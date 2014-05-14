@@ -94,6 +94,7 @@ class BasePage < PageFactory
       action(:administration_tab) { |b| b.link(title: 'Administration').click }
 
       action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').click }
+      action(:collapse_all) { |b| b.frm.button(name: 'methodToCall.hideAllTabs').click }
     end
 
     def tiny_buttons

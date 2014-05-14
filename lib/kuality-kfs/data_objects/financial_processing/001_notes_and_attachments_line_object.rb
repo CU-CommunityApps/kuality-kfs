@@ -53,6 +53,7 @@ class NotesAndAttachmentsLineObject < DataFactory
 
   def attach_file(filename)
     on(KFSBasePage).attach_notes_file.set($file_folder+filename)
+    on(KFSBasePage).attach_notes_file.value.should == filename
   end
 
   def download_file
