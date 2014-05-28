@@ -2,7 +2,7 @@ class BudgetAdjustmentObject < KFSDataObject
 
   include BudgetAdjustmentLinesMixin
 
-  attr_accessor  :fdd_year
+  attr_accessor  :fdd_year, :cb_start_amount, :bb_start_amount
 
   DOC_INFO = { label: 'Budget Adjustment', type_code: 'BA' }
 
@@ -11,8 +11,8 @@ class BudgetAdjustmentObject < KFSDataObject
         initial_lines: [{
                             type:           :source,
                             chart_code:     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-                            account_number: '1258322',
-                            object:         '4480',
+                            account_number: '1258322', #TODO replace with bootstrap data
+                            object:         '4480',    #TODO replace with bootstrap data
                             current_amount: '10000'
                         }])
   end
@@ -20,9 +20,9 @@ class BudgetAdjustmentObject < KFSDataObject
   def initialize(browser, opts={})
     @browser = browser
 
-    defaults = { description: random_alphanums(20, 'AFT') }.merge!(default_accounting_lines)
+    defaults = { description: random_alphanums(20, 'AFT')  }.merge!(default_accounting_lines)
 
-    set_options(defaults.merge(opts))
+    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_BUDGET_ADJUSTMENT)).merge(opts))
   end
 
   def build

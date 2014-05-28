@@ -16,17 +16,34 @@ class KFSDataObject < DataFactory
     [:description]
   end
 
+  def defaults
+    {
+      description:               random_alphanums(40, 'AFT'),
+      notes_and_attachments_tab: collection('NotesAndAttachmentsLineObject')
+    }
+  end
+
+  def extended_defaults
+    Hash.new
+  end
+
+  def initialize(browser, opts={})
+    @browser = browser
+    set_options(defaults.merge(extended_defaults).merge(opts))
+  end
+
   def create
     pre_create
     build
     fill_out_extended_attributes
     post_create
 
-    on page_class_for(self.class.to_s) do |page|
+    on page_class_for(document_object_of(self.class)) do |page|
       page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
       @document_id = page.document_id
       page.send(@press) unless @press.nil?
     end
+
   rescue Watir::Exception::UnknownObjectException => uoe
     unless uoe.message.match(/:title=>"Create a new record", :tag_name=>"a"/).nil?
       raise ArgumentError, '"Create New" button was not found on this page. ' <<
@@ -66,7 +83,18 @@ class KFSDataObject < DataFactory
     @notes_and_attachments_tab = collection('NotesAndAttachmentsLineObject')
   end
 
-  def absorb(target={}); end
+  def update_line_objects_from_page!(target=:new); end
+
+  def update_extended_line_objects_from_page!(target=:new); end
+
+  def absorb(target={})
+    on KFSBasePage do |b|
+      update_options({
+        document_id: b.document_id,
+        description: b.description.value
+      })
+    end
+  end
 
   def save
     on(KFSBasePage).save

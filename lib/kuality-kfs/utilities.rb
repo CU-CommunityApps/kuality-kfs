@@ -32,6 +32,10 @@ module Utilities
     get(snake_case(document))
   end
 
+  def document_object_of(klass)
+    klass.to_s.gsub(/(?<=[a-z])(?=[A-Z])/, ' ').gsub(/Object$/, '')
+  end
+
   def object_class_for(document)
     Kernel.const_get("#{snake_case(document).to_s.split('_').map(&:capitalize).join('')}Object")
   end
@@ -54,7 +58,7 @@ module Utilities
         '09'
       when 'APR', 'Apr', 'April'
         '10'
-      when 'MAY', 'May',
+      when 'MAY', 'May'
         '11'
       when 'JUN', 'Jun', 'June'
         '12'
@@ -66,7 +70,7 @@ module Utilities
         '03'
       when 'OCT', 'Oct', 'October'
         '04'
-      when 'NOV', 'Nov', 'December'
+      when 'NOV', 'Nov', 'November'
         '05'
       when 'DEC', 'Dec', 'December'
         '06'

@@ -22,6 +22,16 @@ class Lookups < BasePage
   element(:lookup_title) { |b| b.frm.div(id: /headerarea/).h1.text }
   action(:on_a_lookup?) { |b| b.lookup_title.include?('Lookup') }
 
+  action(:wait_for_search_results) do |attempts=30, b|
+    while b.no_result_table_returned? && attempts > 0
+      # Wait a bit and check, may be having timing issues.
+      sleep 1
+      attempts -= 1
+      b.search
+    end
+    raise StandardError.new('No results returned from the lookup!') if b.no_result_table_returned?
+  end
+
   class << self
 
     def document_facets
@@ -37,6 +47,10 @@ class Lookups < BasePage
       element(:account_type_code) { |b| b.frm.select(name: 'accountTypeCode') }
       element(:sub_fund_group_code) { |b| b.frm.text_field(name: 'subFundGroupCode') }
       closed_radios
+    end
+
+    def assets_facets
+
     end
 
     def subaccount_facets
@@ -93,6 +107,16 @@ class Lookups < BasePage
       element(:active_yes) { |b| b.frm.radio(id: 'activeYes') }
       element(:active_no) { |b| b.frm.radio(id: 'activeNo') }
       element(:active_both) { |b| b.frm.radio(id: 'activeBoth') }
+      element(:active_indicator) { |b| b.frm.radios(name: 'activeIndicator') }
+      element(:active_indicator_yes) { |b| b.frm.radio(id: 'activeIndicatorYes') }
+      element(:active_indicator_no) { |b| b.frm.radio(id: 'activeIndicatorNo') }
+      element(:active_indicator_both) { |b| b.frm.radio(id: 'activeIndicatorBoth') }
+    end
+
+    def submit_to_cams_radios
+      element(:submit_to_cams_yes) { |b| b.frm.radio(id: 'activityStatusCodeYes') }
+      element(:submit_to_cams_no) { |b| b.frm.radio(id: 'activityStatusCodeNo') }
+      element(:submit_to_cams_both) { |b| b.frm.radio(id: 'activityStatusCodeBoth') }
     end
 
     def reference_document_facets
