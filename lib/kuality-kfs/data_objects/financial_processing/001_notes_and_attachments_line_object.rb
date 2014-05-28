@@ -52,8 +52,9 @@ class NotesAndAttachmentsLineObject < DataFactory
   end
 
   def attach_file(filename)
-    on(KFSBasePage).attach_notes_file.set($file_folder+filename)
-    on(KFSBasePage).attach_notes_file.value.should == filename
+    canonical_path = File.expand_path($file_folder+filename)
+    on(KFSBasePage).attach_notes_file.set(canonical_path)
+    on(KFSBasePage).attach_notes_file.value.include?(filename).true?.should
   end
 
   def download_file
