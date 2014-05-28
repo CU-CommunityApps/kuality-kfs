@@ -1,5 +1,7 @@
 class AccountingLineObject < DataFactory
 
+  include GlobalConfig
+
   attr_accessor   :line_number, :type,
                   :chart_code, :account_number, :sub_account, :object, :sub_object,
                   :project, :org_ref_id, :reference_origin_code, :reference_number,
@@ -11,7 +13,7 @@ class AccountingLineObject < DataFactory
     @browser = browser
 
     defaults = {
-        chart_code:            'IT',
+        chart_code:            get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
         line_description:      "Testing #{opts[:type]} Accounting Line"
     }
 

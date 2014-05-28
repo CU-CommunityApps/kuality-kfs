@@ -1,6 +1,7 @@
 class BasePage < PageFactory
 
   include Utilities
+  include GlobalConfig
 
   # These constants can be used with switches to add modularity to object create methods.
   KNOWN_BUTTONS = {
@@ -16,7 +17,7 @@ class BasePage < PageFactory
     send_notification: 'send notification',
     recall:            'Recall current document',
     error_correction:  'error correction',
-    fyi:           'fyi'
+    fyi:               'fyi'
   }
 
   def self.available_buttons
@@ -47,7 +48,7 @@ class BasePage < PageFactory
     end
 
     def document_header_elements
-      value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text }
+      value(:doc_title) { |b| b.frm.div(id: /^headerarea/).h1.text }
       element(:headerinfo_table) { |b| b.frm.div(id: 'headerarea').table(class: 'headerinfo') }
       value(:document_id) { |p| p.headerinfo_table[0][1].text }
       alias_method :doc_nbr, :document_id
@@ -56,6 +57,11 @@ class BasePage < PageFactory
       alias_method :disposition, :initiator
       value(:last_updated) {|p| p.headerinfo_table[1][3].text }
       alias_method :created, :last_updated
+      value(:requisition_id) { |p| p.headerinfo_table[2][1].text }
+      value(:requisition_status) { |p| p.headerinfo_table[2][3].text }
+      alias_method :po_doc_status, :requisition_status
+      value(:po_number) { |p| p.headerinfo_table[2][1].text }
+      value(:app_doc_status) { |p| p.headerinfo_table[2][3].text }
     end
 
     def description_field
@@ -72,7 +78,7 @@ class BasePage < PageFactory
 
     def global_buttons
       glbl 'blanket approve', 'close', 'cancel', 'reload', 'copy', 'Copy current document',
-           'approve', 'disapprove', 'submit', 'Send Notification', 'Recall current document','fyi'
+           'approve', 'disapprove', 'submit', 'Send Notification', 'Recall current document','fyi', 'Calculate'
       action(:save) { |b| b.frm.button(name: 'methodToCall.save', title: 'save').click }
       action(:error_correction) { |b| b.frm.button(name: 'methodToCall.correct', title: 'Create error correction document from current document').click }
       action(:edit) { |b| b.edit_button.click }
@@ -88,6 +94,7 @@ class BasePage < PageFactory
       action(:administration_tab) { |b| b.link(title: 'Administration').click }
 
       action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').click }
+      action(:collapse_all) { |b| b.frm.button(name: 'methodToCall.hideAllTabs').click }
     end
 
     def tiny_buttons
@@ -113,6 +120,7 @@ class BasePage < PageFactory
       action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
 
       action(:item_row) { |match, b| b.results_table.row(text: /#{match}/m) }
+      alias_method :result_item, :item_row
       # Note: Use this when you need to click the "open" link on the target row
       action(:open) { |match, p| p.results_table.row(text: /#{match}/m).link(text: 'open').click; p.use_new_tab; p.close_parents }
       # Note: Use this when the link itself is the text you want to match
@@ -137,18 +145,34 @@ class BasePage < PageFactory
 
       action(:sort_results_by) { |title_text, b| b.results_table.link(text: title_text).click }
 
-      element(:no_result_table_returned) {|b| b.frm.divs(id: 'lookup')[0].parent.text.include?('No values match this search.') }
+      value(:no_result_table_returned) { |b| b.frm.divs(id: 'lookup')[0].parent.text.match /No values match this search/m }
       alias_method :no_result_table_returned?, :no_result_table_returned
 
+      #action(:find_header_index) { |text_match, b| b.frm.results_table.ths.each { |t| puts t.text.to_s + 'la la la la la' + i.to_s; i += 1  }
+      value(:get_cell_value_by_index) { |index_number, b| b.results_table.td(index: index_number).text }
+      
+      action(:search_then) {|action, b| b.search; action.each_pair{|a, o| o.nil? ? b.send(a) : b.send(a, o)} }
+    end
+
+    def general_ledger_pending_entries
+      element(:glpe_results_table) { |b| b.frm.div(id:'tab-GeneralLedgerPendingEntries-div').table }
+      action(:show_glpe) { |b| b.frm.button(title: 'open General Ledger Pending Entries').when_present.click }
     end
 
     def notes_and_attachments
+      # == Notes and Attachments Tab ==
+      element(:show_notes_and_attachments_button) { |b| b.frm.input(id: 'tab-NotesandAttachments-imageToggle') }
+      alias_method :hide_notes_and_attachments_button, :show_notes_and_attachments_button
+      element(:notes_and_attachments_count) { |b| b.show_notes_and_attachments_button.title.gsub(/.*\((\d+)\)$/, '\1').to_i }
+      action(:show_notes_and_attachments) { |b| b.show_notes_and_attachments_button.click }
+      action(:hide_notes_and_attachments) { |b| b.hide_notes_and_attachments.click }
       element(:note_text) { |b| b.frm.textarea(name: 'newNote.noteText') }
       action(:add_note) { |b| b.frm.button(title: 'Add a Note').click }
       action(:delete_note) { |l=0,b| b.frm.button(name: "methodToCall.deleteBONote.line#{l}").click }
       action(:send_note_fyi) { |l=0,b| b.frm.button(name: "methodToCall.sendNoteWorkflowNotification.line#{l}").click }
       action(:notification_recipient) { |l=0,b| b.frm.text_field(id: "document.note[#{l}].adHocRouteRecipient.id") }
       element(:notes_tab) { |b| b.div(id: 'tab-NotesandAttachments-div') }
+      element(:attachment_type) { |b| b.frm.select(name: 'newNote.attachment.attachmentTypeCode') }
 
       element(:attach_notes_file) { |b| b.frm.file_field(name: 'attachmentFile') }
       element(:notes_table) { |b| b.frm.table(summary: 'view/add notes') }
@@ -156,20 +180,101 @@ class BasePage < PageFactory
       #viewing document where changes have been made
       element(:account_line_changed_text) { |b| b.td(class: 'datacell center', text: /^Accounting Line changed from:/) }
       element(:send_to_vendor) { |b| b.frm.select(name: 'newNote.noteTopicText') }
-      action(:download_file_button) { |l=0, b| b.frm.button(name: "methodToCall.downloadBOAttachment.attachment[#{l}]") }
+      element(:attach_notes_file_1) { |b| b.download_file_button(0) } # FIXME: Remove once all references are gone.
+      element(:download_file_button) { |l=0, b| b.frm.button(name: "methodToCall.downloadBOAttachment.attachment[#{l}]") }
       action(:download_file) { |l=0, b| b.download_file(l).click }
+      alias_method :submitted_attached_file_file, :download_file
+      value(:submitted_note_text) { |l=0, b| b.notes_table[2+l][b.notes_table.keyed_column_index(:note_text)].text }
+      value(:submitted_author) { |l=0, b| b.notes_table[2+l][b.notes_table.keyed_column_index(:author)].text }
+      value(:submitted_posted_timestamp) { |l=0, b| b.notes_table[2+l][b.notes_table.keyed_column_index(:posted_timestamp)].text }
+      value(:submitted_attached_file_name) { |l=0, b| b.notes_table[2+l][b.notes_table.keyed_column_index(:attached_file)].text }
+
+      # == Notes Tab ==
+      element(:show_ro_notes_button) { |b| b.frm.input(id: 'tab-Notes-imageToggle') }
+      alias_method :hide_ro_notes_button, :show_ro_notes_button
+      element(:ro_notes_count) { |b| b.frm.inputs(id: /^tab-\d+-imageToggle$/m, alt: /^(close|open) Notes$/m).length }
+      action(:show_ro_notes) { |b| b.show_ro_notes_button.click }
+      action(:hide_ro_notes) { |b| b.hide_ro_notes_button.click }
+
+      element(:ro_notes_tab) { |b| b.frm.div(id: 'tab-Notes-div').table }
+      element(:ro_note) { |i=0, b| b.ro_notes_tab[i].tables(class: 'datatable')[1] }
+      value(:ro_note_note_text) { |i=0, b| b.ro_note(i).span(id: "boNotes[#{i}].noteText.div").text.strip }
+      value(:ro_note_posted_datetime_stamp) { |i=0, b| b.ro_note(i).span(id: "boNotes[#{i}].notePostedTimestamp.div").text.strip }
+      value(:ro_note_principal_name) { |i=0, b| b.ro_note(i).span(id: "boNotes[#{i}].authorUniversal.principalName.div").text.strip }
+      element(:ro_note_attached_file) { |i=0, b| b.ro_note(i).tr(text: /Attached File/m).td }
+      value(:ro_note_has_attached_file?) { |i=0, b| b.ro_note_attached_file(i).link(text: /Download Attachment/m).exists? }
 
     end
 
     def route_log
       element(:route_log_iframe) { |b| b.frm.iframe(name: 'routeLogIFrame') }
+      element(:show_route_log_button) { |b| b.frm.div(id: 'workarea').input(id: 'tab-RouteLog-imageToggle') }
+      alias_method :hide_route_log_button, :show_route_log_button
+      value(:route_log_shown?) { |b| b.show_route_log_button.title.match(/close Route Log/m) }
+      value(:route_log_hidden?) { |b| b.show_route_log_button.title.match(/open Route Log/m) }
+      action(:show_route_log) { |b| b.show_route_log_button.click }
+      alias_method :hide_route_log, :show_route_log
+      element(:refresh_route_log_button) { |b| b.route_log_iframe.div(class: 'lookupcreatenew', title: 'Refresh').image(alt: 'refresh') }
+      action(:refresh_route_log) { |b| b.refresh_route_log_button.click }
+
       element(:actions_taken_table) { |b| b.route_log_iframe.div(id: 'tab-ActionsTaken-div').table }
       value(:actions_taken) { |b| (b.actions_taken_table.rows.collect{ |row| row[1].text }.compact.uniq).reject{ |action| action==''} }
       element(:pnd_act_req_table) { |b| b.route_log_iframe.div(id: 'tab-PendingActionRequests-div').table }
+
+      element(:show_pending_action_requests_button) { |b| b.route_log_iframe.input(id: 'tab-PendingActionRequests-imageToggle') }
+      alias_method :hide_pending_action_requests_button, :show_pending_action_requests_button
+      value(:pending_action_requests_shown?) { |b| b.show_pending_action_requests_button.title.match(/close Pending Action Requests/m) }
+      value(:pending_action_requests_hidden?) { |b| b.show_pending_action_requests_button.title.match(/open Pending Action Requests/m) }
+      action(:show_pending_action_requests) { |b| b.show_pending_action_requests_button.click }
+      alias_method :hide_pending_action_requests, :show_pending_action_requests
+
+      element(:show_pending_action_requests_in_action_list_button) { |b| b.pnd_act_req_table.image(title: 'show') }
+      element(:hide_pending_action_requests_in_action_list_button) { |b| b.pnd_act_req_table.image(title: 'hide') }
+      value(:pending_action_requests_in_action_list_shown?) { |b| b.hide_pending_action_requests_in_action_list_button.exists? }
+      value(:pending_action_requests_in_action_list_hidden?) { |b| b.show_pending_action_requests_in_action_list_button.exists? }
+      action(:show_pending_action_requests_in_action_list) { |b| b.show_pending_action_requests_in_action_list_button.click }
+      action(:hide_pending_action_requests_in_action_list) { |b| b.hide_pending_action_requests_in_action_list_button.click }
+
+      value(:pnd_act_req_table_action) { |r=1, b| b.pnd_act_req_table[r][b.pnd_act_req_table.keyed_column_index(:action)] }
+      value(:pnd_act_req_table_requested_of) { |r=1, b| b.pnd_act_req_table[r][b.pnd_act_req_table.keyed_column_index(:requested_of)] }
+      value(:pnd_act_req_table_time_date) { |r=1, b| b.pnd_act_req_table[r][b.pnd_act_req_table.keyed_column_index(:time_date)] }
+      value(:pnd_act_req_table_annotation) { |r=1, b| b.pnd_act_req_table[r][b.pnd_act_req_table.keyed_column_index(:annotation)] }
+
+      element(:pnd_act_req_table_sub) { |b| b.pnd_act_req_table.table }
+      element(:pnd_act_req_table_multi) { |b| b.pnd_act_req_table_sub.table }
+      value(:pnd_act_req_table_multi_action) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:action)] }
+      value(:pnd_act_req_table_multi_requested_of) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:requested_of)] }
+      value(:pnd_act_req_table_multi_time_date) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:time_date)] }
+      value(:pnd_act_req_table_multi_annotation) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:annotation)] }
+
       value(:action_requests) { |b| (b.pnd_act_req_table.rows.collect{ |row| row[1].text}).reject{ |action| action==''} }
-      action(:show_future_action_requests) { |b| b.route_log_iframe.h2(text: 'Future Action Requests').parent.parent.image(title: 'show').click }
+      action(:show_future_action_requests) { |b| b.future_actions_table.image(title: 'show').click }
       element(:future_actions_table) { |b| b.route_log_iframe.div(id: 'tab-FutureActionRequests-div').table }
-      action(:requested_action_for) { |name, b| b.future_actions_table.tr(text: /#{name}/).td(index: 2).text }
+      value(:requested_action_for) { |name, b| b.future_actions_table.tr(text: /#{name}/).td(index: 2).text }
+      action(:show_multiple) { |b| b.pnd_act_req_table[1][0].a.image(title: 'show').click }
+      action(:multiple_link_first_approver){ |b| b.pnd_act_req_table[2].table.table[1][2].a.click}
+
+      value(:new_user) do |b|
+        new_user = ''
+        if b.frm.div(id: 'tab-Overview-div').tables[0][1].text.include?('Principal Name:')
+          new_user = b.frm.div(id: 'tab-Overview-div').tables[0][1].tds[0].text
+        else
+          # TODO : this is for group.  any other alternative ?
+          mbr_tr = b.frm.select(id: 'document.members[0].memberTypeCode').parent.parent.parent
+          new_user = mbr_tr[4].text
+        end
+        new_user
+      end
+
+      value(:pending_action_annotation) { |i=0, b| b.pnd_act_req_table[(1+(i*2))][4].text }
+      action(:first_pending_approve) do |b|
+        (1..b.pnd_act_req_table.rows.length - 2).each do |i|
+          if b.pnd_act_req_table[i][1].text.include?('APPROVE')
+            b.pnd_act_req_table[i][2].links[0].click
+          end
+        end
+
+      end
     end
 
     # Gathers all errors on the page and puts them in an array called "errors"

@@ -5,7 +5,15 @@ module Watir
         when iframe(id: 'iframeportlet').exist?
           iframe(id: 'iframeportlet')
         when iframe(id: /easyXDM_default\d+_provider/).iframe(id: 'iframeportlet').exist?
-          iframe(id: /easyXDM_default\d+_provider/).iframe(id: 'iframeportlet')
+          begin
+            if iframe(id: /easyXDM_default\d+_provider/).iframe(id: 'iframeportlet').iframe(id: 'iframeportlet').exists?
+              iframe(id: /easyXDM_default\d+_provider/).iframe(id: 'iframeportlet').iframe(id: 'iframeportlet')
+            else
+              iframe(id: /easyXDM_default\d+_provider/).iframe(id: 'iframeportlet')
+            end
+          rescue
+            iframe(id: /easyXDM_default\d+_provider/).iframe(id: 'iframeportlet')
+          end
         when iframe(id: /easyXDM_default\d+_provider/).exist?
           iframe(id: /easyXDM_default\d+_provider/)
         else
@@ -24,6 +32,18 @@ module Watir
     end
   end
 
+  # It would be nice if fit tried both the value and
+  # the text before giving up.
+  class Select
+    def fit(str_or_rx)
+      if include?(str_or_rx)
+        select_by :text, str_or_rx unless str_or_rx==nil
+      else
+        select_by :value, str_or_rx unless str_or_rx==nil
+      end
+    end
+  end
+
   # Because we're focusing on watir-webdriver v0.6.4 for now, we don't have good column access.
   # These extensions should provide us with some of that capability until we are ready to update,
   # and "shouldn't" cause problems when we do.
@@ -36,7 +56,7 @@ module Watir
 
     # @return [Array] An array of associative keys matching the text of the Table#header_row.
     def header_keys
-      header_row.cells.collect { |x| snake_case(x.text.strip).to_sym }
+      header_row.cells.collect { |x| snake_case(x.text.strip).to_s.gsub(/^[_]*/, '').to_sym }
     end
 
     # @param [Symbol] key The key in the Table#header_row associated with the desired column.
@@ -94,6 +114,18 @@ class Array
   def rest
     f, *r = *self
     r
+  end
+end
+
+class Object
+  # Convenience shorthand method for comparing against false, similar to #nil?
+  def false?
+    self == false
+  end
+
+  # Convenience shorthand method for comparing against true, similar to #nil?
+  def true?
+    self == true
   end
 end
 
