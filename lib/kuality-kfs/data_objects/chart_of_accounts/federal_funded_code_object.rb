@@ -15,15 +15,10 @@ class FederalFundedCodeObject < KFSDataObject
   end
 
   def build
-
     visit(MaintenancePage).federal_funded_code
-    on(FederalFundedCodeLookupPage) do |page|
-      # page.search
-      # capture all codes then pick a valid code that does not already exist [0-9 A-Z]
+    on(FederalFundedCodeLookupPage).create_new
 
-      page.create_new
-    end
-    on FederalFundedCodePage do |page|
+  on FederalFundedCodePage do |page|
       page.description.focus
       page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
 
@@ -43,10 +38,7 @@ class FederalFundedCodeObject < KFSDataObject
 
 
   def search_results_array
-    on FederalFundedCodeLookupPage do |page|
-      # @search_results_array = Array.new
-      page.make_results_array
-    end
+    on(FederalFundedCodeLookupPage).make_results_array
     # action(:make_results_array) {|b| b.frm.table(id: 'row').trs.each { |tr| tr.tds.each { |t| @search_results_array << t.text } } }
   end
 
