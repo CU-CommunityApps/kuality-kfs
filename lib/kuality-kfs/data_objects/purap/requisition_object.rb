@@ -73,6 +73,8 @@ class RequisitionObject < KFSDataObject
       page.search
       page.return_random
     end
+    #If postal code is blank - submit will fail even though not shown as a required field with *
+
   end
 
 end #class
