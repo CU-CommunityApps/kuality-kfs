@@ -56,7 +56,13 @@ module Watir
 
     # @return [Array] An array of associative keys matching the text of the Table#header_row.
     def header_keys
-      header_row.cells.collect { |x| snake_case(x.text.strip).to_s.gsub(/^[_]*/, '').to_sym }
+      header_row.cells.collect { |x|
+        if x.text.empty?
+          :checkboxes if x.checkbox.exists?
+        else
+          snake_case(x.text.strip).to_s.gsub(/^[_]*/, '').gsub(/_[_]+_/, '_').to_sym
+        end
+      }
     end
 
     # @param [Symbol] key The key in the Table#header_row associated with the desired column.
@@ -129,37 +135,9 @@ class Object
   end
 end
 
-class Class
-  alias_method :attr_reader_without_tracking, :attr_reader
-  def attr_reader(*names)
-    attr_readers.concat(superclass.attr_readers).concat(names)
-    attr_reader_without_tracking(*names)
-  end
-
-  def attr_readers
-    @attr_readers ||= [ ]
-  end
-
-  alias_method :attr_writer_without_tracking, :attr_writer
-  def attr_writer(*names)
-    attr_writers.concat(superclass.attr_writers).concat(names)
-    attr_writer_without_tracking(*names)
-  end
-
-  def attr_writers
-    @attr_writers ||= [ ]
-  end
-
-  alias_method :attr_accessor_without_tracking, :attr_accessor
-  def attr_accessor(*names)
-    attr_readers.concat(superclass.attr_readers).concat(names)
-    attr_writers.concat(superclass.attr_writers).concat(names)
-    attributes.concat(superclass.attributes).concat(names)
-    attr_accessor_without_tracking(*names)
-  end
-
-  def attributes
-    @attributes ||= [ ]
+class Cucumber::Ast::Table
+  def to_data_object_attr
+    Hash[rows_hash.map{ |k, v| [StringFactory.damballa(k), (v == 'nil' ? nil : v)] }]
   end
 end
 

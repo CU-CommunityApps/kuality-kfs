@@ -8,17 +8,9 @@ class KFSDataObject < DataFactory
                 :notes_and_attachments_tab #, :required_attributes, :default_attributes
 
   # Hooks:
-  def self.default_attributes
-    []
-  end
-
-  def self.required_attributes
-    [:description]
-  end
-
   def defaults
     {
-      description:               random_alphanums(40, 'AFT'),
+      description:               random_alphanums(37, 'AFT'),
       notes_and_attachments_tab: collection('NotesAndAttachmentsLineObject')
     }
   end
@@ -30,6 +22,12 @@ class KFSDataObject < DataFactory
   def initialize(browser, opts={})
     @browser = browser
     set_options(defaults.merge(extended_defaults).merge(opts))
+  end
+
+  def expand_focus_and_clear(page)
+    page.expand_all
+    page.description.focus
+    page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
   end
 
   def create
@@ -59,31 +57,17 @@ class KFSDataObject < DataFactory
 
   def build; end
 
-  def fill_out_required_attributes
-    on page_class_for(self.class.to_s) do |page|
-      page.expand_all
-      page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
-      fill_out page, *self.class.required_attributes
-    end
-  end
-
-  def fill_out_optional_attributes
-    on page_class_for(self.class.to_s) do |page|
-      page.expand_all
-      page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
-      fill_out page, *(self.class.attributes - self.class.required_attributes - [:press, :document_id, :notes_and_attachments_tab])
-    end
-  end
-
   def fill_out_extended_attributes(attribute_group=nil); end
+
+  def edit_extended_attributes(attribute_group=nil); end
 
   def post_create
     @notes_and_attachments_tab = collection('NotesAndAttachmentsLineObject')
   end
 
-  def update_line_objects_from_page!(target=:new); end
+  def update_line_objects_from_page!(target=:new)
+    update_extended_line_objects_from_page!(target)
+  end
 
   def update_extended_line_objects_from_page!(target=:new); end
 
