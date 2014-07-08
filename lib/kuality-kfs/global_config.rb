@@ -170,4 +170,7 @@ module GlobalConfig
   def get_root_action_requests(document_number)
     workflow_document_service.getRootActionRequests(document_number)
   end
+  def get_pending_action_requests(document_number)
+    workflow_document_service.getPendingActionRequests(document_number)
+  end
 end
