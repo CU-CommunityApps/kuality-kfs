@@ -167,6 +167,11 @@ class BasePage < PageFactory
       action(:show_glpe) { |b| b.frm.button(title: 'open General Ledger Pending Entries').when_present.click }
     end
 
+    def labor_ledger_pending_entries
+      element(:llpe_results_table) { |b| b.frm.div(id:'tab-LaborLedgerPendingEntries-div').table }
+      action(:show_llpe) { |b| b.frm.button(title: 'open Labor Ledger Pending Entries').when_present.click }
+    end
+
     def notes_and_attachments
       # == Notes and Attachments Tab ==
       element(:show_notes_and_attachments_button) { |b| b.frm.input(id: 'tab-NotesandAttachments-imageToggle') }
