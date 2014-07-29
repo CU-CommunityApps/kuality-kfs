@@ -100,17 +100,4 @@ class SalaryExpenseTransferObject < KFSDataObject
     end
   end
 
-
-
-  def lookup_labor_benefits_type_code(chart_code, object_code)
-    on LaborObjectCodeBenefitsLookupPage do |lobpage|
-      lobpage.use_new_tab
-      lobpage.universityFiscalYear.set @fiscal_year
-      lobpage.chart_code.set chart_code
-      lobpage.object_code.set object_code
-      lobpage.search
-      lobpage.find_item_in_table
-    end
-  end
-
 end
