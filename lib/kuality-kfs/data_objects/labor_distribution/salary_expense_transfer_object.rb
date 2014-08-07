@@ -6,17 +6,46 @@ class SalaryExpenseTransferObject < KFSDataObject
 
   DOC_INFO = { label: 'Salary Expense Transfer Document', type_code: 'ST' }
 
-  attr_accessor :fiscal_year, :employee_id
+  attr_accessor :fiscal_year, :employee_id,
+                :actuals_balance_type, :labor_balance_typed, :debit_code, :credit_code, :period_unassigned,
+                :remembered_employee_id
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
-        description: random_alphanums(20, 'AFT'),
-        employee_id: get_aft_parameter_value(ParameterConstants::DEFAULT_ST_EMPL_ID)
+        description:          random_alphanums(20, 'AFT'),
+        employee_id:          get_aft_parameter_value(ParameterConstants::DEFAULT_ST_EMPL_ID),
+        actuals_balance_type: "AC",
+        labor_balance_typed:  "A2",
+        debit_code:           "D",
+        credit_code:          "C",
+        period_unassigned:    ""
+
     }.merge!(default_accounting_lines)
 
     set_options(defaults.merge(opts))
+    #set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULT_CONSTANTS_FOR_ST_LLPE)).merge(opts))
+  end
+
+  def ACTUALS_BALANCE_TYPE
+    @actuals_balance_type
+  end
+
+  def LABOR_BALANCE_TYPE
+    @labor_balance_typed
+  end
+
+  def DEBIT_CODE
+    @debit_code
+  end
+
+  def CREDIT_CODE
+    @credit_code
+  end
+
+  def PERIOD_UNASSIGNED
+    @period_unassigned
   end
 
   def build
@@ -29,41 +58,57 @@ class SalaryExpenseTransferObject < KFSDataObject
     end
   end
 
-
-  def search_for_employee
-    on(SalaryExpenseTransferPage) do |page|
-      #look back to previous fiscal year at start of new fiscal year because we do not have labor data yet
-      if fiscal_period_conversion(right_now[:MON]).to_i < 2
-        @fiscal_year = page.fiscal_year.value.to_i - 1
-        page.fiscal_year.set @fiscal_year
-      end
-      page.import_search
-    end
-  end
-
-  def retrieve_first_positive_balance_month
-    on LedgerBalanceLookupPage do |lblookup|
-      #TODO Change to select first month with a positive balance.  Currently, first month regardless of balance is being selected.
-      lblookup.check_first_month
-      lblookup.return_selected
-    end
-
+  def clear_global_attributes_to_be_used
+    @chart_code = nil
+    @account_number = nil
+    @sub_account_code = nil
+    @object_code = nil
+    @sub_object_code = nil
+    @project_code = nil
+    @organization_reference_id = nil
+    @position_number = nil
+    @payroll_end_date_fiscal_year = nil
+    @payroll_end_date_fiscal_period_code = nil
+    @payroll_total_hours = nil
+    @amount = nil
+    @fringe_benefit_inquiry = nil
   end
 
   def pull_specified_accounting_line(type, row, page)
-    @chart_code = page.chart_code_value type; row
-    @account_number = page.account_number_value type; row
-    @sub_account_code = page.sub_account_number_value type; row
-    @object_code = page.object_code_value type; row
-    @sub_object_code = page.sub_object_code_value type; row
-    @project_code = page.project_code_value type; row
-    @organization_reference_id = page.organization_reference_id_value type; row
-    @position_number = page.position_number_value type; row
-    @payroll_end_date_fiscal_year = page.payroll_end_date_fiscal_year_value type; row
-    @payroll_end_date_fiscal_period_code = page.payroll_end_date_fiscal_period_code_value type; row
-    @payroll_total_hours = page.payroll_total_hours type; row
-    @amount = page.salary_expense_amount type; row
-    @fringe_benefit_inquiry = page.view_fringe_benefit_link
+    #required to ensure validity of data being used is from page
+    clear_global_attributes_to_be_used
+
+    if type == :source
+      @chart_code = page.chart_code_value type; row
+      @account_number = page.account_number_value type; row
+      @sub_account_code = page.sub_account_number_value type; row
+      @object_code = page.object_code_value type; row
+      @sub_object_code = page.sub_object_code_value type; row
+      @project_code = page.project_code_value type; row
+      @organization_reference_id = page.organization_reference_id_value type; row
+      @position_number = page.position_number_value type; row
+      @payroll_end_date_fiscal_year = page.payroll_end_date_fiscal_year_value type; row
+      @payroll_end_date_fiscal_period_code = page.payroll_end_date_fiscal_period_code_value type; row
+      @payroll_total_hours = page.st_payroll_total_hours type; row
+      @amount = page.st_amount type; row
+      @fringe_benefit_inquiry = page.view_fringe_benefit_link type; row
+
+    else #":target"
+      @chart_code = page.st_chart_code type; row
+      @account_number = page.st_account_number type; row
+      @sub_account_code = page.st_sub_account_code type; row
+      @object_code = page.st_object_code type; row
+      @sub_object_code = page.st_sub_object_code type; row
+      @project_code = page.st_project_code type; row
+      @organization_reference_id = page.st_organization_reference_id type; row
+      @position_number = page.position_number_value type; row
+      @payroll_end_date_fiscal_year = page.payroll_end_date_fiscal_year_value type; row
+      @payroll_end_date_fiscal_period_code = page.payroll_end_date_fiscal_period_code_value type; row
+      @payroll_total_hours = page.st_payroll_total_hours type; row
+      @amount = page.st_amount type; row
+      @fringe_benefit_inquiry = page.view_fringe_benefit_link type; row
+    end
+
     new_line = {
       :chart_code                           => @chart_code,
       :account_number                       => @account_number,
@@ -97,6 +142,33 @@ class SalaryExpenseTransferObject < KFSDataObject
         }
       end
       return fringe_detail
+    end
+  end
+
+
+  # NOTE: percent value is stored in database as a whole number
+  #       i.e. 25.00% and does not have decimal representation of .25
+  def calculate_benefit_amount(amount, percentage_as_whole_number)
+
+    percent = percentage_as_whole_number.to_f / 100.0  #get into percent
+
+    #to round i.e. want 10% of 22.79 ==> ((22.79 * .1)*100).round / 100.0 = 2.28
+    benefit_amount = (((amount).to_f * percent.to_f) * 100.0).round / 100.0
+    return benefit_amount
+  end
+
+
+  def llpe_line_matches_accounting_line_data(llpe_account, llpe_object, llpe_amount, llpe_period, llpe_balance_type,
+                               llpe_debit_credit_code, account, object, amount, period, balance_type, debit_credit_code)
+
+    #return true only when all input parameters match;
+    # period values could be zero length strings; amounts could be floats; rest should be string values
+    if (llpe_account == account) && (llpe_object == object) && (llpe_amount.to_s == amount.to_s) &&
+       (llpe_balance_type == balance_type) && (llpe_debit_credit_code == debit_credit_code) &&
+       ( (llpe_period.empty? & period.empty?) || (!llpe_period.empty? && !period.empty? && llpe_period == period)  )
+      return true
+    else
+      return false
     end
   end
 

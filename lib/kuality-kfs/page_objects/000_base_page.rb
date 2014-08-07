@@ -155,6 +155,9 @@ class BasePage < PageFactory
       value(:no_result_table_returned) { |b| b.frm.divs(id: 'lookup')[0].parent.text.match /No values match this search/m }
       alias_method :no_result_table_returned?, :no_result_table_returned
 
+      value(:no_results_found) { |b| b.frm.divs(id: 'lookup')[0].parent.text.match /There were no results found/m }
+      alias_method :no_results_found?, :no_results_found
+
       #action(:find_header_index) { |text_match, b| b.frm.results_table.ths.each { |t| puts t.text.to_s + 'la la la la la' + i.to_s; i += 1  }
       value(:get_cell_value_by_index) { |index_number, b| b.results_table.td(index: index_number).text }
       

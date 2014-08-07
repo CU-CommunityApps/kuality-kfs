@@ -22,17 +22,18 @@ class SalaryExpenseTransferPage < FinancialProcessingPage
   value(:organization_reference_id_value) { |t='source', i=0, b| b.frm.span(id:  "document.#{t}AccountingLine[#{i}].organizationReferenceId.div").text.strip }
   value(:payroll_end_date_fiscal_year_value) { |t='source', i=0, b| b.frm.span(id: "document.#{t}AccountingLine[#{i}].payrollEndDateFiscalYear.div").text.strip }
   value(:payroll_end_date_fiscal_period_code_value) { |t='source', i=0, b| b.frm.span(id: "document.#{t}AccountingLine[#{i}].payrollEndDateFiscalPeriodCode.div").text.strip }
-  #Accounting Lines (Editable data elements)
-  value(:payroll_total_hours) { |t='source', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].payrollTotalHours").value.strip }
-  value(:salary_expense_amount) { |t='source', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].amount").value.strip }
+  #Accounting Lines (Editable data elements only on this page)
+  value(:st_chart_code) { |t='target', i=0, b| b.frm.select(name: "document.#{t}AccountingLine[#{i}].chartOfAccountsCode").value}
+  value(:st_account_number) { |t='target', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].accountNumber").value.strip }
+  value(:st_sub_account_code) { |t='target', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].subAccountNumber").value.strip }
+  value(:st_object_code) { |t='target', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].financialObjectCode").value.strip }
+  value(:st_sub_object_code) { |t='target', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].financialSubObjectCode").value.strip }
+  value(:st_project_code) { |t='target', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].projectCode").value.strip }
+  value(:st_organization_reference_id) { |t='target', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].organizationReferenceId").value.strip }
+  value(:st_payroll_total_hours) { |t='source', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].payrollTotalHours").value.strip }
+  value(:st_amount) { |t='source', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].amount").value.strip }
   #Accounting Lines (Clickable link)
-#  value(:fringe_benefit_view_value) { |t='source', i=0, b| b.frm.span(id: "document.#{t}AccountingLine[#{i}].fringeBenefitView.div").text.strip } #give text value of link
   action(:view_fringe_benefit_link) { |t='source', i=0, b| b.frm.span(id: "document.#{t}AccountingLine[#{i}].fringeBenefitView.div").link(href: /calculateFringeBenefit/) }
-
-
-  # works not needed at this time
-  # action(:accounting_lines_tab) {|b| b.frm.div(id: 'tab-AccountingLines-div')}
-  # action(:accounting_lines_table) {|b| b.frm.div(id: 'tab-AccountingLines-div').table(class: 'datatable')}
 
   #specify :source or :target when requesting count
   action(:accounting_lines_row_count) do |t, b|
