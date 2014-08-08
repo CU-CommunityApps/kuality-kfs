@@ -34,6 +34,7 @@ class KFSDataObject < DataFactory
   def create
     pre_create
     build
+    update_data_from_header
     fill_out_extended_attributes
     post_create
 

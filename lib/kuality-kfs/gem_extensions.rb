@@ -99,6 +99,45 @@ module Watir
     def rest
       self.trs[1..(self.trs.length-1)]
     end
+
+    # Applies Array#sample to TableRows
+    # @param [Fixnum] n Number of rows to return
+    # @return [TableRow] The sampled row(s)
+    def sample(n=nil)
+      self.trs.to_a.sample n
+    end
+
+    # Applies Array#sample to TableRows
+    # @param [Fixnum] n Number of rows to return
+    # @return [TableRow] The sampled row(s)
+    def sample(n=nil, rng)
+      self.trs.to_a.sample(n,rng)
+    end
+  end
+
+  class TableRowCollection
+
+    # @return [TableRowCollection] All rows in the table except the first one.
+    def rest
+      self[1..(self.length-1)]
+    end
+
+    # Applies Array#sample to TableRows
+    # @param [Fixnum] n Number of rows to return
+    # @param [Range] rng Range of rows to return
+    # @return [TableRow] The sampled row(s)
+    def sample(n=nil, rng=nil)
+      if n.nil?
+        if rng.nil?
+          self.to_a.sample
+        else
+          self.to_a.sample n, rng
+        end
+      else
+        self.to_a.sample rng
+      end
+    end
+
   end
 
   class TextFieldLocator

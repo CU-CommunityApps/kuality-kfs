@@ -188,6 +188,10 @@ module GlobalConfig
     end
   end
 
+  def get_random_vendor
+    get_kuali_business_object('KFS-VND', 'VendorDetail', "active=Y&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")
+  end
+
   def perform_university_login(page)
     #do nothing - override this in the university project
   end

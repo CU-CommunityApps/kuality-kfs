@@ -72,6 +72,7 @@ class AccountingLineObject < DataFactory
       mappings.merge!({"update_#{@type}_base_amount".to_sym => opts[:base_amount]}) unless opts[:base_amount].nil?
       mappings.merge!({"update_#{@type}_object_code".to_sym => opts[:object]}) unless opts[:object].nil?
       mappings.merge!(extended_update_mappings)
+      mappings.delete_if {|k,v| v.nil? }
 
       mappings.each do |field, value|
         lmnt = page.send(*[field, nil].compact, @line_number)
@@ -80,7 +81,7 @@ class AccountingLineObject < DataFactory
       end
 
       edit_extended_attributes
-      page.send("refresh_#{@type}_accounting_line")
+      page.send("refresh_#{@type}_accounting_line", @line_number) if page.send("refresh_#{@type}_accounting_line_button", @line_number).present?
       unless @account_expired_override.nil?
         page.send("#{@type}_account_expired_override").set
         page.send("refresh_#{@type}_accounting_line")

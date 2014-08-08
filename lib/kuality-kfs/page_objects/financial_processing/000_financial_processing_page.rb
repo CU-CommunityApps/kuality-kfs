@@ -77,7 +77,8 @@ class FinancialProcessingPage < KFSBasePage
       action(:add_source_accounting_line) { |b| b.frm.button(name: 'methodToCall.insertSourceLine.anchoraccountingSourceAnchor').click }
       action(:delete_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.deleteSourceLine.line#{l}.anchoraccountingSourceAnchor").click }
       action(:balance_inquiry_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.performBalanceInquiryForSourceLine.line#{l}.anchoraccountingSourceexistingLineLineAnchor#{l}").click }
-      action(:refresh_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.refresh.line#{l}.anchoraccountingSourceAnchor").click }
+      action(:refresh_source_accounting_line_button) { |l=0, b| b.frm.button(name: "methodToCall.refresh.line#{l}.anchoraccountingSourceAnchor") }
+      action(:refresh_source_accounting_line) { |l=0, b| b.refresh_source_accounting_line_button(l).click }
       action(:copy_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.copyAccountingLine.line#{l}.anchoraccountingSourceAnchor").click }
 
       #ACCOUNTING LINES TO/INCREASE
@@ -140,7 +141,8 @@ class FinancialProcessingPage < KFSBasePage
       action(:add_target_accounting_line) { |b| b.frm.button(name: 'methodToCall.insertTargetLine.anchoraccountingTargetAnchor').click }
       action(:delete_target_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.deleteTargetLine.line#{l}.anchoraccountingTargetAnchor").click }
       action(:balance_inquiry_target_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.performBalanceInquiryForTargetLine.line#{l}.anchoraccountingTargetexistingLineLineAnchor#{l}").click }
-      action(:refresh_target_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.refresh.line#{l}.anchoraccountingTargetAnchor").click }
+      action(:refresh_target_accounting_line_button) { |l=0, b| b.frm.button(name: "methodToCall.refresh.line#{l}.anchoraccountingTargetAnchor") }
+      action(:refresh_target_accounting_line) { |l=0, b| b.refresh_target_accounting_line_button(l).click }
 
       action(:update_chart_code) { |t='source', i=0, b| b.frm.select(name: "document.#{t}AccountingLine[#{i}].chartOfAccountsCode") }
       action(:update_account_number) { |t='source', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].accountNumber") }
