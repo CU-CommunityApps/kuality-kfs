@@ -37,7 +37,7 @@ class EShopCartObject < DataFactory
   def pre_create; end
 
   def build
-    on ShopCartPage do |scp|
+    on EShopCartPage do |scp|
       fill_out scp, :cart_name, :cart_description
       add_note @business_purpose unless @business_purpose.nil?
     end
@@ -51,19 +51,21 @@ class EShopCartObject < DataFactory
   alias_method :absorb_items_extensions!, :update_extended_line_objects_from_page!
 
   def absorb!
-    on ShopCartPage do |scp|
-      update_options({
-                       cart_name:        scp.cart_name.value.strip,
-                       cart_description: scp.cart_description.value.strip,
-                       business_purpose: (scp.add_note_link.exists? ? nil : scp.add_note_textarea.value.strip)
-                     })
-      absorb_items!
-      absorb_items_extensions!
+    on EShopCartPage do |scp|
+      if scp.cart_name.present?
+        update_options({
+                         cart_name:        scp.cart_name.value.strip,
+                         cart_description: scp.cart_description.value.strip,
+                         business_purpose: (scp.add_note_link.exists? ? nil : scp.add_note_textarea.value.strip)
+                       })
+        absorb_items!
+        absorb_items_extensions!
+      end
     end
   end
 
   def absorb_items!
-    on ShopCartPage do |scp|
+    on EShopCartPage do |scp|
       @items.clear
       scp.suppliers.each do |supplier|
         @items[supplier] = collection('ProductLineObject')
@@ -75,21 +77,33 @@ class EShopCartObject < DataFactory
   alias_method :update_line_objects_from_page!, :absorb_items!
 
   def save
-    on(ShopCartPage).save_shopping_cart
+    on(EShopCartPage).save_shopping_cart
   end
 
   def submit
-    on(ShopCartPage).submit_shopping_cart
+    on(EShopCartPage).submit_shopping_cart
   end
 
   def add_note(note)
-    on ShopCartPage do |scp|
+    on EShopCartPage do |scp|
       scp.add_note_link.click if scp.add_note_link.exists?
       scp.add_note_textarea.fit note
       scp.save_shopping_cart
       scp.cart_status_message.should == 'Cart was saved successfully'
       @business_purpose = note
     end
+  end
+
+  def clear_items_from(supplier)
+    view
+    on(EShopCartPage).delete_all_products_for_supplier(supplier)
+    @items.delete(supplier)
+  end
+
+  def clear_items
+    view
+    @items.keys.each {|supplier| on(EShopCartPage).delete_all_products_for_supplier(supplier) }
+    @items.clear
   end
 
   def view(in_e_shop=true)
