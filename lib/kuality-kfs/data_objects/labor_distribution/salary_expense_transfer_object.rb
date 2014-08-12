@@ -10,42 +10,17 @@ class SalaryExpenseTransferObject < KFSDataObject
                 :actuals_balance_type, :labor_balance_typed, :debit_code, :credit_code, :period_unassigned,
                 :remembered_employee_id
 
-  def initialize(browser, opts={})
-    @browser = browser
-
-    defaults = {
-        description:          random_alphanums(20, 'AFT'),
+  def  defaults
+    super.merge({
         employee_id:          get_aft_parameter_value(ParameterConstants::DEFAULT_ST_EMPL_ID),
-        actuals_balance_type: "AC",
-        labor_balance_typed:  "A2",
-        debit_code:           "D",
-        credit_code:          "C",
-        period_unassigned:    ""
+        actuals_balance_type: 'AC',
+        labor_balance_typed:  'A2',
+        debit_code:           'D',
+        credit_code:          'C',
+        period_unassigned:    ''
 
-    }.merge!(default_accounting_lines)
+    }).merge!(default_accounting_lines)
 
-    set_options(defaults.merge(opts))
-    #set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULT_CONSTANTS_FOR_ST_LLPE)).merge(opts))
-  end
-
-  def ACTUALS_BALANCE_TYPE
-    @actuals_balance_type
-  end
-
-  def LABOR_BALANCE_TYPE
-    @labor_balance_typed
-  end
-
-  def DEBIT_CODE
-    @debit_code
-  end
-
-  def CREDIT_CODE
-    @credit_code
-  end
-
-  def PERIOD_UNASSIGNED
-    @period_unassigned
   end
 
   def build
@@ -58,7 +33,7 @@ class SalaryExpenseTransferObject < KFSDataObject
     end
   end
 
-  def clear_global_attributes_to_be_used
+  def clear_global_attributes_to_be_used  #nkk4 move to mixin requested, do it on @accounting_lines so data is not duplicated
     @chart_code = nil
     @account_number = nil
     @sub_account_code = nil
@@ -74,39 +49,39 @@ class SalaryExpenseTransferObject < KFSDataObject
     @fringe_benefit_inquiry = nil
   end
 
-  def pull_specified_accounting_line(type, row, page)
+  def pull_specified_accounting_line(type, row, page)   #nkk4 move to the mixin for the accounting lines
     #required to ensure validity of data being used is from page
     clear_global_attributes_to_be_used
 
     if type == :source
-      @chart_code = page.chart_code_value type; row
-      @account_number = page.account_number_value type; row
-      @sub_account_code = page.sub_account_number_value type; row
-      @object_code = page.object_code_value type; row
-      @sub_object_code = page.sub_object_code_value type; row
-      @project_code = page.project_code_value type; row
-      @organization_reference_id = page.organization_reference_id_value type; row
-      @position_number = page.position_number_value type; row
-      @payroll_end_date_fiscal_year = page.payroll_end_date_fiscal_year_value type; row
-      @payroll_end_date_fiscal_period_code = page.payroll_end_date_fiscal_period_code_value type; row
-      @payroll_total_hours = page.st_payroll_total_hours type; row
-      @amount = page.st_amount type; row
-      @fringe_benefit_inquiry = page.view_fringe_benefit_link type; row
+      @chart_code = page.chart_code_value type, row
+      @account_number = page.account_number_value type, row
+      @sub_account_code = page.sub_account_number_value type, row
+      @object_code = page.object_code_value type, row
+      @sub_object_code = page.sub_object_code_value type, row
+      @project_code = page.project_code_value type, row
+      @organization_reference_id = page.organization_reference_id_value type, row
+      @position_number = page.position_number_value type, row
+      @payroll_end_date_fiscal_year = page.payroll_end_date_fiscal_year_value type, row
+      @payroll_end_date_fiscal_period_code = page.payroll_end_date_fiscal_period_code_value type, row
+      @payroll_total_hours = page.st_payroll_total_hours type, row
+      @amount = page.st_amount type, row
+      @fringe_benefit_inquiry = page.view_fringe_benefit_link type, row
 
     else #":target"
-      @chart_code = page.st_chart_code type; row
-      @account_number = page.st_account_number type; row
-      @sub_account_code = page.st_sub_account_code type; row
-      @object_code = page.st_object_code type; row
-      @sub_object_code = page.st_sub_object_code type; row
+      @chart_code = page.st_chart_code type, row
+      @account_number = page.st_account_number type, row
+      @sub_account_code = page.st_sub_account_code type, row
+      @object_code = page.st_object_code type, row
+      @sub_object_code = page.st_sub_object_code type, row
       @project_code = page.st_project_code type; row
-      @organization_reference_id = page.st_organization_reference_id type; row
-      @position_number = page.position_number_value type; row
-      @payroll_end_date_fiscal_year = page.payroll_end_date_fiscal_year_value type; row
-      @payroll_end_date_fiscal_period_code = page.payroll_end_date_fiscal_period_code_value type; row
-      @payroll_total_hours = page.st_payroll_total_hours type; row
-      @amount = page.st_amount type; row
-      @fringe_benefit_inquiry = page.view_fringe_benefit_link type; row
+      @organization_reference_id = page.st_organization_reference_id type, row
+      @position_number = page.position_number_value type, row
+      @payroll_end_date_fiscal_year = page.payroll_end_date_fiscal_year_value type, row
+      @payroll_end_date_fiscal_period_code = page.payroll_end_date_fiscal_period_code_value type, row
+      @payroll_total_hours = page.st_payroll_total_hours type, row
+      @amount = page.st_amount type, row
+      @fringe_benefit_inquiry = page.view_fringe_benefit_link type, row
     end
 
     new_line = {
@@ -165,7 +140,7 @@ class SalaryExpenseTransferObject < KFSDataObject
     # period values could be zero length strings; amounts could be floats; rest should be string values
     if (llpe_account == account) && (llpe_object == object) && (llpe_amount.to_s == amount.to_s) &&
        (llpe_balance_type == balance_type) && (llpe_debit_credit_code == debit_credit_code) &&
-       ( (llpe_period.empty? & period.empty?) || (!llpe_period.empty? && !period.empty? && llpe_period == period)  )
+       ( (llpe_period.empty? && period.empty?) || (!llpe_period.empty? && !period.empty? && llpe_period == period)  )
       return true
     else
       return false

@@ -29,7 +29,7 @@ class SalaryExpenseTransferAccountingLineObject < AccountingLineObject
       end
   end
 
-  def edit
+  def extended_update_mappings
     mappings = Hash.new
     mappings.merge!({"update_#{@type}_org_ref_id".to_sym => opts[:org_ref_id]}) unless opts[:org_ref_id].nil?
     mappings.merge!({"update_#{@type}_position".to_sym => opts[:position]}) unless opts[:position].nil?
@@ -37,10 +37,6 @@ class SalaryExpenseTransferAccountingLineObject < AccountingLineObject
     mappings.merge!({"update_#{@type}_pay_hours".to_sym => opts[:pay_hours]}) unless opts[:pay_hours].nil?
     mappings.merge!({"update_#{@type}_fringe_benefit".to_sym => opts[:fringe_benefit]}) unless opts[:fringe_benefit].nil?
     mappings
-  end
-
-  def build
-
   end
 
 end
