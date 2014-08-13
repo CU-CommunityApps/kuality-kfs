@@ -10,16 +10,6 @@ class AccountObject < KFSDataObject
                 :indirect_cost_recovery_chart_of_accounts_code, :indirect_cost_recovery_account_number, :indirect_cost_recovery_account_line_percent,
                 :indirect_cost_recovery_active_indicator
 
-  def self.required_attributes
-    super | [ :chart_code, :number, :name, :organization_code,
-              :campus_code, :effective_date, :account_expiration_date,
-              :postal_code, :city, :state, :address,
-              :type_code, :sub_fund_group_code, :higher_ed_funct_code, :restricted_status_code,
-              :fo_principal_name, :supervisor_principal_name, :manager_principal_name,
-              :budget_record_level_code, :sufficient_funds_code,
-              :expense_guideline_text, :income_guideline_text, :purpose_text ]
-  end
-
   def initialize(browser, opts={})
     @browser = browser
 
@@ -68,8 +58,38 @@ class AccountObject < KFSDataObject
     end
   end
 
-  def absorb(target={})
+  def absorb!(target={})
     super
     update_options(on(AccountPage).send("#{target.to_s}_account_data"))
   end
+
+  class << self
+    # Attributes that are required for a successful save/submit.
+    # @return Array List of Symbols for attributes that are required
+    def required_attributes
+      super | [ :chart_code, :number, :name, :organization_code,
+                :campus_code, :effective_date, :account_expiration_date,
+                :postal_code, :city, :state, :address,
+                :type_code, :sub_fund_group_code, :higher_ed_funct_code, :restricted_status_code,
+                :fo_principal_name, :supervisor_principal_name, :manager_principal_name,
+                :budget_record_level_code, :sufficient_funds_code,
+                :expense_guideline_text, :income_guideline_text, :purpose_text ]
+    end
+
+    # Attributes that don't copy over to a new document's fields during a copy.
+    # @return Array List of Symbols for attributes that aren't copied to the new side of a copy
+    def uncopied_attributes
+      super | [:chart_code, :number, :effective_date]
+    end
+  end
+
+  # def ==(other_acct)
+  #   if other_acct.is_a? self.class
+  #    self.class.attributes
+  #              .delete_if{ |a| self.class.uncopied_attributes.include?(a) }
+  #              .all?{ |attr| self.instance_variable_get("@#{attr}") == other_acct.instance_variable_get("@#{attr}") }
+  #   else
+  #     false
+  #   end
+  # end
 end

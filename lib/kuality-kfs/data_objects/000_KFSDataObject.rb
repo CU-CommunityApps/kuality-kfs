@@ -9,6 +9,36 @@ class KFSDataObject < DataFactory
                 :press, :notes_and_attachments_tab
 
   # Hooks:
+  class << self
+    # Attributes that are required for a successful save/submit.
+    # @return Array List of Symbols for attributes that are required
+    def required_attributes
+      [:description]
+    end
+
+    # Attributes that don't copy over to a new document's fields during a copy.
+    # @return Array List of Symbols for attributes that aren't copied to the new side of a copy
+    def uncopied_attributes
+      [:description, :initiator]
+    end
+  end
+
+  # Overloaded equality operator. Compares based on attribute values that should be carried over during a copy. TODO: Simply compare all attributes?
+  def ==(other_acct)
+    if other_acct.is_a? self.class
+      puts self.class
+          .attributes
+          .reject{ |a| self.class.uncopied_attributes.include?(a) }
+      self.class
+          .attributes
+          .reject{ |a| self.class.uncopied_attributes.include?(a) }
+          .all?{ |attr| self.instance_variable_get("@#{attr}") == other_acct.instance_variable_get("@#{attr}") }
+    else
+      false
+    end
+  end
+
+
   def defaults
     {
       description:               random_alphanums(37, 'AFT'),
