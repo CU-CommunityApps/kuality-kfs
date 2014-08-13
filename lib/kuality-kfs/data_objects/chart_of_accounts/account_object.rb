@@ -1,48 +1,56 @@
 class AccountObject < KFSDataObject
 
-  attr_accessor :chart_code, :number, :name, :organization_code, :campus_code, :effective_date,
+                # == Account Maintenance tab ==
+  attr_accessor :chart_code, :number, :name, :organization_code, :campus_code,
+                :effective_date, :account_expiration_date,
                 :postal_code, :city, :state, :address, :closed,
                 :type_code, :sub_fund_group_code, :higher_ed_funct_code, :restricted_status_code,
+                # == Account Responsibility tab ==
                 :fo_principal_name, :supervisor_principal_name, :manager_principal_name,
                 :budget_record_level_code, :sufficient_funds_code,
+                :income_stream_financial_cost_code, :income_stream_account_number,
+                # == Guidelines and Purpose tab ==
                 :expense_guideline_text, :income_guideline_text, :purpose_text,
-                :income_stream_financial_cost_code, :income_stream_account_number, :account_expiration_date,
-                :indirect_cost_recovery_chart_of_accounts_code, :indirect_cost_recovery_account_number, :indirect_cost_recovery_account_line_percent,
-                :indirect_cost_recovery_active_indicator
+                # == Contracts and Grants tab ==
+                :contract_control_chart_of_accounts_code, :contract_control_account_number,
+                :account_icr_type_code, :indirect_cost_rate, :cfda_number, :cg_account_responsibility_id,
+                :invoice_frequency_code, :invoice_type_code, :everify_indicator, :cost_share_for_project_number,
+                # == Indirect Cost Recovery tab (May be worth turning into a collection) ==
+                :indirect_cost_recovery_chart_of_accounts_code, :indirect_cost_recovery_account_number,
+                :indirect_cost_recovery_account_line_percent, :indirect_cost_recovery_active_indicator
+
+  def defaults
+    super.merge({
+      chart_code:                        get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
+      number:                            random_alphanums(7),
+      name:                              random_alphanums(10),
+      organization_code:                 '01G0',  #TODO replace with bootstrap data
+      campus_code:                       get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_CODE),
+      effective_date:                    '01/01/2010',
+      postal_code:                       get_random_postal_code('*'),
+      city:                              get_generic_city,
+      state:                             get_random_state_code,
+      address:                           get_generic_address_1,
+      type_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_TYPE_CODE),
+      sub_fund_group_code:               'ADMSYS', #TODO replace with bootstrap data
+      higher_ed_funct_code:              '4000',   #TODO replace with bootstrap data
+      restricted_status_code:            'U - Unrestricted',  #TODO replace with bootstrap data
+      fo_principal_name:                 get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
+      supervisor_principal_name:         get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
+      manager_principal_name:            get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER),
+      budget_record_level_code:          'C - Consolidation', #TODO replace with bootstrap data
+      sufficient_funds_code:             'C - Consolidation', #TODO replace with bootstrap data
+      expense_guideline_text:            'expense guideline text',
+      income_guideline_text:             'income guideline text',
+      purpose_text:                      'purpose text',
+      account_expiration_date:           '',
+      press:                             :save
+    })
+  end
 
   def initialize(browser, opts={})
     @browser = browser
-
-    defaults = {
-        description:                       random_alphanums(40, 'AFT'),
-        chart_code:                        get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-        number:                            random_alphanums(7),
-        name:                              random_alphanums(10),
-        organization_code:                 '01G0',  #TODO replace with bootstrap data
-        campus_code:                       get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_CODE),
-        effective_date:                    '01/01/2010',
-        postal_code:                       get_random_postal_code('*'),
-        city:                              get_generic_city,
-        state:                             get_random_state_code,
-        address:                           get_generic_address_1,
-        type_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_TYPE_CODE),
-        sub_fund_group_code:               'ADMSYS', #TODO replace with bootstrap data
-        higher_ed_funct_code:              '4000',   #TODO replace with bootstrap data
-        restricted_status_code:            'U - Unrestricted',  #TODO replace with bootstrap data
-        fo_principal_name:                 get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
-        supervisor_principal_name:         get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
-        manager_principal_name:            get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER),
-        budget_record_level_code:          'C - Consolidation', #TODO replace with bootstrap data
-        sufficient_funds_code:             'C - Consolidation', #TODO replace with bootstrap data
-        expense_guideline_text:            'expense guideline text',
-        income_guideline_text:             'income guideline text',
-        purpose_text:                      'purpose text',
-        labor_benefit_rate_cat_code:       'CC',    #TODO replace with bootstrap data
-        account_expiration_date:           '',
-        press:                             :save
-    }
     set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT)).merge(opts))
-
   end
 
   def build
@@ -53,16 +61,23 @@ class AccountObject < KFSDataObject
       page.type_code.fit @type_code
       page.description.focus
       page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
-      fill_out_required_attributes
-      fill_out_optional_attributes
+      fill_out page, self.class.attributes # We don't have any special attribute sections, so we should be able to throw them all in.
     end
   end
+
+  def update(opts={})
+    # Because AccountObject::attributes contains super.attributes and we're not doing anything fancy, we can just do this:
+    on(AccountPage) { |p| edit_fields opts, p, *self.class.attributes }
+    update_options(opts)
+  end
+  alias_method :edit, :update
 
   def absorb!(target={})
     super
     update_options(on(AccountPage).send("#{target.to_s}_account_data"))
   end
 
+  # Class Methods:
   class << self
     # Attributes that are required for a successful save/submit.
     # @return Array List of Symbols for attributes that are required
@@ -82,14 +97,4 @@ class AccountObject < KFSDataObject
       super | [:chart_code, :number, :effective_date]
     end
   end
-
-  # def ==(other_acct)
-  #   if other_acct.is_a? self.class
-  #    self.class.attributes
-  #              .delete_if{ |a| self.class.uncopied_attributes.include?(a) }
-  #              .all?{ |attr| self.instance_variable_get("@#{attr}") == other_acct.instance_variable_get("@#{attr}") }
-  #   else
-  #     false
-  #   end
-  # end
 end

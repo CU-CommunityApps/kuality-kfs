@@ -95,9 +95,9 @@ module Utilities
 
   def yesno2setclear(value)
     case value.to_s.upcase
-      when 'YES', 'ON'
+      when 'YES', 'ON', 'TRUE'
         :set
-      when 'NO', 'OFF'
+      when 'NO', 'OFF', 'FALSE'
         :clear
       else
         nil

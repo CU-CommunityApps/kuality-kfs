@@ -27,6 +27,15 @@ class AccountPage < KFSBasePage
   element(:continuation_account_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.continuationAccountNumber') }
   element(:account_expiration_date) { |b| b.frm.text_field(name: 'document.newMaintainableObject.accountExpirationDate') }
 
+  element(:contract_control_chart_of_accounts_code) { |b| b.frm.select(name: 'document.newMaintainableObject.contractControlFinCoaCode') }
+  element(:contract_control_account_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.contractControlAccountNumber') }
+  element(:account_icr_type_code) { |b| b.frm.text_field(name: 'document.newMaintainableObject.acctIndirectCostRcvyTypeCd') }
+  element(:indirect_cost_rate) { |b| b.frm.text_field(name: 'document.newMaintainableObject.financialIcrSeriesIdentifier') }
+  element(:cfda_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.accountCfdaNumber') }
+  element(:cg_account_responsibility_id) { |b| b.frm.select(name: 'document.newMaintainableObject.contractsAndGrantsAccountResponsibilityId') }
+  element(:invoice_frequency_code) { |b| b.frm.select(name: 'document.newMaintainableObject.extension.invoiceFrequencyCode') }
+  element(:invoice_type_code) { |b| b.frm.select(name: 'document.newMaintainableObject.extension.invoiceTypeCode') }
+
   element(:income_stream_financial_cost_code) { |b| b.frm.select(name: 'document.newMaintainableObject.incomeStreamFinancialCoaCode') }
   element(:income_stream_account_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.incomeStreamAccountNumber') }
 
@@ -64,6 +73,14 @@ class AccountPage < KFSBasePage
       income_stream_financial_cost_code: b.frm.span(id: 'document.oldMaintainableObject.incomeStreamFinancialCoaCode.div').text.strip,
       income_stream_account_number:      b.frm.span(id: 'document.oldMaintainableObject.incomeStreamAccountNumber.div').text.strip,
       account_expiration_date:           b.frm.span(id: 'document.oldMaintainableObject.accountExpirationDate.div').text.strip,
+      contract_control_chart_of_accounts_code:       b.frm.span(id: 'document.oldMaintainableObject.contractControlFinCoaCode.div').text.strip,
+      contract_control_account_number:               b.frm.span(id: 'document.oldMaintainableObject.contractControlAccountNumber.div').text.strip,
+      account_icr_type_code:                         b.frm.span(id: 'document.oldMaintainableObject.acctIndirectCostRcvyTypeCd.div').text.strip,
+      indirect_cost_rate:                            b.frm.span(id: 'document.oldMaintainableObject.financialIcrSeriesIdentifier.div').text.strip,
+      cfda_number:                                   b.frm.span(id: 'document.oldMaintainableObject.accountCfdaNumber.div').text.strip,
+      cg_account_responsibility_id:                  b.frm.span(id: 'document.oldMaintainableObject.contractsAndGrantsAccountResponsibilityId.div').text.strip,
+      invoice_frequency_code:                        b.frm.span(id: 'document.oldMaintainableObject.extension.invoiceFrequencyCode.div').text.strip,
+      invoice_type_code:                             b.frm.span(id: 'document.oldMaintainableObject.extension.invoiceTypeCode.div').text.strip,
       # TODO: Make the next few lines grab every line of the ICRA data once we create a collection for ICRA data
       indirect_cost_recovery_chart_of_accounts_code: b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryFinCoaCode.div').text.strip,
       indirect_cost_recovery_account_number:         b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryAccountNumber.div').text.strip,
@@ -98,6 +115,14 @@ class AccountPage < KFSBasePage
         income_stream_financial_cost_code: b.income_stream_financial_cost_code.selected_options.first.text,
         income_stream_account_number:      b.income_stream_account_number.value,
         account_expiration_date:           b.account_expiration_date.value,
+        contract_control_chart_of_accounts_code:       b.contract_control_chart_of_accounts_code.selected_options.first.text,
+        contract_control_account_number:               b.contract_control_account_number.value,
+        account_icr_type_code:                         b.account_icr_type_code.value,
+        indirect_cost_rate:                            b.indirect_cost_rate.value,
+        cfda_number:                                   b.cfda_number.value,
+        cg_account_responsibility_id:                  b.cg_account_responsibility_id.value,
+        invoice_frequency_code:                        b.invoice_frequency_code.selected_options.first.text,
+        invoice_type_code:                             b.invoice_type_code.selected_options.first.text,
         # TODO: Make the next few lines grab every line of the ICRA data once we create a collection for ICRA data
         indirect_cost_recovery_chart_of_accounts_code: b.frm.select(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryFinCoaCode').selected_options.first.text,
         indirect_cost_recovery_account_number:         b.frm.text_field(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryAccountNumber').value,

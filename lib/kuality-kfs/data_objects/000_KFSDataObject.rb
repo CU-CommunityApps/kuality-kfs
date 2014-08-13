@@ -19,16 +19,14 @@ class KFSDataObject < DataFactory
     # Attributes that don't copy over to a new document's fields during a copy.
     # @return Array List of Symbols for attributes that aren't copied to the new side of a copy
     def uncopied_attributes
-      [:description, :initiator]
+      [:description, :initiator, :document_id]
     end
   end
 
-  # Overloaded equality operator. Compares based on attribute values that should be carried over during a copy. TODO: Simply compare all attributes?
+  # Overloaded equality operator. Useful for equality while copying a document, this compares based
+  # on attribute values that should be carried over during a copy.
   def ==(other_acct)
     if other_acct.is_a? self.class
-      puts self.class
-          .attributes
-          .reject{ |a| self.class.uncopied_attributes.include?(a) }
       self.class
           .attributes
           .reject{ |a| self.class.uncopied_attributes.include?(a) }
@@ -38,6 +36,16 @@ class KFSDataObject < DataFactory
     end
   end
 
+  # Overloaded equality operator. Useful for strict equality, this compares based on all attribute values.
+  def eql?(other_acct)
+    if other_acct.is_a? self.class
+      self.class
+          .attributes
+          .all?{ |attr| self.instance_variable_get("@#{attr}") == other_acct.instance_variable_get("@#{attr}") }
+    else
+      false
+    end
+  end
 
   def defaults
     {

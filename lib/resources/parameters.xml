@@ -405,7 +405,7 @@
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="organization_code=01G0;sub_fund_group_code=ADMSYS;higher_ed_funct_code=4000;restricted_status_code=U - Unrestricted;budget_record_level_code=C - Consolidation;sufficient_funds_code=C - Consolidation;labor_benefit_rate_cat_code=CC"/>
+      <column name="VAL" value="organization_code=01G0;sub_fund_group_code=ADMSYS;higher_ed_funct_code=4000;restricted_status_code=U - Unrestricted;budget_record_level_code=C - Consolidation;sufficient_funds_code=C - Consolidation;labor_benefit_rate_category_code=CC"/>
       <column name="PARM_DESC_TXT" value="Defaults for the Account object"/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>

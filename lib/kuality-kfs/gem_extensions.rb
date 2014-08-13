@@ -123,6 +123,27 @@ class Array
   end
 end
 
+class Hash
+  def rekey(h)
+    dup.rekey! h
+  end
+
+  def rekey!(h)
+    h.each { |k, newk| store(newk, delete(k)) if has_key? k }
+    self
+  end
+
+  def snake_case_key!
+    key_update = Hash[keys.zip(collect{ |k, _| snake_case(k) })]
+    rekey! key_update
+  end
+
+  def snake_case_key
+    key_update = Hash[keys.zip(collect{ |k, _| snake_case(k) })]
+    rekey key_update
+  end
+end
+
 class Object
   # Convenience shorthand method for comparing against false, similar to #nil?
   def false?
