@@ -101,8 +101,9 @@ class SalaryExpenseTransferObject < KFSDataObject
       to_lines.push(line_hash)
     end
 
-    st_accounting_lines = {source: from_lines,
-                           target: to_lines}
+    st_accounting_lines = {
+      source: from_lines,
+      target: to_lines}
 
     return st_accounting_lines
   end
@@ -165,7 +166,8 @@ class SalaryExpenseTransferObject < KFSDataObject
       benefit_amount = calculate_benefit_amount((line[:amount]).to_f, (labor_calc_info['positionFringeBenefitPercent'][0]).to_f)
 
       #Now add the benefit attributes to the accounting line
-      line.merge!({  benefit_object:  labor_calc_info['positionFringeBenefitObjectCode'][0],
+      line.merge!({
+                     benefit_object:  labor_calc_info['positionFringeBenefitObjectCode'][0],
                      benefit_amount:  benefit_amount
                   })
     end #for each accounting line
@@ -174,7 +176,8 @@ class SalaryExpenseTransferObject < KFSDataObject
 
 
   def create_llpe_line(account, object, period, balance_type, amount, debit_credit_code)
-    data_line = {  account_number:     account,
+    data_line = {
+                   account_number:     account,
                    object:             object,
                    period:             period,
                    balance_type:       balance_type,
@@ -230,7 +233,7 @@ class SalaryExpenseTransferObject < KFSDataObject
       expected_llpe_data.push(data_line)
 
       # create three source benefits rows when benefits amount is not zero
-      if (line[:benefit_amount] != 0)
+      if line[:benefit_amount] != 0
         data_line = create_llpe_line(line[:account_number], line[:benefit_object], @period_unassigned, @actuals_balance_type, line[:benefit_amount], @credit_code)
         expected_llpe_data.push(data_line)
         data_line = create_llpe_line(line[:account_number], line[:benefit_object], @period_unassigned, @labor_balance_type, line[:benefit_amount], @debit_code)
@@ -251,7 +254,7 @@ class SalaryExpenseTransferObject < KFSDataObject
       expected_llpe_data.push(data_line)
 
       # create three target benefits rows when benefits amount is not zero
-      if (line[:benefit_amount] != 0)
+      if line[:benefit_amount] != 0
         data_line = create_llpe_line(line[:account_number], line[:benefit_object], @period_unassigned, @actuals_balance_type, line[:benefit_amount], @debit_code)
         expected_llpe_data.push(data_line)
         data_line = create_llpe_line(line[:account_number], line[:benefit_object], @period_unassigned, @labor_balance_type, line[:benefit_amount], @credit_code)
@@ -265,19 +268,19 @@ class SalaryExpenseTransferObject < KFSDataObject
     need_clearing_account_entries = false
     st_accounting_lines[:source].each do |from_line|
       st_accounting_lines[:target].each do |to_line|
-        if (from_line[:benefit_amount] != to_line[:benefit_amount])
+        if from_line[:benefit_amount] != to_line[:benefit_amount]
           #found differing benefit amounts
           need_clearing_account_entries = true
           break
         end
       end
-      if (need_clearing_account_entries)
+      if need_clearing_account_entries
         # no need to continue to look, get out of outer loop
         break
       end
     end
 
-    if (need_clearing_account_entries)
+    if need_clearing_account_entries
       #Obtain the clearing account
       clearing_account = get_benefits_clearing_account
 
@@ -300,11 +303,11 @@ class SalaryExpenseTransferObject < KFSDataObject
 
   def create_clearing_account_benefit_entries(clearing_account, clearing_entries, st_accounting_lines, type, debit_credit_code)
     st_accounting_lines[type].each do |line|
-      unless (clearing_entries.empty?)
+      unless clearing_entries.empty?
         same_benefits_object_found = false
         same_object_index = -1
         clearing_entries.each_with_index do |clearing_line, index|
-          if (line[:benefit_object] == clearing_line[:benefit_object])
+          if line[:benefit_object] == clearing_line[:benefit_object]
             same_benefits_object_found = true
             same_object_index = index
             break
