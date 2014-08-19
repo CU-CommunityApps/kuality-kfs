@@ -417,7 +417,7 @@
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="fiscal_year=2014;reports_to_object_code=A000;object_type_code=ES;level_code=BADJ;object_sub_type_code=OE;cg_reporting_code=06SM;budget_aggregation_code=L"/>
+      <column name="VAL" value="reports_to_object_code=A000;object_type_code=ES;level_code=BADJ;object_sub_type_code=OE;cg_reporting_code=06SM;budget_aggregation_code=L"/>
       <column name="PARM_DESC_TXT" value="Defaults for the Object Code object"/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
@@ -429,7 +429,7 @@
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="noc_fiscal_year=2014;noc_object_code=1000"/>
+      <column name="VAL" value="noc_object_code=1000"/>
       <column name="PARM_DESC_TXT" value="Defaults for the Sub Account Code object"/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
@@ -532,6 +532,54 @@
        <insert tableName="KRCR_PARM_T">
          <column name="NMSPC_CD" value="KFS-AFTEST"/>
          <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULT_ST_ACTUALS_BALANCE_TYPE"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="AC"/>
+         <column name="PARM_DESC_TXT" value="Default Actuals Balance Type used for ST testing"/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULT_ST_LABOR_BALANCE_TYPE"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="A2"/>
+         <column name="PARM_DESC_TXT" value="Default Labor Balance Type used for ST testing"/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULT_ST_DEBIT_CODE"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="D"/>
+         <column name="PARM_DESC_TXT" value="Default Debit Code used for ST testing"/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULT_ST_CREDIT_CODE"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="C"/>
+         <column name="PARM_DESC_TXT" value="Default Credit Code used for ST testing"/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
          <column name="PARM_NM" value="DEFAULTS_FOR_PURCHASE_ORDER_AMENDMENT"/>
          <column name="APPL_ID" value="KFS"/>
          <column name="OBJ_ID" valueNumeric="sys_guid()"/>
@@ -575,6 +623,18 @@
          <column name="PARM_TYP_CD" value="VALID"/>
          <column name="VAL" value="asset_type_code=019;asset_campus=IT"/>
          <column name="PARM_DESC_TXT" value="Defaults for the Asset Global object"/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULT_REQS_INITIATOR"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="der9"/>
+         <column name="PARM_DESC_TXT" value="Default REQS initiator for automated functional testing"/>
          <column name="EVAL_OPRTR_CD" value="A"/>
        </insert>
 
