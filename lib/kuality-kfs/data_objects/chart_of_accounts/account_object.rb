@@ -14,43 +14,39 @@ class AccountObject < KFSDataObject
                 # == Contracts and Grants tab ==
                 :contract_control_chart_of_accounts_code, :contract_control_account_number,
                 :account_icr_type_code, :indirect_cost_rate, :cfda_number, :cg_account_responsibility_id,
-                :invoice_frequency_code, :invoice_type_code, :everify_indicator, :cost_share_for_project_number,
+                :invoice_frequency_code, :invoice_type_code, :everify_indicator, :cost_share_for_project_number
                 # == Indirect Cost Recovery tab (May be worth turning into a collection) ==
-                :indirect_cost_recovery_chart_of_accounts_code, :indirect_cost_recovery_account_number,
-                :indirect_cost_recovery_account_line_percent, :indirect_cost_recovery_active_indicator
+                # :indirect_cost_recovery_chart_of_accounts_code, :indirect_cost_recovery_account_number,
+                # :indirect_cost_recovery_account_line_percent, :indirect_cost_recovery_active_indicator
 
   def defaults
     super.merge({
-      chart_code:                        get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-      number:                            random_alphanums(7),
-      name:                              random_alphanums(10),
-      organization_code:                 '01G0',  #TODO replace with bootstrap data
-      campus_code:                       get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_CODE),
-      effective_date:                    '01/01/2010',
-      postal_code:                       get_random_postal_code('*'),
-      city:                              get_generic_city,
-      state:                             get_random_state_code,
-      address:                           get_generic_address_1,
-      type_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_TYPE_CODE),
-      sub_fund_group_code:               'ADMSYS', #TODO replace with bootstrap data
-      higher_ed_funct_code:              '4000',   #TODO replace with bootstrap data
-      restricted_status_code:            'U - Unrestricted',  #TODO replace with bootstrap data
-      fo_principal_name:                 get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
-      supervisor_principal_name:         get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
-      manager_principal_name:            get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER),
-      budget_record_level_code:          'C - Consolidation', #TODO replace with bootstrap data
-      sufficient_funds_code:             'C - Consolidation', #TODO replace with bootstrap data
-      expense_guideline_text:            'expense guideline text',
-      income_guideline_text:             'income guideline text',
-      purpose_text:                      'purpose text',
-      account_expiration_date:           '',
-      press:                             :save
-    })
-  end
-
-  def initialize(browser, opts={})
-    @browser = browser
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT)).merge(opts))
+                  chart_code:                        get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
+                  number:                            random_alphanums(7),
+                  name:                              random_alphanums(10),
+                  organization_code:                 '01G0',  #TODO replace with bootstrap data
+                  campus_code:                       get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_CODE),
+                  effective_date:                    '01/01/2010',
+                  postal_code:                       get_random_postal_code('*'),
+                  city:                              get_generic_city,
+                  state:                             get_random_state_code,
+                  address:                           get_generic_address_1,
+                  type_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_TYPE_CODE),
+                  sub_fund_group_code:               'ADMSYS', #TODO replace with bootstrap data
+                  higher_ed_funct_code:              '4000',   #TODO replace with bootstrap data
+                  restricted_status_code:            'U - Unrestricted',  #TODO replace with bootstrap data
+                  fo_principal_name:                 get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
+                  supervisor_principal_name:         get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
+                  manager_principal_name:            get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER),
+                  budget_record_level_code:          'C - Consolidation', #TODO replace with bootstrap data
+                  sufficient_funds_code:             'C - Consolidation', #TODO replace with bootstrap data
+                  expense_guideline_text:            'expense guideline text',
+                  income_guideline_text:             'income guideline text',
+                  purpose_text:                      'purpose text',
+                  account_expiration_date:           '',
+                  press:                             :save
+                }).merge(default_icr_accounts)
+                  .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT))
   end
 
   def build
@@ -66,8 +62,10 @@ class AccountObject < KFSDataObject
   end
 
   def update(opts={})
+    puts "Looking for #{opts[:icr_accounts]}"
+    puts *(self.class.attributes - [:initial_icr_accounts]).inspect
     # Because AccountObject::attributes contains super.attributes and we're not doing anything fancy, we can just do this:
-    on(AccountPage) { |p| edit_fields opts, p, *self.class.attributes }
+    on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes - [:initial_icr_accounts]) } # :initial_icr_accounts aren't useful for an update
     update_options(opts)
   end
   alias_method :edit, :update
@@ -75,6 +73,7 @@ class AccountObject < KFSDataObject
   def absorb!(target={})
     super
     update_options(on(AccountPage).send("#{target.to_s}_account_data"))
+    update_line_objects_from_page!(target == :original ? :old : target)
   end
 
   # Class Methods:
@@ -97,4 +96,7 @@ class AccountObject < KFSDataObject
       super | [:chart_code, :number, :effective_date]
     end
   end
+
+  include IndirectCostRecoveryLinesMixin
+
 end

@@ -39,10 +39,11 @@ class AccountPage < KFSBasePage
   element(:income_stream_financial_cost_code) { |b| b.frm.select(name: 'document.newMaintainableObject.incomeStreamFinancialCoaCode') }
   element(:income_stream_account_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.incomeStreamAccountNumber') }
 
-  element(:indirect_cost_recovery_chart_of_accounts_code) { |b| b.frm.select(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.indirectCostRecoveryFinCoaCode') }
-  element(:indirect_cost_recovery_account_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.indirectCostRecoveryAccountNumber') }
-  element(:indirect_cost_recovery_account_line_percent) { |b| b.frm.text_field(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.accountLinePercent') }
-  element(:indirect_cost_recovery_active_indicator) { |b| b.frm.checkbox(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.active') }
+  # FIXME: Fix any old uses of ICR Accounts tab so they use the new mixin!
+  # element(:indirect_cost_recovery_chart_of_accounts_code) { |b| b.frm.select(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.indirectCostRecoveryFinCoaCode') }
+  # element(:indirect_cost_recovery_account_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.indirectCostRecoveryAccountNumber') }
+  # element(:indirect_cost_recovery_account_line_percent) { |b| b.frm.text_field(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.accountLinePercent') }
+  # element(:indirect_cost_recovery_active_indicator) { |b| b.frm.checkbox(name: 'document.newMaintainableObject.add.indirectCostRecoveryAccounts.active') }
 
   value(:original_chart_code) { |b| b.frm.span(id: 'document.oldMaintainableObject.chartOfAccountsCode.div').text.strip }
   value(:original_account_number) { |b| b.frm.span(id: 'document.oldMaintainableObject.accountNumber.div').text.strip }
@@ -81,11 +82,11 @@ class AccountPage < KFSBasePage
       cg_account_responsibility_id:                  b.frm.span(id: 'document.oldMaintainableObject.contractsAndGrantsAccountResponsibilityId.div').text.strip,
       invoice_frequency_code:                        b.frm.span(id: 'document.oldMaintainableObject.extension.invoiceFrequencyCode.div').text.strip,
       invoice_type_code:                             b.frm.span(id: 'document.oldMaintainableObject.extension.invoiceTypeCode.div').text.strip,
-      # TODO: Make the next few lines grab every line of the ICRA data once we create a collection for ICRA data
-      indirect_cost_recovery_chart_of_accounts_code: b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryFinCoaCode.div').text.strip,
-      indirect_cost_recovery_account_number:         b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryAccountNumber.div').text.strip,
-      indirect_cost_recovery_account_line_percent:   b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].accountLinePercent.div').text.strip,
-      indirect_cost_recovery_active_indicator:       yesno2setclear(b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].active.div').text.strip)
+      # # TODO: Make the next few lines grab every line of the ICRA data once we create a collection for ICRA data
+      # indirect_cost_recovery_chart_of_accounts_code: b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryFinCoaCode.div').text.strip,
+      # indirect_cost_recovery_account_number:         b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryAccountNumber.div').text.strip,
+      # indirect_cost_recovery_account_line_percent:   b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].accountLinePercent.div').text.strip,
+      # indirect_cost_recovery_active_indicator:       yesno2setclear(b.frm.span(id: 'document.oldMaintainableObject.indirectCostRecoveryAccounts[0].active.div').text.strip)
     }.merge(b.respond_to?(:original_account_extended_data) ? b.original_account_extended_data : Hash.new)
   end
   value(:new_account_data) do |b|
@@ -123,11 +124,11 @@ class AccountPage < KFSBasePage
         cg_account_responsibility_id:                  b.cg_account_responsibility_id.value,
         invoice_frequency_code:                        b.invoice_frequency_code.selected_options.first.text,
         invoice_type_code:                             b.invoice_type_code.selected_options.first.text,
-        # TODO: Make the next few lines grab every line of the ICRA data once we create a collection for ICRA data
-        indirect_cost_recovery_chart_of_accounts_code: b.frm.select(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryFinCoaCode').selected_options.first.text,
-        indirect_cost_recovery_account_number:         b.frm.text_field(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryAccountNumber').value,
-        indirect_cost_recovery_account_line_percent:   b.frm.text_field(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].accountLinePercent').value,
-        indirect_cost_recovery_active_indicator:       yesno2setclear(b.frm.checkbox(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].active').value)
+        # # TODO: Make the next few lines grab every line of the ICRA data once we create a collection for ICRA data
+        # indirect_cost_recovery_chart_of_accounts_code: b.frm.select(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryFinCoaCode').selected_options.first.text,
+        # indirect_cost_recovery_account_number:         b.frm.text_field(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].indirectCostRecoveryAccountNumber').value,
+        # indirect_cost_recovery_account_line_percent:   b.frm.text_field(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].accountLinePercent').value,
+        # indirect_cost_recovery_active_indicator:       yesno2setclear(b.frm.checkbox(name: 'document.newMaintainableObject.indirectCostRecoveryAccounts[0].active').value)
     }.merge(b.respond_to?(:new_account_extended_data) ? b.new_account_extended_data : Hash.new)
   end
 
