@@ -4,7 +4,7 @@ class SalaryExpenseTransferObject < KFSDataObject
   include GlobalConfig
   include SalaryExpenseTransferAccountingLinesMixin
 
-  DOC_INFO = { label: 'Salary Expense Transfer Document', type_code: 'ST' }
+  DOC_INFO = { label: 'Salary Expense Transfer Document', type_code: 'ST', transactional?: true }
 
   attr_accessor :fiscal_year, :employee_id,
                 :remembered_employee_id,

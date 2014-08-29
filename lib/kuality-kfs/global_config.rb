@@ -139,9 +139,13 @@ module GlobalConfig
   def get_document_initiator(document_type)
     permission_details = {'documentTypeName' => document_type}
     assignees = get_permission_assignees_by_template('KR-SYS', 'Initiate Document', permission_details).to_a
-    principal_id = assignees.delete_if{ |assignee| assignee.principalId == '2'}.sample.principalId
-    person = identity_service.getEntity(principal_id)
-    person.principals.principal.to_a.sample.principalName
+    if assignees.any?
+      principal_id = assignees.delete_if{ |assignee| assignee.principalId == '2'}.sample.principalId
+      person = identity_service.getEntity(principal_id)
+      person.principals.principal.to_a.sample.principalName
+    else
+      get_principal_name_for_role('KFS-SYS', 'Manager').sample
+    end
   end
   def get_document_blanket_approver(document_type)
     permission_details = {'documentTypeName' => document_type}
@@ -253,6 +257,9 @@ module GlobalConfig
   end
   def fetch_random_origination_code
     get_kuali_business_object('KFS-SYS','OriginationCode','active=true')['financialSystemOriginationCode'].sample
+  end
+  def fetch_random_department_organization_code
+    get_kuali_business_object('KFS-SYS','Organization','organizationTypeCode=D&organizationCode=01**&active=true')['organizationCode'].sample
   end
 
 end
