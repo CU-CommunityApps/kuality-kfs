@@ -26,10 +26,10 @@ class IndirectCostRecoveryAccountsTab < KFSBasePage
   value(:old_active_indicator) { |i=0, b| yesno2setclear(b.frm.span(id: "document.oldMaintainableObject.indirectCostRecoveryAccounts[#{i}].active.div").text.strip) }
 
   # New Copy
-  element(:update_chart_of_accounts_code) { |i=0, b| b.frm.select(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].indirectCostRecoveryFinCoaCode") }
-  element(:update_account_number) { |i=0, b| b.frm.text_field(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].indirectCostRecoveryAccountNumber") }
-  element(:update_account_line_percent) { |i=0, b| b.frm.text_field(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].accountLinePercent") }
-  element(:update_active_indicator) { |i=0, b| b.frm.checkbox(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].active") }
+  element(:update_chart_of_accounts_code) { |i=0, b| b.icra_tab.select(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].indirectCostRecoveryFinCoaCode") }
+  element(:update_account_number) { |i=0, b| b.icra_tab.text_field(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].indirectCostRecoveryAccountNumber") }
+  element(:update_account_line_percent) { |i=0, b| b.icra_tab.text_field(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].accountLinePercent") }
+  element(:update_active_indicator) { |i=0, b| b.icra_tab.checkbox(name: "document.newMaintainableObject.indirectCostRecoveryAccounts[#{i}].active") }
   value(:new_chart_of_accounts_code) { |i=0, b| b.update_chart_of_accounts_code(i).selected_options.first.value }
   value(:new_account_number) { |i=0, b| b.update_account_number(i).value }
   value(:new_account_line_percent) { |i=0, b| b.update_account_line_percent(i).value }

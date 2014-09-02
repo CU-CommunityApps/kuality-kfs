@@ -61,14 +61,11 @@ class AccountObject < KFSDataObject
     end
   end
 
-  def update(opts={})
-    puts "Looking for #{opts[:icr_accounts]}"
-    puts *(self.class.attributes - [:initial_icr_accounts]).inspect
+  def edit(opts={})
     # Because AccountObject::attributes contains super.attributes and we're not doing anything fancy, we can just do this:
-    on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes - [:initial_icr_accounts]) } # :initial_icr_accounts aren't useful for an update
+    on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes - self.class.icra_mixin_attributes) }
     update_options(opts)
   end
-  alias_method :edit, :update
 
   def absorb!(target={})
     super

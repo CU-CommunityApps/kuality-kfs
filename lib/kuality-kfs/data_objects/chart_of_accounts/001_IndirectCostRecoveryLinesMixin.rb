@@ -10,15 +10,22 @@ module IndirectCostRecoveryLinesMixin
       attr_accessor :initial_icr_accounts
       attr_reader :icr_accounts
 
+
+      class << self
+        def icra_mixin_attributes
+          [:initial_icr_accounts, :icr_accounts]
+        end
+      end
+
       # @param [Array] icras An array of Hashes representing an update to the @icr_accounts collection
-      def icr_accounts=(icras=[])
+      def icr_accounts=(icras)
         # If we're initializing, copying or resetting, just take the collection as-is
-        if icras.is_a? IndirectCostRecoveryLineObjectCollection
+        if icras.instance_of? IndirectCostRecoveryLineObjectCollection
           @icr_accounts = icras
           return
         end
 
-        # Otherwise, we're adding or editting elements and we want a Hash.
+        # Otherwise, we're adding or editing elements and we want a Hash.
         raise ArgumentError, 'All Indirect Cost Recovery line updates must be supplied as Hashes!' unless icras.all? {|icra| icra.is_a? Hash }
 
         # Load them in the prescribed order. If no number is provided, throw them at the end in the order given
@@ -49,7 +56,6 @@ module IndirectCostRecoveryLinesMixin
       # back up methods to be extended. Use these instead of #super in the extended methods
       alias_method :super_post_create, :post_create
       alias_method :super_edit, :edit
-      alias_method :super_update, :update
       alias_method :super_update_line_objects_from_page!, :update_line_objects_from_page!
       def post_create
         super_post_create
@@ -57,11 +63,10 @@ module IndirectCostRecoveryLinesMixin
         @initial_icr_accounts = nil
       end
 
-      def update(opts={})
-        @icr_accounts = opts[:icr_accounts] unless opts[:icr_accounts].nil?
-        super_update
+      def edit(opts={})
+        self.icr_accounts = opts[:icr_accounts] unless opts[:icr_accounts].nil?
+        super_edit(opts)
       end
-      alias_method :edit, :update
 
       def update_line_objects_from_page!(target=:new)
         super_update_line_objects_from_page!

@@ -35,14 +35,13 @@ class IndirectCostRecoveryLineObject < DataFactory
   def edit(opts={})
     on IndirectCostRecoveryAccountsTab do |icr_tab|
       icr_tab.update_chart_of_accounts_code(@line_number).pick! opts[:chart_of_accounts_code] unless opts[:chart_of_accounts_code].nil?
-      icr_tab.update_account_number(@line_number).pick!         opts[:account_number] unless opts[:account_number].nil?
+      icr_tab.update_account_number(@line_number).fit           opts[:account_number] unless opts[:account_number].nil?
       icr_tab.update_account_line_percent(@line_number).fit     opts[:account_line_percent] unless opts[:account_line_percent].nil?
       icr_tab.update_active_indicator(@line_number).fit         opts[:active_indicator] unless opts[:active_indicator].nil?
     end
     update_options(opts)
     update_extended_attributes(opts)
   end
-  alias_method :update, :edit
 
   def delete
     on(IndirectCostRecoveryAccountsTab).delete_icr_account
