@@ -26,4 +26,43 @@ class ContractGrantReportingCodeObject < KFSDataObject
     end
   end
 
+  def absorb!(target=:new, action=:edit)
+    super target
+    on(ContractGrantReportingCodePage).expand_all
+    case action
+      when :edit;           update_options(pull_edit_cg_reporting_data)
+      when :create, :copy;  update_options(pull_new_cg_reporting_data)
+    end
+  end
+
+
+  def pull_new_cg_reporting_data
+    pulled_cg_data = Hash.new
+    on ContractGrantReportingCodePage do |page|
+      pulled_cg_data = {
+          chart_code:           page.chart_code.value.strip,
+          code:                 page.code.value.strip,
+          name:                 page.name.value.strip
+      }
+    end
+    pulled_cg_data.merge(pull_cg_reporting_code_extended_data(:new))
+  end
+
+  def pull_edit_cg_reporting_data
+    pulled_cg_data = Hash.new
+    on ContractGrantReportingCodePage do |page|
+      pulled_cg_data = {
+          chart_code:           page.chart_code_value.text.strip,
+          code:                 page.code_value.text.strip,
+          name:                 page.name.value.strip
+      }
+    end
+    pulled_cg_data.merge(pull_cg_reporting_code_extended_data(:new))
+  end
+
+
+  def pull_cg_reporting_code_extended_data(target=:new)
+    Hash.new
+  end
+
 end
