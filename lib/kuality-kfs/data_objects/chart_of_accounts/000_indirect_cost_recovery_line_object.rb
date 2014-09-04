@@ -120,4 +120,8 @@ class IndirectCostRecoveryLineObjectCollection < LineObjectCollection
     Hash.new
   end
 
+  def account_line_percent_sum
+    reduce(0) { |sum, icra| sum + icra.account_line_percent.to_i }
+  end
+
 end

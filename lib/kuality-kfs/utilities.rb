@@ -125,10 +125,25 @@ module Utilities
         get_kuali_business_object('KFS-COA','Account','organizationCode=01**&subFundGroupCode=GNDEPT&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
       when 'Endowed NonGrant'
         get_kuali_business_object('KFS-COA','Account','accountTypeCode=EN&subFundGroupCode=GNDEPT&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
+      when 'Contracts & Grants with ICR'
+        kbos = get_kuali_business_objects('KFS-COA',
+                                          'Account',
+                                          'fundGroupCode=CG' <<
+                                          '&financialIcrSeriesIdentifier=RE1*' <<
+                                          '&acctIndirectCostRcvyTypeCd=22' <<
+                                          '&active=Y' <<
+                                          '&accountExpirationDate=NULL')['org.kuali.kfs.coa.businessobject.Account']
+        kbos.reject! { |acct| acct['accountCfdaNumber'].empty? }
+        kbos.sample['accountNumber'][0]
       else
         nil
     end
+  rescue NoMethodError => nme
+    # when 'Contracts & Grants with ICR' case occasionally returns no results, which causes the CFDA#-based filtering to raise a NoMethodError.
+    raise ArgumentError,
+          "Could not find any non-expired accounts of the supplied type (#{type})!" if nme.message == 'undefined method `reject!\' for nil:NilClass'
   rescue RuntimeError => re
+    # In other cases, get_kuali_business_object will raise a RuntimeError if no results are found.
     nil
   end
 

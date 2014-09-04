@@ -62,8 +62,10 @@ class AccountObject < KFSDataObject
   end
 
   def edit(opts={})
+    super
     # Because AccountObject::attributes contains super.attributes and we're not doing anything fancy, we can just do this:
-    on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes - self.class.icra_mixin_attributes) }
+    puts (self.class.attributes - self.class.read_only_attributes - self.class.icra_mixin_attributes).inspect
+    on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes - self.class.read_only_attributes - self.class.icra_mixin_attributes) }
     update_options(opts)
   end
 
@@ -75,10 +77,17 @@ class AccountObject < KFSDataObject
 
   # Class Methods:
   class << self
+
+    # alias_method :account_doc_attributes, :attributes
+    # # @return [Array] The AccountObject's attributes, including those of the superclass
+    # def attributes
+    #   superclass.attributes | account_doc_attributes
+    # end
+
     # Attributes that are required for a successful save/submit.
-    # @return Array List of Symbols for attributes that are required
+    # @return [Array] List of Symbols for attributes that are required
     def required_attributes
-      super | [ :chart_code, :number, :name, :organization_code,
+      superclass.required_attributes | [ :chart_code, :number, :name, :organization_code,
                 :campus_code, :effective_date, :account_expiration_date,
                 :postal_code, :city, :state, :address,
                 :type_code, :sub_fund_group_code, :higher_ed_funct_code, :restricted_status_code,
@@ -88,9 +97,9 @@ class AccountObject < KFSDataObject
     end
 
     # Attributes that don't copy over to a new document's fields during a copy.
-    # @return Array List of Symbols for attributes that aren't copied to the new side of a copy
+    # @return [Array] List of Symbols for attributes that aren't copied to the new side of a copy
     def uncopied_attributes
-      super | [:chart_code, :number, :effective_date]
+      superclass.uncopied_attributes | [:chart_code, :number, :effective_date]
     end
   end
 
