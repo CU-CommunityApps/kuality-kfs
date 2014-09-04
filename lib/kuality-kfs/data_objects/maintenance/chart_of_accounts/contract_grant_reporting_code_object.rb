@@ -5,16 +5,17 @@ class ContractGrantReportingCodeObject < KFSDataObject
   DOC_INFO = { label: 'Contract Grant Reporting Code', type_code: 'OCGR' }
 
   def defaults
-    super.merge({  chart_code:   get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
+    super.merge({
+                   chart_code:   get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
                    code:         random_alphanums(4),
                    name:         random_alphanums(9, 'Default CG Reporting Code Name ')
                })
   end
 
-  def initialize(browser, opts={})
-    @browser = browser
-    set_options(defaults.merge(opts))
-  end
+  # def initialize(browser, opts={})
+  #   @browser = browser
+  #   set_options(defaults.merge(opts))
+  # end
 
   def build
     visit(MaintenancePage).cg_reporting_code
@@ -45,8 +46,14 @@ class ContractGrantReportingCodeObject < KFSDataObject
           name:                 page.name.value.strip
       }
     end
-    pulled_cg_data.merge(pull_cg_reporting_code_extended_data(:new))
+    pulled_cg_data.merge(pull_new_cg_reporting_code_extended_data)
   end
+
+
+  def pull_new_cg_reporting_code_extended_data
+    Hash.new
+  end
+
 
   def pull_edit_cg_reporting_data
     pulled_cg_data = Hash.new
@@ -57,11 +64,11 @@ class ContractGrantReportingCodeObject < KFSDataObject
           name:                 page.name.value.strip
       }
     end
-    pulled_cg_data.merge(pull_cg_reporting_code_extended_data(:new))
+    pulled_cg_data.merge(pull_edit_cg_reporting_code_extended_data)
   end
 
 
-  def pull_cg_reporting_code_extended_data(target=:new)
+  def pull_edit_cg_reporting_code_extended_data
     Hash.new
   end
 
