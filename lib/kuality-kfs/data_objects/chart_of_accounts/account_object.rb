@@ -62,9 +62,9 @@ class AccountObject < KFSDataObject
   end
 
   def edit(opts={})
-    super
-    # Because AccountObject::attributes contains super.attributes and we're not doing anything fancy, we can just do this:
-    puts (self.class.attributes - self.class.read_only_attributes - self.class.icra_mixin_attributes).inspect
+    super # Edit anything editable in KFSDataObject
+
+    # Because AccountObject::attributes we're not doing anything fancy, we can just do this:
     on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes - self.class.read_only_attributes - self.class.icra_mixin_attributes) }
     update_options(opts)
   end

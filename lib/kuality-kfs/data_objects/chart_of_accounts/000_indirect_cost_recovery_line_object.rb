@@ -62,28 +62,49 @@ class IndirectCostRecoveryLineObjectCollection < LineObjectCollection
 
   contains IndirectCostRecoveryLineObject
 
-  def update_from_page!(target=:new)
-    on IndirectCostRecoveryAccountsTab do |icra_tab|
-      clear # Drop any cached lines. More reliable than sorting out an array merge.
-
-      icra_tab.show_icr_accounts unless icra_tab.icra_tab_shown?
-      unless icra_tab.current_icr_accounts_count.zero?
-        (0..(icra_tab.current_icr_accounts_count - 1)).to_a.collect!{ |i|
-          pull_existing_icr_account(i, target).merge(pull_extended_existing_icr_account(i, target))
-        }.each { |new_obj|
-          # Update the stored lines
-          self << (make contained_class, new_obj)
-        }
-      end
-
-    end
-  end
 
   # @return [Array] Ordered Array of Hashes that can be used for serialization
   def to_update
     {
-      icr_accounts: collect { |icra| icra.to_update }
+        icr_accounts: collect { |icra| icra.to_update }
     }
+  end
+
+  # @param [Symbol] target Which ICR Account to pull from (most useful during a copy action). Defaults to :new
+  def update_from_page!(target=:new)
+    # on IndirectCostRecoveryAccountsTab do |icra_tab|
+    #   clear # Drop any cached lines. More reliable than sorting out an array merge.
+    #
+    #   icra_tab.show_icr_accounts unless icra_tab.icra_tab_shown?
+    #   unless icra_tab.current_icr_accounts_count.zero?
+    #     (0..(icra_tab.current_icr_accounts_count - 1)).to_a.collect!{ |i|
+    #       pull_existing_icr_account(i, target).merge(pull_extended_existing_icr_account(i, target))
+    #     }.each { |new_obj|
+    #       # Update the stored lines
+    #       self << (make contained_class, new_obj)
+    #     }
+    #   end
+    #
+    # end
+    updates_pulled_from_page(target).each do |new_obj|
+      # Update the stored lines
+      self << (make contained_class, new_obj)
+    end
+  end
+
+  # @param [Symbol] target Which ICR Account to pull from (most useful during a copy action). Defaults to :new
+  # @return [Array] Array of Hashes representing the updates that were pulled, or nil if none were found.
+  def updates_pulled_from_page(target=:new)
+    on IndirectCostRecoveryAccountsTab do |icra_tab|
+      icra_tab.show_icr_accounts unless icra_tab.icra_tab_shown?
+      unless icra_tab.current_icr_accounts_count.zero?
+        return (0..(icra_tab.current_icr_accounts_count - 1)).to_a
+                                                             .collect!{ |i|
+          pull_existing_icr_account(i, target).merge(pull_extended_existing_icr_account(i, target))
+                                              .merge({line_number: i})
+        }
+      end
+    end
   end
 
   # @param [Fixnum] i The line number to look for (zero-based)
