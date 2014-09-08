@@ -77,6 +77,14 @@ module Watir
       (0..(self.trs.length-1)).collect{ |i| self[i][columnnumber] }
     end
 
+    def to_a
+      trs[0..(trs.length - 1)].collect{ |row|
+        row.cells
+           .collect{ |col| col.text }
+           .reject{ |col| col.empty? }
+      }.reject{ |row| row.empty? }
+    end
+
     # @return [TableRow] The first row in the table.
     def first
       self.trs.first
@@ -121,6 +129,17 @@ class Array
     f, *r = *self
     r
   end
+end
+
+class String
+
+  # Compares against another string, ignoring spaces, tabs, and newlines.
+  # @param [String] other The String to compare against. Could be another type of object, so long as it supplies #gsub
+  # @return [TrueClass] Result of #eql? if the mentioned characters were removed from both objects in the comparison.
+  def eql_ignoring_whitespace?(other)
+    gsub(/[ \n\t]*/, '').eql?(other.gsub(/[ \n\t]*/, ''))
+  end
+
 end
 
 class Hash

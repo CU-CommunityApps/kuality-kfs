@@ -15,9 +15,6 @@ class AccountObject < KFSDataObject
                 :contract_control_chart_of_accounts_code, :contract_control_account_number,
                 :account_icr_type_code, :indirect_cost_rate, :cfda_number, :cg_account_responsibility_id,
                 :invoice_frequency_code, :invoice_type_code, :everify_indicator, :cost_share_for_project_number
-                # == Indirect Cost Recovery tab (May be worth turning into a collection) ==
-                # :indirect_cost_recovery_chart_of_accounts_code, :indirect_cost_recovery_account_number,
-                # :indirect_cost_recovery_account_line_percent, :indirect_cost_recovery_active_indicator
 
   def defaults
     super.merge({
@@ -65,7 +62,10 @@ class AccountObject < KFSDataObject
     super # Edit anything editable in KFSDataObject
 
     # Because AccountObject::attributes we're not doing anything fancy, we can just do this:
-    on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes - self.class.read_only_attributes - self.class.icra_mixin_attributes) }
+    on(AccountPage) { |p| edit_fields opts, p, *(self.class.attributes -
+                                                 self.class.read_only_attributes -
+                                                 self.class.icra_mixin_attributes) }
+    # This does mean that you can't update stuff from the ICRA Mixin via #edit, though.
     update_options(opts)
   end
 
@@ -77,13 +77,6 @@ class AccountObject < KFSDataObject
 
   # Class Methods:
   class << self
-
-    # alias_method :account_doc_attributes, :attributes
-    # # @return [Array] The AccountObject's attributes, including those of the superclass
-    # def attributes
-    #   superclass.attributes | account_doc_attributes
-    # end
-
     # Attributes that are required for a successful save/submit.
     # @return [Array] List of Symbols for attributes that are required
     def required_attributes

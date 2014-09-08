@@ -72,20 +72,8 @@ class IndirectCostRecoveryLineObjectCollection < LineObjectCollection
 
   # @param [Symbol] target Which ICR Account to pull from (most useful during a copy action). Defaults to :new
   def update_from_page!(target=:new)
-    # on IndirectCostRecoveryAccountsTab do |icra_tab|
-    #   clear # Drop any cached lines. More reliable than sorting out an array merge.
-    #
-    #   icra_tab.show_icr_accounts unless icra_tab.icra_tab_shown?
-    #   unless icra_tab.current_icr_accounts_count.zero?
-    #     (0..(icra_tab.current_icr_accounts_count - 1)).to_a.collect!{ |i|
-    #       pull_existing_icr_account(i, target).merge(pull_extended_existing_icr_account(i, target))
-    #     }.each { |new_obj|
-    #       # Update the stored lines
-    #       self << (make contained_class, new_obj)
-    #     }
-    #   end
-    #
-    # end
+    clear # Drop any cached lines. More reliable than sorting out an array merge.
+
     updates_pulled_from_page(target).each do |new_obj|
       # Update the stored lines
       self << (make contained_class, new_obj)
@@ -97,11 +85,13 @@ class IndirectCostRecoveryLineObjectCollection < LineObjectCollection
   def updates_pulled_from_page(target=:new)
     on IndirectCostRecoveryAccountsTab do |icra_tab|
       icra_tab.show_icr_accounts unless icra_tab.icra_tab_shown?
-      unless icra_tab.current_icr_accounts_count.zero?
+      if icra_tab.current_icr_accounts_count.zero?
+        return nil
+      else
         return (0..(icra_tab.current_icr_accounts_count - 1)).to_a
                                                              .collect!{ |i|
-          pull_existing_icr_account(i, target).merge(pull_extended_existing_icr_account(i, target))
-                                              .merge({line_number: i})
+          {line_number: i}.merge(pull_existing_icr_account(i, target))
+                          .merge(pull_extended_existing_icr_account(i, target))
         }
       end
     end
