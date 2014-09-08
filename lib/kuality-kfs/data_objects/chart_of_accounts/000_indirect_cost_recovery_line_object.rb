@@ -74,9 +74,12 @@ class IndirectCostRecoveryLineObjectCollection < LineObjectCollection
   def update_from_page!(target=:new)
     clear # Drop any cached lines. More reliable than sorting out an array merge.
 
-    updates_pulled_from_page(target).each do |new_obj|
-      # Update the stored lines
-      self << (make contained_class, new_obj)
+    updates = updates_pulled_from_page(target)
+    unless updates.nil?
+      updates.each do |new_obj|
+        # Update the stored lines
+        self << (make contained_class, new_obj)
+      end
     end
   end
 
