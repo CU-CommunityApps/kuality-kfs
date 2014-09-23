@@ -29,11 +29,11 @@ class CapitalAssetsTab < PageFactory
   element(:room) { |i=0, j=0,  b| b.frm.text_field(id: "document.capitalAssetInformation[#{i}].capitalAssetInformationDetails[#{j}].buildingRoomNumber") }
   #value(:remain_asset_amount) { |b| b.frm.table(summary: 'Capital Asset Information')[0][0].table[1][1].text.split(':')[1] }
   element(:remain_asset_amount) { |b| b.frm.td(class: 'tab-subhead', text: /System Control Remainder Amount:/).text.split(':')[1] }
-  value(:asset_account_number) { |b| b.frm.table(summary: 'Asset for Accounting Lines')[1][4].text.strip }
+  value(:asset_account_number) { |i=0, b| b.frm.tables(summary: 'Asset for Accounting Lines')[i * 2][1][4].text.strip }
   action(:vendor_search) { |b| b.frm.button(name: /methodToCall.performLookup.\(!!org.kuali.kfs.vnd.businessobject.VendorDetail!!\)/m).click }
   action(:delete_asset) { |i=0, b| b.frm.button(id: "methodToCall.deleteCapitalAssetInfo.line#{i}.Anchor").click }
   value(:asset_tables) { |b| b.frm.tables(summary: "Asset for Accounting Lines") }
-  value(:current_asset_count) { |b| b.asset_tables.length - 1 }
+  value(:current_asset_count) { |b| b.asset_tables.length / 2 }
   value(:old_qty) { |i=0, b| b.frm.hidden(name: "document.capitalAssetInformation[#{i}].capitalAssetQuantity") }
   value(:old_type) { |i=0, b| b.frm.hidden(name: "document.capitalAssetInformation[#{i}].capitalAssetTypeCode") }
   value(:old_manufacturer) { |i=0, b| b.frm.hidden(name: "document.capitalAssetInformation[#{i}].capitalAssetManufacturerName") }

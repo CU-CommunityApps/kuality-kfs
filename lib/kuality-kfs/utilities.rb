@@ -129,6 +129,8 @@ module Utilities
         get_kuali_business_object('KFS-COA','Account','organizationCode=01**&subFundGroupCode=CG*&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
       when 'Endowed Grant'
         get_kuali_business_object('KFS-COA','Account','accountTypeCode=EN&organizationCode=01**&subFundGroupCode=CG*&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
+      when 'Endowed Appropriated'
+        get_kuali_business_object('KFS-COA','Account',"accountTypeCode=EN&subFundGroupCode=GNAPPR&active=Y&accountExpirationDate=NULL&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")['accountNumber'].sample
       else
         nil
     end

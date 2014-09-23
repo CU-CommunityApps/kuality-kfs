@@ -31,10 +31,11 @@ And /^I add a (From|To) amount of "(.*)" for account "(.*)" with object code "(.
   end
 end
 
-And /^I select accounting line and (create|modify) Capital Asset$/ do |action|
+And /^I select accounting line \#(\d+) and (create|modify) Capital Asset$/ do |il, action|
+  il = il.to_i - 1
   on CapitalAssetsTab do |tab|
-    tab.generate_accounting_lines_for_capitalization
-    tab.accounting_lines_for_capitalization_select.set
+    tab.generate_accounting_lines_for_capitalization unless tab.accounting_lines_for_capitalization_select(il).exists?
+    tab.accounting_lines_for_capitalization_select(il).set
     tab.distribution_method.fit 'Distribute cost by amount'
     case action
       when 'create'
@@ -47,43 +48,47 @@ end
 
 And /^I distribute a new Capital Asset amount$/ do
   on CapitalAssetsTab do |tab|
-    @asset_account_number = tab.asset_account_number
+    i = tab.current_asset_count.to_i - 1
+    @new_asset_account_number = tab.asset_account_number(i)
     @distribution_of_income_and_expense.assets.add   qty:           '1',
                                                      type:          '019',
                                                      manufacturer:  'CA manufacturer',
                                                      description:   random_alphanums(40, 'AFT'),
                                                      line_amount:   tab.remain_asset_amount
-    #page.capital_asset_line_amount.fit page.remain_asset_amount
-    tab.number.fit @asset_number unless @asset_number.nil?
     tab.redistribute_amount
   end
 end
 
 And /^I distribute the modify Capital Asset amount$/ do
   on CapitalAssetsTab do |tab|
-    @asset_account_number = tab.asset_account_number
-    tab.line_amount.fit tab.remain_asset_amount
-    tab.number.fit @asset_number
+    i = tab.current_asset_count.to_i - 1
+    @modify_asset_account_number = tab.asset_account_number(i)
+    tab.line_amount(i).fit tab.remain_asset_amount
+    tab.number(i).fit @asset_number
     tab.redistribute_modify_amount
   end
 end
 
 And /^I build a Capital Asset from the General Ledger$/ do
-  steps %Q{
-    Given I Login as an Asset Processor
-    And   I lookup a Capital Asset from GL transaction to process
-    And   I create asset from General Ledger Processing
-    And   I submit the Asset Global document
-    Then  the Asset Global document goes to FINAL
-   }
+  step 'I Login as an Asset Processor'
+  step "I lookup a Capital Asset with Account Number of #{@new_asset_account_number} from GL transaction to process"
+  step 'I create asset from General Ledger Processing'
+  step 'I submit the Asset Global document'
+  step 'the Asset Global document goes to FINAL'
+  step "check payments tab for correct account and amount with following:",
+       table(%Q{
+              | Asset Number    | #{@new_asset_number}            |
+              | Account Number  | #{@new_asset_account_number}   |
+              | Amount          | #{@asset_amount}           |
+         })
 end
 
-And /^I lookup a Capital Asset from GL transaction to process$/ do
+And /^I lookup a Capital Asset with Account Number of (.*) from GL transaction to process$/ do |account_number|
   visit(MainPage).capital_asset_builder_gl_transactions
   on GeneralLedgerPendingEntryLookupPage do |page|
-    page.account_number.fit @asset_account_number
+    page.account_number.fit account_number
     page.search
-    page.process(@asset_account_number)
+    page.process(account_number)
   end
 
   on(CapitalAssetInformationProcessingPage).process
@@ -92,6 +97,8 @@ end
 And /^I create asset from General Ledger Processing$/ do
   on(GeneralLedgerProcessingPage).create_asset
   @asset_global = create AssetGlobalObject
+  sleep 3
+  @new_asset_number = on(AssetGlobalPage).asset_number
 end
 
 Given  /^I create a Distribution of Income and Expense document with the following:$/ do |table|
@@ -119,11 +126,11 @@ Given  /^I create a Distribution of Income and Expense document with the followi
   end
 
   unless @lookup_asset.nil?
-    capital_asset_action = 'modify'
+    capital_asset_action = capital_asset_action.eql?('create') ? 'move' : 'modify'
     step "I add a Source Accounting Line to the Distribution Of Income And Expense document with the following:",
          table(%Q{
               | Chart Code   | #{@asset_chart}            |
-              | Number       | #{@asset_account_number}   |
+              | Number       | #{@modify_asset_account_number}   |
               | Object Code  | #{@asset_object_code}      |
               | Amount       | #{@asset_amount}           |
          })
@@ -132,13 +139,21 @@ Given  /^I create a Distribution of Income and Expense document with the followi
   case capital_asset_action
     when 'create'
       steps %Q{
-              And     I select accounting line and create Capital Asset
+              And     I select accounting line #1 and create Capital Asset
               And     I distribute a new Capital Asset amount
               And     I add a tag and location for Capital Asset
   }
     when 'modify'
       steps %Q{
-              And   I select accounting line and modify Capital Asset
+              And   I select accounting line #1 and modify Capital Asset
+              And     I distribute the modify Capital Asset amount
+  }
+    when 'move'
+      steps %Q{
+              And     I select accounting line #1 and create Capital Asset
+              And     I distribute a new Capital Asset amount
+              And     I add a tag and location for Capital Asset
+              And     I select accounting line #2 and modify Capital Asset
               And     I distribute the modify Capital Asset amount
   }
   end
@@ -170,7 +185,7 @@ And /^I select Capital Asset detail information$/ do
   on AssetInquiryPage do |page|
     page.toggle_payment
     @asset_number = page.asset_number
-    @asset_account_number = page.asset_account_number
+    @modify_asset_account_number = page.asset_account_number
     @asset_object_code = page.asset_object_code
     @asset_amount = page.asset_amount
     @asset_chart = page.asset_chart
@@ -180,13 +195,17 @@ And /^I select Capital Asset detail information$/ do
 end
 
 And /^I modify a Capital Asset from the General Ledger and apply payment$/ do
-  steps %Q{
-    Given I Login as an Asset Processor
-    And   I lookup a Capital Asset from GL transaction to process
-    And   I select and apply payment for General Ledger Capital Asset
-    And   I submit the Asset Manual Payment document
-    Then  the Asset Manual Payment document goes to FINAL
-   }
+  step 'I Login as an Asset Processor'
+  step "I lookup a Capital Asset with Account Number of #{@modify_asset_account_number} from GL transaction to process"
+  step 'I select and apply payment for General Ledger Capital Asset'
+  step 'I submit the Asset Manual Payment document'
+  step 'the Asset Manual Payment document goes to FINAL'
+  step "check payments tab for correct account and amount with following:",
+       table(%Q{
+              | Asset Number    | #{@asset_number}            |
+              | Account Number  | #{@modify_asset_account_number}   |
+              | Amount          | #{@asset_amount}           |
+         })
 end
 
 And /^I select and apply payment for General Ledger Capital Asset$/ do
@@ -194,3 +213,32 @@ And /^I select and apply payment for General Ledger Capital Asset$/ do
   @asset_manual_payment = create AssetManualPaymentObject
 end
 
+Given  /^I create a Distribution of Income and Expense document with target account using a non Capital Asset account and the same Capital Asset Object Code$/ do
+  account_nbr = get_account_of_type('Endowed Appropriated')
+  chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
+
+  step 'I create a Distribution of Income and Expense document with the following:',
+       table(%Q{
+      | Line Type | Chart Code     | Account        | Object Code            | Amount | Capital Asset? |
+      | To        | #{chart_code}  | #{account_nbr} | #{@asset_object_code}  |        | Yes            |
+         })
+
+end
+
+And /^check payments tab for correct account and amount with following:$/ do |table|
+  arguments = table.rows_hash
+  visit(MainPage).asset
+  on AssetLookupPage do |page|
+    page.asset_number.fit arguments['Asset Number']
+    page.search
+    page.return_random_asset
+  end
+
+  on AssetInquiryPage do |page|
+    page.toggle_payment
+    i = page.current_payment_count - 1
+    page.asset_account_number(i).should == arguments['Account Number']
+    page.asset_amount(i).gsub(',','').should include arguments['Amount'].gsub(',','')
+  end
+
+end

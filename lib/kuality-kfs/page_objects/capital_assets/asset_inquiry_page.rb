@@ -6,5 +6,7 @@ class AssetInquiryPage < KFSBasePage
   value(:asset_object_code) { |i=0, b| b.frm.span(id: "assetPayments[#{i}].financialObjectCode.div").text.strip }
   value(:asset_amount) { |i=0, b| b.frm.span(id: "assetPayments[#{i}].accountChargeAmount.div").text.strip }
   value(:asset_chart) { |i=0, b| b.frm.span(id: "assetPayments[#{i}].chartOfAccountsCode.div").text.strip }
+  element(:payment_tab) { |b| b.frm.div(id: 'tab-Payments-div') }
+  value(:current_payment_count) { |b| b.payment_tab.spans(class: 'left', text: /Payment/m).length }
 
 end
