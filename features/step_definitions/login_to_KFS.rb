@@ -203,7 +203,6 @@ end
 
 And /^I remember the logged in user$/ do
   @remembered_logged_in_user = get_current_user
-  puts "@remembered_logged_in_user=#{@remembered_logged_in_user}="
 end
 
 And /^I am logged in as the remembered user$/ do
