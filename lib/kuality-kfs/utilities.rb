@@ -121,7 +121,7 @@ module Utilities
   # @return [String] The Account Number of the requested type if found by the service, or nil if not found
   def get_account_of_type(type)
     case type
-      when 'Unrestricted Account'
+      when 'Unrestricted Account', 'NonGrant'
         get_kuali_business_object('KFS-COA','Account','organizationCode=01**&subFundGroupCode=GNDEPT&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
       when 'Endowed NonGrant'
         get_kuali_business_object('KFS-COA','Account','accountTypeCode=EN&subFundGroupCode=GNDEPT&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
@@ -136,6 +136,10 @@ module Utilities
         kbos.reject! { |acct| acct['accountCfdaNumber'].empty? }
         kbos.reject! { |acct| !orgs_with_reviewers.any?{|org| org[0..1] == acct['organization.codeAndDescription'][0].split('-')[0][0..1] } }
         kbos.sample['accountNumber'][0]
+      when 'Grant'
+        get_kuali_business_object('KFS-COA','Account','organizationCode=01**&subFundGroupCode=CG*&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
+      when 'Endowed Grant'
+        get_kuali_business_object('KFS-COA','Account','accountTypeCode=EN&organizationCode=01**&subFundGroupCode=CG*&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
       else
         nil
     end
@@ -161,8 +165,9 @@ module Utilities
         current_fiscal_year   = get_aft_parameter_value('CURRENT_FISCAL_YEAR') # '2015'
 
         object_levels += %w(CAPA CAPC) unless cap_asset_allowed
+        chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
         levels = get_kuali_business_objects('KFS-COA', 'ObjectLevel', "universityFiscalYear=#{current_fiscal_year}")
-        object_codes = get_kuali_business_objects('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}")
+        object_codes = get_kuali_business_objects('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}&chartOfAccountsCode=#{chart_code}")
 
         object_codes['org.kuali.kfs.coa.businessobject.ObjectCode'].delete_if do |oc_hash|
           !(object_levels & oc_hash['financialObjectLevelCode']).empty? ||
@@ -208,6 +213,21 @@ module Utilities
         fetch_random_capital_asset_object_code
       when 'Accounts Receivable Asset'
         get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}&financialObjectTypeCode=AS&financialObjectLevelCode=AROT&chartOfAccountsCode=#{chart_code}")['financialObjectCode'][0]
+      when 'Income-Cash'
+        get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}&financialObjectSubTypeCode=ID&financialObjectTypeCode=IN&financialObjectLevelCode=IDRV&chartOfAccountsCode=#{chart_code}")['financialObjectCode'][0]
+      else
+        nil
+    end
+  rescue RuntimeError => re
+    nil
+  end
+
+  def get_commodity_of_type(type, sensitiveDataCode='ANIM')
+    case type
+      when 'Sensitive'
+        get_kuali_business_object('KFS-VND','CommodityCode',"sensitiveDataCode=#{sensitiveDataCode}&active=true")['purchasingCommodityCode'].sample
+      when 'Regular'
+        get_kuali_business_object('KFS-VND','CommodityCode','sensitiveDataCode=NULL&active=true')['purchasingCommodityCode'].sample
       else
         nil
     end
