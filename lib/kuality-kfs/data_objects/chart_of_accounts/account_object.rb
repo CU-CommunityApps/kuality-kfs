@@ -64,4 +64,75 @@ class AccountObject < KFSDataObject
                      :indirect_cost_recovery_account_line_percent, :indirect_cost_recovery_active_indicator
     end
   end
+
+  # Parameter code_and_description: string containing a code and description delimited by a single hyphen.
+  # Returns an array where the first element is the code (represented by everything up to the first hyphen) and the
+  # second element is the description (represented by everything after the first hyphen).
+  def split_code_description_at_first_hyphen(code_and_description)
+    split_data_array = code_and_description.to_s.split( /- */, 2)
+    unless (split_data_array[0]).to_s.rstrip.nil?
+      #there is trailing white space
+      split_data_array[0] = (split_data_array[0]).to_s.rstrip
+    end
+    unless (split_data_array[1]).to_s.lstrip.nil?
+      #there is leading white space
+      split_data_array[1] = (split_data_array[1]).to_s.lstrip
+    end
+    return split_data_array
+  end
+
+
+  # Parameter data_item: Single array element from a WebService call for the data object in question.
+  # Returns a Hash of the object's data attributes and the values provided in the data_item.
+  # Used in method absorb_webservice_item!
+  def create_hash_from_webservice_item(data_item)
+    coa_code_descr_array = split_code_description_at_first_hyphen(data_item['chartOfAccounts.codeAndDescription'][0])
+    org_code_descr_array = split_code_description_at_first_hyphen(data_item['organization.codeAndDescription'][0])
+    sub_fund_code_descr_array = split_code_description_at_first_hyphen(data_item['subFundGroup.codeAndDescription'][0])
+    fin_higher_ed_code_descr_array = split_code_description_at_first_hyphen(data_item['financialHigherEdFunction.codeAndDescription'][0])
+
+    data_hash = {
+        description:                          'WebService provided data',
+        chart_code:                           coa_code_descr_array[0],
+        number:                               data_item['accountNumber'][0],
+        name:                                 data_item['accountName'][0],
+        organization_code:                    org_code_descr_array[0],
+        campus_code:                          data_item['accountPhysicalCampusCode'][0],
+        effective_date:                       data_item['accountEffectiveDate'][0],
+        postal_code:                          data_item['accountZipCode'][0],
+        city:                                 data_item['accountCityName'][0],
+        state:                                data_item['accountStateCode'][0],
+        address:                              data_item['accountStreetAddress'][0],
+        type_code:                            data_item['accountTypeCode'][0],
+        sub_fund_group_code:                  sub_fund_code_descr_array[0],
+        higher_ed_funct_code:                 fin_higher_ed_code_descr_array[0],
+        restricted_status_code:               data_item['accountRestrictedStatusCode'][0],
+        fo_principal_name:                    data_item['accountFiscalOfficerUser.principalName'][0],
+        supervisor_principal_name:            data_item['accountSupervisoryUser.principalName'][0],
+        manager_principal_name:               data_item['accountManagerUser.principalName'][0],
+        budget_record_level_code:             data_item['budgetRecordingLevelCode'][0],
+        sufficient_funds_code:                data_item['accountSufficientFundsCode'][0],
+        expense_guideline_text:               data_item['accountGuideline.accountExpenseGuidelineText'][0],
+        income_guideline_txt:                 data_item['accountGuideline.accountIncomeGuidelineText'][0],
+        purpose_text:                         data_item['accountGuideline.accountPurposeText'][0],
+        labor_benefit_rate_cat_code:          data_item['laborBenefitRateCategoryCode'][0],
+        account_expiration_date:              data_item['accountExpirationDate'][0],
+        closed:                               data_item['closed'][0],
+        income_stream_account_number:         data_item['incomeStreamAccountNumber'][0],
+        income_stream_financial_cost_code:    data_item['incomeStreamFinancialCoaCode'][0]
+    }
+    return data_hash
+  end
+
+  # Parameter data_hash: Hash of the object's data attributes and the corresponding values.
+  # Used in method absorb_webservice_item!
+  def absorb_webservice_item_hash!(data_hash)
+     update_options(data_hash)
+  end
+
+
+  def absorb_webservice_item!(data_item)
+    super(data_item)
+  end
+
 end
