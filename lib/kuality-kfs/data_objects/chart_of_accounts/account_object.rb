@@ -51,10 +51,12 @@ class AccountObject < KFSDataObject
     on(AccountLookupPage).create
     on AccountPage do |page|
       page.expand_all
-      page.type_code.fit @type_code
+      page.type_code.fit @type_code # Gotta do this first or we get a modal
       page.description.focus
       page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
-      fill_out page, self.class.attributes # We don't have any special attribute sections, so we should be able to throw them all in.
+      fill_out page, *(self.class.attributes -
+                       self.class.read_only_attributes -
+                       self.class.icra_mixin_attributes) # We don't have any special attribute sections, so we should be able to throw them all in.
     end
   end
 
@@ -71,7 +73,7 @@ class AccountObject < KFSDataObject
 
   def absorb!(target={})
     super
-    update_options(on(AccountPage).send("#{target.to_s}_account_data"))
+    update_options(on(AccountPage).send("account_data_#{target.to_s}"))
     update_line_objects_from_page!(target == :original ? :old : target)
   end
 

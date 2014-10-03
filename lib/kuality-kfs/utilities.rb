@@ -126,14 +126,15 @@ module Utilities
       when 'Endowed NonGrant'
         get_kuali_business_object('KFS-COA','Account','accountTypeCode=EN&subFundGroupCode=GNDEPT&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
       when 'Contracts & Grants with ICR'
+        orgs_with_reviewers = %w(36 34 03 04 01 05) # TODO: Find a way to define this through the service or some such
         kbos = get_kuali_business_objects('KFS-COA',
                                           'Account',
                                           'fundGroupCode=CG' <<
-                                          '&financialIcrSeriesIdentifier=RE1*' <<
+                                          '&financialIcrSeriesIdentifier=RE1' <<
                                           '&acctIndirectCostRcvyTypeCd=22' <<
-                                          '&active=Y' <<
-                                          '&accountExpirationDate=NULL')['org.kuali.kfs.coa.businessobject.Account']
+                                          '&active=Y')['org.kuali.kfs.coa.businessobject.Account']
         kbos.reject! { |acct| acct['accountCfdaNumber'].empty? }
+        kbos.reject! { |acct| !orgs_with_reviewers.any?{|org| org[0..1] == acct['organization.codeAndDescription'][0].split('-')[0][0..1] } }
         kbos.sample['accountNumber'][0]
       else
         nil
