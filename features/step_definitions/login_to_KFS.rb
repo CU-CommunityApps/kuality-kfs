@@ -194,11 +194,11 @@ Given /^I am logged in as a Sensitive Data Viewer$/ do
 end
 
 Given /^I am logged in as an e\-SHOP Plus User without a favorite account$/ do
-  visit(BackdoorLoginPage).login_as(get_random_principal_without_favorite_account_for_role('KFS-PURAP', 'eShop Plus User(cu)'))
+  perform_backdoor_login(get_random_principal_without_favorite_account_for_role('KFS-PURAP', 'eShop Plus User(cu)'))
 end
 
 Given /^I am logged in as a KR Technical Administrator$/ do
-  visit(BackdoorLoginPage).login_as(get_random_principal_name_for_role('KR-SYS', 'Technical Administrator'))
+  perform_backdoor_login(get_random_principal_name_for_role('KR-SYS', 'Technical Administrator'))
 end
 
 And /^I remember the logged in user$/ do
