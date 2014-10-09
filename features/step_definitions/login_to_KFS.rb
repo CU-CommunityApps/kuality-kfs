@@ -90,7 +90,6 @@ end
 
 Given /^I am logged in as a Commodity Reviewer$/ do
   perform_backdoor_login(get_first_principal_name_for_role('KFS-SYS', 'Commodity Reviewer'))
-perform_backdoor_login(user_id)
 end
 
 Given /^I am logged in as FTC\/BSC member User$/ do

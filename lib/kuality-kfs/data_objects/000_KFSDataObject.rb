@@ -161,21 +161,20 @@ class KFSDataObject < DataFactory
   end
 
 
-  ######The next three methods are intended to have their implementations provided by each subclass.#####
+  ###### The next two methods are intended to have their implementations provided by each subclass. #####
 
-  # Parameter data_item: Single array element from a WebService call for the data object in question.
-  # Returns a Hash of the object's data attributes and the values provided in the data_item.
-  def create_hash_from_webservice_item(data_item); end
+  # Used in method absorb_webservice_item! or can be called standalone
+  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
+  # @return [Hash] A hash of the object's data attributes and the values provided in the data_item.
+  def self.create_hash_from_webservice_item(data_item); end
 
-  # Parameter data_hash: Hash of the object's data attributes and the corresponding values.
-  def absorb_webservice_item_hash!(data_hash); end
 
-  # Parameter data_item: Single array element from a WebService call for the data object in question.
   # By invoking create_hash_from_webservice_item and absorb_webservice_item_hash! this method achieves
   # in a single call the same result as calling both methods individually.
+  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
   def absorb_webservice_item!(data_item)
     data_hash = create_hash_from_webservice_item(data_item)
-    absorb_webservice_item_hash!(data_hash)
+    update_options(data_hash)
   end
 
 end

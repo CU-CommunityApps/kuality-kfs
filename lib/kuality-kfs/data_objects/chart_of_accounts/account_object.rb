@@ -65,38 +65,38 @@ class AccountObject < KFSDataObject
     end
   end
 
-  # Parameter code_and_description: string containing a code and description delimited by a single hyphen.
-  # Returns an array where the first element is the code (represented by everything up to the first hyphen) and the
-  # second element is the description (represented by everything after the first hyphen).
-  def split_code_description_at_first_hyphen(code_and_description)
+
+  # @param [String] code_and_description: String containing a code and description delimited by a single hyphen.
+  # Description could contain one or more hyphens.
+  #
+  # @return [Hash] A hash of :code, :description where :code is the the portion of the string represented by everything
+  # up to the first hyphen with trailing white space removed and :description is the portion of the string represented
+  # by everything after the first hyphen with leading white space removed.
+  def self.split_code_description_at_first_hyphen(code_and_description)
     split_data_array = code_and_description.to_s.split( /- */, 2)
-    unless (split_data_array[0]).to_s.rstrip.nil?
-      #there is trailing white space
-      split_data_array[0] = (split_data_array[0]).to_s.rstrip
-    end
-    unless (split_data_array[1]).to_s.lstrip.nil?
-      #there is leading white space
-      split_data_array[1] = (split_data_array[1]).to_s.lstrip
-    end
-    return split_data_array
+    data_hash = {
+        code:           split_data_array[0].rstrip!,
+        description:    split_data_array[1].lstrip!
+    }
+    return data_hash
   end
 
 
-  # Parameter data_item: Single array element from a WebService call for the data object in question.
-  # Returns a Hash of the object's data attributes and the values provided in the data_item.
-  # Used in method absorb_webservice_item!
-  def create_hash_from_webservice_item(data_item)
-    coa_code_descr_array = split_code_description_at_first_hyphen(data_item['chartOfAccounts.codeAndDescription'][0])
-    org_code_descr_array = split_code_description_at_first_hyphen(data_item['organization.codeAndDescription'][0])
-    sub_fund_code_descr_array = split_code_description_at_first_hyphen(data_item['subFundGroup.codeAndDescription'][0])
-    fin_higher_ed_code_descr_array = split_code_description_at_first_hyphen(data_item['financialHigherEdFunction.codeAndDescription'][0])
+  # Used in method absorb_webservice_item! or can be called standalone
+  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
+  # @return [Hash] A hash of the object's data attributes and the values provided in the data_item.
+  def self.create_hash_from_webservice_item(data_item)
+    coa_code_descr_hash = split_code_description_at_first_hyphen(data_item['chartOfAccounts.codeAndDescription'][0])
+    org_code_descr_hash = split_code_description_at_first_hyphen(data_item['organization.codeAndDescription'][0])
+    sub_fund_code_descr_hash = split_code_description_at_first_hyphen(data_item['subFundGroup.codeAndDescription'][0])
+    fin_higher_ed_code_descr_hash = split_code_description_at_first_hyphen(data_item['financialHigherEdFunction.codeAndDescription'][0])
 
     data_hash = {
         description:                          'WebService provided data',
-        chart_code:                           coa_code_descr_array[0],
+        chart_code:                           coa_code_descr_hash[:code],
         number:                               data_item['accountNumber'][0],
         name:                                 data_item['accountName'][0],
-        organization_code:                    org_code_descr_array[0],
+        organization_code:                    org_code_descr_hash[:code],
         campus_code:                          data_item['accountPhysicalCampusCode'][0],
         effective_date:                       data_item['accountEffectiveDate'][0],
         postal_code:                          data_item['accountZipCode'][0],
@@ -104,8 +104,8 @@ class AccountObject < KFSDataObject
         state:                                data_item['accountStateCode'][0],
         address:                              data_item['accountStreetAddress'][0],
         type_code:                            data_item['accountTypeCode'][0],
-        sub_fund_group_code:                  sub_fund_code_descr_array[0],
-        higher_ed_funct_code:                 fin_higher_ed_code_descr_array[0],
+        sub_fund_group_code:                  sub_fund_code_descr_hash[:code],
+        higher_ed_funct_code:                 fin_higher_ed_code_descr_hash[:code],
         restricted_status_code:               data_item['accountRestrictedStatusCode'][0],
         fo_principal_name:                    data_item['accountFiscalOfficerUser.principalName'][0],
         supervisor_principal_name:            data_item['accountSupervisoryUser.principalName'][0],
@@ -124,13 +124,8 @@ class AccountObject < KFSDataObject
     return data_hash
   end
 
-  # Parameter data_hash: Hash of the object's data attributes and the corresponding values.
-  # Used in method absorb_webservice_item!
-  def absorb_webservice_item_hash!(data_hash)
-     update_options(data_hash)
-  end
 
-
+  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
   def absorb_webservice_item!(data_item)
     super(data_item)
   end
