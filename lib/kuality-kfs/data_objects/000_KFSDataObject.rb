@@ -150,6 +150,18 @@ class KFSDataObject < DataFactory
     end
   end
 
+  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
+  def absorb_webservice_item!(data_item); end
+
+  class << self
+    # Used in method absorb_webservice_item! or can be called standalone
+    # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
+    # @return [Hash] A hash of the object's data attributes and the values provided in the data_item.
+    def webservice_item_to_hash(data_item); end
+
+    def extended_webservice_item_to_hash(data_item); end
+  end
+
   private
 
   # Grabs values, lest we haven't before (e.g. we used #make previously instead of #create)
@@ -158,23 +170,6 @@ class KFSDataObject < DataFactory
       @document_id = page.document_id
       @initiator   = page.initiator
     end
-  end
-
-
-  ###### The next two methods are intended to have their implementations provided by each subclass. #####
-
-  # Used in method absorb_webservice_item! or can be called standalone
-  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
-  # @return [Hash] A hash of the object's data attributes and the values provided in the data_item.
-  def self.create_hash_from_webservice_item(data_item); end
-
-
-  # By invoking create_hash_from_webservice_item and absorb_webservice_item_hash! this method achieves
-  # in a single call the same result as calling both methods individually.
-  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
-  def absorb_webservice_item!(data_item)
-    data_hash = create_hash_from_webservice_item(data_item)
-    update_options(data_hash)
   end
 
 end

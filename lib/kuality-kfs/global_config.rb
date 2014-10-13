@@ -290,7 +290,7 @@ module GlobalConfig
 
   def get_current_user
     unless @logged_in_users_list.nil? || @logged_in_users_list.empty?
-      return @logged_in_users_list[@logged_in_users_list.last]
+      return @logged_in_users_list.last
     else
       return nil
     end
