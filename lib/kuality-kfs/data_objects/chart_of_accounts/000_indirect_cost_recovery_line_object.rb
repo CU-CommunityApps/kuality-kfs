@@ -104,13 +104,13 @@ class IndirectCostRecoveryLineObjectCollection < LineObjectCollection
   # @param [Symbol] target Which ICR Account to pull from (most useful during a copy action). Defaults to :new
   # @return [Hash] The return values of attributes for the given line
   def pull_existing_icr_account(i=0, target=:new)
-    pulled_address = Hash.new
+    pulled_icr_account = Hash.new
 
     on IndirectCostRecoveryAccountsTab do |icr_tab|
       case target
         when :old, :new
           # How fancy is this!?!
-          pulled_address = {
+          pulled_icr_account = {
             chart_of_accounts_code: icr_tab.send("#{target}_chart_of_accounts_code", i),
             account_number:         icr_tab.send("#{target}_account_number", i),
             account_line_percent:   icr_tab.send("#{target}_account_line_percent", i),
@@ -121,7 +121,7 @@ class IndirectCostRecoveryLineObjectCollection < LineObjectCollection
       end
     end
 
-    pulled_address
+    pulled_icr_account
   end
 
   # @param [Fixnum] i The line number to look for (zero-based)
