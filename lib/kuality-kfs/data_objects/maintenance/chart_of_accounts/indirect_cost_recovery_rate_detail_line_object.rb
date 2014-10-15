@@ -18,7 +18,7 @@ class IndirectCostRecoveryRateDetailLineObject < DataFactory
   end
 
 
-  def create()
+  def create
       on IndirectCostRecoveryRatePage do |page|
         fill_out page, :chart_code, :account_number, :sub_account_number, :object_code, :sub_object_code, :debit_credit_code, :percent
         fill_out_extended_attributes

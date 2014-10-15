@@ -84,12 +84,6 @@ class AccountObject < KFSDataObject
     update_line_objects_from_page!(target == :original ? :old : target)
   end
 
-  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
-  def absorb_webservice_item!(data_item)
-    data_hash = self.class.webservice_item_to_hash(data_item)
-    update_options(data_hash)
-  end
-
 
   # Class Methods:
   class << self
@@ -120,13 +114,13 @@ class AccountObject < KFSDataObject
     # by everything after the first hyphen with leading white space removed.
     def split_code_description_at_first_hyphen(code_and_description)
       split_data_array = code_and_description.to_s.split( /- */, 2)
-      unless (split_data_array[0]).to_s.rstrip.nil?
+      unless (split_data_array[0]).rstrip.nil?
         #there is trailing white space
-        split_data_array[0] = (split_data_array[0]).to_s.rstrip
+        split_data_array[0] = (split_data_array[0]).rstrip
       end
-      unless (split_data_array[1]).to_s.lstrip.nil?
+      unless (split_data_array[1]).lstrip.nil?
         #there is leading white space
-        split_data_array[1] = (split_data_array[1]).to_s.lstrip
+        split_data_array[1] = (split_data_array[1]).lstrip
       end
       code_description_hash = {
           code:         split_data_array[0],
@@ -180,8 +174,6 @@ class AccountObject < KFSDataObject
     def extended_webservice_item_to_hash(data_item)
       Hash.new
     end
-
-
 
   end #class<<self
 

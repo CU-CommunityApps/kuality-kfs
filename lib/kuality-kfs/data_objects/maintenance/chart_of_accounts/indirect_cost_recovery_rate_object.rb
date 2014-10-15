@@ -28,28 +28,26 @@ attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery
 
   def absorb!(target=:new)
     super
-    on(IndirectCostRecoveryRatePage).expand_all
-    case target
-      when :new; update_options(pull_new_indirect_cost_recovery_rate_data)
-      #TODO implement :old when needed
-    end
-
+    update_options(pull_indirect_cost_recovery_rate_data(target))
     update_line_objects_from_page!(target)
   end
 
 
   # @return [Hash] The return values of attributes for the new Indirect Cost Recovery Rate
-  def pull_new_indirect_cost_recovery_rate_data
+  def pull_indirect_cost_recovery_rate_data(target=:new)
     pulled_indirect_cost_recovery_rate = Hash.new
     on IndirectCostRecoveryRatePage do |page|
-      pulled_indirect_cost_recovery_rate = {
-          fiscal_year:        page.fiscal_year_new,
-          rate_id:            page.rate_id_new,
-          active_indicator:   page.active_indicator_new
-      }
+      page.expand_all
+      case target
+        when :new;      pulled_indirect_cost_recovery_rate = {
+                            fiscal_year:        page.fiscal_year_new,
+                            rate_id:            page.rate_id_new,
+                            active_indicator:   page.active_indicator_new
+                        }
+        #TODO implement :old when needed
+      end
     end
-    pulled_indirect_cost_recovery_rate.merge(pull_indirect_cost_recovery_rate_extended_data(:new))
-
+    pulled_indirect_cost_recovery_rate.merge(pull_indirect_cost_recovery_rate_extended_data(target))
   end
 
 
@@ -77,24 +75,28 @@ attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery
 
   def add_wildcarded_icr_rate_for_specified_institutional_object_codes (percent_to_use, debit_object_code, credit_object_code)
     #need two icr rate details created, one for debit and one for credit
-    icr_rate_debit_detail = make IndirectCostRecoveryRateDetailLineObject
-    icr_rate_debit_detail.chart_code               = IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD
-    icr_rate_debit_detail.account_number           = IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD
-    icr_rate_debit_detail.sub_account_number       = IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD
-    icr_rate_debit_detail.object_code              = debit_object_code
-    icr_rate_debit_detail.debit_credit_code        = 'Debit'
-    icr_rate_debit_detail.percent                  = percent_to_use
-    icr_rate_debit_detail.details_active_indicator = :set
+    debit_opts = {
+        chart_code:                 IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD,
+        account_number:             IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD,
+        sub_account_number:         IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD,
+        object_code:                debit_object_code,
+        debit_credit_code:          'Debit',
+        percent:                    percent_to_use,
+        details_active_indicator:   :set
+    }
+    icr_rate_debit_detail = make IndirectCostRecoveryRateDetailLineObject, debit_opts
     icr_rate_debit_detail.create
 
-    icr_rate_credit_detail = make IndirectCostRecoveryRateDetailLineObject
-    icr_rate_credit_detail.chart_code               = IndirectCostRecoveryRateDetailLineObject::CREDIT_WILDCARD
-    icr_rate_credit_detail.account_number           = IndirectCostRecoveryRateDetailLineObject::CREDIT_WILDCARD
-    icr_rate_credit_detail.sub_account_number       = ''
-    icr_rate_credit_detail.object_code              = credit_object_code
-    icr_rate_credit_detail.debit_credit_code        = 'Credit'
-    icr_rate_credit_detail.percent                  = percent_to_use
-    icr_rate_credit_detail.details_active_indicator = :set
+    credit_opts = {
+        chart_code:                 IndirectCostRecoveryRateDetailLineObject::CREDIT_WILDCARD,
+        account_number:             IndirectCostRecoveryRateDetailLineObject::CREDIT_WILDCARD,
+        sub_account_number:         '',
+        object_code:                credit_object_code,
+        debit_credit_code:          'Credit',
+        percent:                    percent_to_use,
+        details_active_indicator:   :set
+    }
+    icr_rate_credit_detail = make IndirectCostRecoveryRateDetailLineObject, credit_opts
     icr_rate_credit_detail.create
 
     #get data from page since "add" adjusts case and populates dependent data

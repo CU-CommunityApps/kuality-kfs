@@ -195,8 +195,8 @@ class KFSDataObject < DataFactory
     end
   end
 
-  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
-  def absorb_webservice_item!(data_item); end
+  # # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
+  # def absorb_webservice_item!(data_item); end
 
   class << self
     # Used in method absorb_webservice_item! or can be called standalone
@@ -205,6 +205,12 @@ class KFSDataObject < DataFactory
     def webservice_item_to_hash(data_item); end
 
     def extended_webservice_item_to_hash(data_item); end
+  end
+
+  # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
+  def absorb_webservice_item!(data_item)
+    data_hash = self.class.webservice_item_to_hash(data_item)
+    update_options(data_hash)
   end
 
   private

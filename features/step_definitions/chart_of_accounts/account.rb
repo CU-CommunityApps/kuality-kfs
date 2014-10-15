@@ -128,25 +128,6 @@ And /^I extend the Expiration Date of the Account document (\d+) days$/ do |days
   on(AccountPage).account_expiration_date.fit (@account.account_expiration_date + days.to_i).strftime('%m/%d/%Y')
 end
 
-And /^I use these Accounts:$/ do |table|
-  existing_accounts = table.raw.flatten
-
-  visit(MainPage).account
-  on AccountLookupPage do |page|
-    existing_accounts.each do |account_number|
-      page.chart_code.fit     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-      page.account_number.fit account_number
-      page.search
-
-      # We're only really interested in these parts
-      @account = make AccountObject
-      @account.number = page.results_table[1][page.column_index(:account_number)].text
-      @account.chart_code = page.results_table[1][page.column_index(:chart_code)].text
-      @accounts = @accounts.nil? ? [@account] : @accounts + [@account]
-    end
-  end
-end
-
 And /^I clone a random Account with name, chart code, and description changes$/ do
   step "I clone Account nil with the following changes:",
        table(%Q{
