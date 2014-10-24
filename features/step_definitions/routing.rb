@@ -35,6 +35,41 @@ When /^I route the (.*) document to final$/ do |document|
 
 end
 
+
+Then  /^the (.*) document routes to the (.*) node$/ do |document, node|
+  pending_action_request_node = ''
+  step "the #{document} document goes to ENROUTE"
+  on page_class_for(document) do |page|
+    page.show_route_log_button.wait_until_present
+    page.show_route_log unless page.route_log_shown?
+    page.pnd_act_req_table_action.visible?.should
+    page.show_pending_action_requests_in_action_list unless page.pending_action_requests_in_action_list_shown?
+
+    until (page.pen_act_req_table_sub_node == node) || ('FINALPROCESSSED'.include? on(page_class_for(document)).document_status)
+      step "I route the #{document} document to the next node"
+      page.show_route_log_button.wait_until_present
+      page.show_route_log unless page.route_log_shown?
+      page.pnd_act_req_table_action.visible?.should
+      page.show_pending_action_requests_in_action_list unless page.pending_action_requests_in_action_list_shown?
+      pending_action_request_node = page.pen_act_req_table_sub_node
+    end #until
+  end #on page
+  pending_action_request_node.should == node
+end
+
+
+When /^I route the (.*) document to the next node$/ do |document|
+  step "I view the #{document} document"
+  step "I switch to the user with the next Pending Action in the Route Log for the #{document} document"
+  step "I view the #{document} document"
+  step "I attach an Invoice Image to the #{document} document" if document == 'Payment Request' &&
+      (document_object_for(document).notes_and_attachments_tab.length.zero? ||
+          document_object_for(document).notes_and_attachments_tab.index{ |na| na.type == 'Invoice Image' }.nil?)
+  step "I approve the #{document} document, confirming any questions, if it is not already FINAL"
+  step "I view the #{document} document"
+end
+
+
 Then /^I switch to the user with the next Pending Action in the Route Log for the (.*) document$/ do |document|
   new_user = ''
   on page_class_for(document) do |page|

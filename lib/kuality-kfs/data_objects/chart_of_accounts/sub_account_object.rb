@@ -1,8 +1,10 @@
 class SubAccountObject < KFSDataObject
 
+  include GlobalConfig
+
   attr_accessor :chart_code, :account_number, :sub_account_number, :name, :active, :type_code, :icr_identifier,
                 :cost_sharing_account_number, :cost_sharing_chart_of_accounts_code,
-                :adhoc_approver_userid, :sub_account_type_code, :cost_sharing_account_number
+                :adhoc_approver_userid, :sub_account_type_code
 
 #add if needed                :fin_reporting_chart_code, :fin_reporting_org_code, :fin_reporting_code,
 
@@ -13,7 +15,7 @@ class SubAccountObject < KFSDataObject
         description:          random_alphanums(40, 'AFT'),
         chart_code:           get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
         account_number:       get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER),
-        sub_account_number:   random_alphanums(7),
+        sub_account_number:   random_alphanums(5),
         name:                 random_alphanums(10),
         press:                :save
     }
@@ -30,7 +32,7 @@ class SubAccountObject < KFSDataObject
 
       fill_out page, :description, :chart_code, :account_number, :sub_account_number, :name,
                :cost_sharing_account_number, :cost_sharing_chart_of_accounts_code,
-               :sub_account_type_code, :cost_sharing_account_number
+               :sub_account_type_code
 
       add_adhoc_approver(page) unless @adhoc_approver_userid.nil?
     end

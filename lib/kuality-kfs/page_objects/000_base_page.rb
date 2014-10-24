@@ -264,6 +264,7 @@ class BasePage < PageFactory
       value(:pnd_act_req_table_annotation) { |r=1, b| b.pnd_act_req_table[r][b.pnd_act_req_table.keyed_column_index(:annotation)] }
 
       element(:pnd_act_req_table_sub) { |b| b.pnd_act_req_table.table }
+value(:pen_act_req_table_sub_node) { |r=0, b| (b.pnd_act_req_table_sub[r][1]).text.strip }
       element(:pnd_act_req_table_multi) { |b| b.pnd_act_req_table_sub.table }
       value(:pnd_act_req_table_multi_action) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:action)] }
       value(:pnd_act_req_table_multi_requested_of) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:requested_of)] }
