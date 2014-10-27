@@ -20,19 +20,25 @@ class IndirectCostRecoveryAccountsTab < KFSBasePage
   element(:active_indicator) { |b| b.frm.checkbox(name: /document.newMaintainableObject.add.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts).active/) }
 
   # Old
-  value(:old_chart_of_accounts_code) { |i=0, b| b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryFinCoaCode.div/).text.strip }
-  value(:old_account_number) { |i=0, b| b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryAccountNumber.div/).text.strip }
-  value(:old_account_line_percent) { |i=0, b| b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].accountLinePercent.div/).text.strip }
-  value(:old_active_indicator) { |i=0, b| yesno2setclear(b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].active.div/).text.strip) }
+  value(:chart_of_accounts_code_old) { |i=0, b| b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryFinCoaCode.div/).text.strip }
+  value(:account_number_old) { |i=0, b| b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryAccountNumber.div/).text.strip }
+  value(:account_line_percent_old) { |i=0, b| b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].accountLinePercent.div/).text.strip }
+  value(:active_indicator_old) { |i=0, b| yesno2setclear(b.frm.span(id: /document.oldMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].active.div/).text.strip) }
 
-  # New Copy
-  element(:update_chart_of_accounts_code) { |i=0, b| b.icra_tab.select(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryFinCoaCode/) }
-  element(:update_account_number) { |i=0, b| b.icra_tab.text_field(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryAccountNumber/) }
-  element(:update_account_line_percent) { |i=0, b| b.icra_tab.text_field(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].accountLinePercent/) }
-  element(:update_active_indicator) { |i=0, b| b.icra_tab.checkbox(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].active/) }
-  value(:new_chart_of_accounts_code) { |i=0, b| b.update_chart_of_accounts_code(i).selected_options.first.text }
-  value(:new_account_number) { |i=0, b| b.update_account_number(i).value }
-  value(:new_account_line_percent) { |i=0, b| b.update_account_line_percent(i).value }
-  value(:new_active_indicator) { |i=0, b| yesno2setclear(b.update_active_indicator(i).value) }
+  # ICR Accounts currently in the collection
+  element(:chart_of_accounts_code_update) { |i=0, b| b.icra_tab.select(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryFinCoaCode/) }
+  element(:account_number_update) { |i=0, b| b.icra_tab.text_field(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryAccountNumber/) }
+  element(:account_line_percent_update) { |i=0, b| b.icra_tab.text_field(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].accountLinePercent/) }
+  element(:active_indicator_update) { |i=0, b| b.icra_tab.checkbox(name: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].active/) }
+  value(:chart_of_accounts_code_new) { |i=0, b| b.chart_of_accounts_code_update(i).present? ? b.chart_of_accounts_code_update(i).selected_options.first.text : b.chart_of_accounts_code_readonly(i) }
+  value(:account_number_new) { |i=0, b| b.account_number_update(i).present? ? b.account_number_update(i).value : b.account_number_readonly(i) }
+  value(:account_line_percent_new) { |i=0, b| b.account_line_percent_update(i).present? ? b.account_line_percent_update(i).value : b.account_line_percent_readonly(i) }
+  value(:active_indicator_new) { |i=0, b| b.active_indicator_update(i).present? ? yesno2setclear(b.active_indicator_update(i).value) : b.active_indicator_readonly(i) }
 
+  # Read-Only
+  value(:chart_of_accounts_code_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::chart_of_accounts_code_readonly has not been defined yet. Please add it if you need it.' }
+  value(:account_number_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::account_number_readonly has not been defined yet. Please add it if you need it.' }
+  value(:account_line_percent_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::account_line_percent_readonly has not been defined yet. Please add it if you need it.' }
+  value(:active_indicator_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::active_indicator_readonly has not been defined yet. Please add it if you need it.' }
+  
 end
