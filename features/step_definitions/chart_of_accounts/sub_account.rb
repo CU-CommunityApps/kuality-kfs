@@ -85,24 +85,16 @@ And /^I create a Sub-Account with Sub-Account Type Code (\w+)$/ do |sub_account_
 end
 
 
-And /^I remember the Sub-Account$/ do
-  @remembered_sub_account = @sub_account
-end
-
-
-And /^I edit the remembered Sub-Account$/ do
-  @sub_account = @remembered_sub_account
-
+And /^I lookup the Sub-Account I want to edit$/ do
+  #get the sub-account we want to edit
   visit(MainPage).sub_account
   on SubAccountLookupPage do |page|
     page.chart_code.fit           @sub_account.chart_code
     page.account_number.fit       @sub_account.account_number
     page.sub_account_number.fit   @sub_account.sub_account_number
     page.search
-    # sub_account_number could be an alpha-numeric, Watir in not able to find the item in the table of values
+    # sub_account_number could be an alpha-numeric, Watir is not able to find the item in the table of values
     # returned by the lookup unless the sub_account_number matches even on case of letters (i.e. aBc != ABC)
     page.edit_item(@sub_account.sub_account_number.upcase)
   end
-  (on SubAccountPage).description.fit   random_alphanums(40, 'AFT')
 end
-

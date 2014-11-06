@@ -36,9 +36,9 @@ class IndirectCostRecoveryAccountsTab < KFSBasePage
   value(:active_indicator_new) { |i=0, b| b.active_indicator_update(i).present? ? yesno2setclear(b.active_indicator_update(i).value) : b.active_indicator_readonly(i) }
 
   # Read-Only
-  value(:chart_of_accounts_code_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::chart_of_accounts_code_readonly has not been defined yet. Please add it if you need it.' }
-  value(:account_number_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::account_number_readonly has not been defined yet. Please add it if you need it.' }
-  value(:account_line_percent_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::account_line_percent_readonly has not been defined yet. Please add it if you need it.' }
-  value(:active_indicator_readonly) { |i=0, b| pending 'IndirectCostRecoveryAccountsTab::active_indicator_readonly has not been defined yet. Please add it if you need it.' }
-  
+  value(:chart_of_accounts_code_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].indirectCostRecoveryFinCoaCode.div").text.strip }
+  value(:account_number_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].indirectCostRecoveryAccountNumber.div").text.strip }
+  value(:account_line_percent_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].accountLinePercent.div").text.strip }
+  value(:active_indicator_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].active.div").text.strip }
+
 end

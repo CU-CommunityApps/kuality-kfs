@@ -72,9 +72,10 @@ class BasePage < PageFactory
     def description_field
       element(:doc_overview_info) { |b| b.frm.table(class: 'datatable', summary: 'view/edit document overview information') }
       element(:description) { |b| b.frm.text_field(name: 'document.documentHeader.documentDescription') }
-      value(:readonly_description) { |b| b.doc_overview_info.rows[0].tds[0].text.strip }
       element(:explanation) { |b| b.frm.textarea(name: 'document.documentHeader.explanation') }
       element(:organization_document_number) { |b| b.frm.text_field(name: 'document.documentHeader.organizationDocumentNumber') }
+      value(:description_readonly) { |b| b.doc_overview_info.rows[0].tds[0].text.strip }
+      value(:description_new) { |b| b.description.exists? ? b.description.value : b.description_readonly}
     end
 
     def organization_facets
@@ -264,7 +265,7 @@ class BasePage < PageFactory
       value(:pnd_act_req_table_annotation) { |r=1, b| b.pnd_act_req_table[r][b.pnd_act_req_table.keyed_column_index(:annotation)] }
 
       element(:pnd_act_req_table_sub) { |b| b.pnd_act_req_table.table }
-value(:pen_act_req_table_sub_node) { |r=0, b| (b.pnd_act_req_table_sub[r][1]).text.strip }
+      value(:pen_act_req_table_sub_node) { |r=0, b| (b.pnd_act_req_table_sub[r][1]).text.strip }
       element(:pnd_act_req_table_multi) { |b| b.pnd_act_req_table_sub.table }
       value(:pnd_act_req_table_multi_action) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:action)] }
       value(:pnd_act_req_table_multi_requested_of) { |r=1, b| b.pnd_act_req_table_multi[r][b.pnd_act_req_table_multi.keyed_column_index(:requested_of)] }
