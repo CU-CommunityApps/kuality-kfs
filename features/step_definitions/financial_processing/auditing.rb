@@ -20,15 +20,11 @@ And /^On the Budget Adjustment I modify the To current amount line item (.*) to 
 end
 
 And /^on the (.*) document I modify the (From|To) Object Code line item (\d+) to be (.*)$/ do |document, from_or_to, line_item, new_object_code|
-  on page_class_for(document) do |page|
-    case from_or_to
-      when 'From'
-        page.update_source_object_code(line_item).fit new_object_code
-
-      when 'To'
-        page.update_target_object_code(line_item).fit new_object_code
-    end
-  end
+  document_object_for(document).accounting_lines[AccountingLineObject::get_type_conversion(from_or_to)][line_item.to_i]
+                               .edit object: new_object_code
+  on(AccountingLine).send("update_#{AccountingLineObject::get_type_conversion(from_or_to)}_object_code", line_item)
+                    .value
+                    .should == new_object_code
 end
 
 And /^on the (.*) document I modify the Object Code line item (\d+) to be (.*)$/ do |document, line_item, new_object_code|
