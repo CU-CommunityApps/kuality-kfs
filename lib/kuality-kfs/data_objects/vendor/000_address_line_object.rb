@@ -54,20 +54,20 @@ class AddressLineObject < DataFactory
 
   def edit(opts={})
     on VendorPage do |vp|
-      vp.update_address_type(@line_number).pick! opts[:type]
-      vp.update_address_1(@line_number).fit      opts[:address_1]
-      vp.update_address_2(@line_number).fit      opts[:address_2]
-      vp.update_city(@line_number).fit           opts[:city]
-      vp.update_state(@line_number).fit          opts[:state]
-      vp.update_zipcode(@line_number).fit        opts[:postal_code]
-      vp.update_province(@line_number).fit       opts[:province]
-      vp.update_country(@line_number).pick!      opts[:country]
-      vp.update_address_attention(@line_number).fit opts[:attention]
-      vp.update_address_url(@line_number).fit       opts[:url]
-      vp.update_fax(@line_number).fit               opts[:fax]
-      vp.update_email(@line_number).fit             opts[:email]
-      vp.update_default_address(@line_number).pick! opts[:set_as_default]
-      vp.update_address_active_indicator(@line_number).fit opts[:active]
+      vp.address_type_update(@line_number).pick! opts[:type]
+      vp.address_1_update(@line_number).fit      opts[:address_1]
+      vp.address_2_update(@line_number).fit      opts[:address_2]
+      vp.city_update(@line_number).fit           opts[:city]
+      vp.state_update(@line_number).fit          opts[:state]
+      vp.zipcode_update(@line_number).fit        opts[:postal_code]
+      vp.province_update(@line_number).fit       opts[:province]
+      vp.country_update(@line_number).pick!      opts[:country]
+      vp.address_attention_update(@line_number).fit opts[:attention]
+      vp.address_url_update(@line_number).fit       opts[:url]
+      vp.fax_update(@line_number).fit               opts[:fax]
+      vp.email_update(@line_number).fit             opts[:email]
+      vp.default_address_update(@line_number).pick! opts[:set_as_default]
+      vp.address_active_indicator_update(@line_number).fit opts[:active]
     end
     update_options(opts)
     update_extended_attributes(opts)
@@ -119,54 +119,54 @@ class AddressLineObjectCollection < LineObjectCollection
       case target
         when :old
           pulled_address = {
-            type:           vp.old_address_type(i),
-            address_1:      vp.old_address_1(i),
-            address_2:      vp.old_address_2(i),
-            city:           vp.old_city(i),
-            state:          vp.old_state(i),
-            postal_code:    vp.old_zipcode(i),
-            province:       vp.old_province(i),
-            country:        vp.old_country(i),
-            attention:      vp.old_address_attention(i),
-            url:            vp.old_address_url(i),
-            fax:            vp.old_fax(i),
-            email:          vp.old_email(i),
-            set_as_default: vp.old_default_address(i),
-            active:         yesno2setclear(vp.old_address_active_indicator(i))
+              type:           vp.address_type_old(i),
+              address_1:      vp.address_1_old(i),
+              address_2:      vp.address_2_old(i),
+              city:           vp.city_old(i),
+              state:          vp.state_old(i),
+              postal_code:    vp.zipcode_old(i),
+              province:       vp.province_old(i),
+              country:        vp.country_old(i),
+              attention:      vp.address_attention_old(i),
+              url:            vp.address_url_old(i),
+              fax:            vp.fax_old(i),
+              email:          vp.email_old(i),
+              set_as_default: vp.default_address_old(i),
+              active:         yesno2setclear(vp.address_active_indicator_old(i))
           }
         when :new
           pulled_address = {
-            type:           vp.update_address_type(i).selected_options.first.text.strip,
-            address_1:      vp.update_address_1(i).value.strip,
-            address_2:      vp.update_address_2(i).value.strip,
-            city:           vp.update_city(i).value.strip,
-            state:          vp.update_state(i).value.strip,
-            postal_code:    vp.update_zipcode(i).value.strip,
-            province:       vp.update_province(i).value.strip,
-            country:        vp.update_country(i).selected_options.first.text.strip,
-            attention:      vp.update_address_attention(i).value.strip,
-            url:            vp.update_address_url(i).value.strip,
-            fax:            vp.update_fax(i).value.strip,
-            email:          vp.update_email(i).value.strip,
-            set_as_default: vp.update_default_address(i).selected_options.first.text,
-            active:         yesno2setclear(vp.update_address_active_indicator(i).value.strip)
+              type:           vp.address_type_new(i),
+              address_1:      vp.address_1_new(i),
+              address_2:      vp.address_2_new(i),
+              city:           vp.city_new(i),
+              state:          vp.state_new(i),
+              postal_code:    vp.zipcode_new(i),
+              province:       vp.province_new(i),
+              country:        vp.country_new(i),
+              attention:      vp.address_attention_new(i),
+              url:            vp.address_url_new(i),
+              fax:            vp.fax_new(i),
+              email:          vp.email_new(i),
+              set_as_default: vp.default_address_new(i),
+              active:         yesno2setclear(vp.address_active_indicator_new(i))
           }
         when :readonly
           pulled_address = {
-              type:           vp.readonly_address_type(i),
-              address_1:      vp.readonly_address_1(i),
-              address_2:      vp.readonly_address_2(i),
-              city:           vp.readonly_city(i),
-              state:          vp.readonly_state(i),
-              postal_code:    vp.readonly_zipcode(i),
-              province:       vp.readonly_province(i),
-              country:        vp.readonly_country(i),
-              attention:      vp.readonly_address_attention(i),
-              url:            vp.readonly_address_url(i),
-              fax:            vp.readonly_fax(i),
-              email:          vp.readonly_email(i),
-              set_as_default: vp.readonly_default_address(i),
-              active:         yesno2setclear(vp.readonly_address_active_indicator(i))
+              type:           vp.address_type_readonly(i),
+              address_1:      vp.address_1_readonly(i),
+              address_2:      vp.address_2_readonly(i),
+              city:           vp.city_readonly(i),
+              state:          vp.state_readonly(i),
+              postal_code:    vp.zipcode_readonly(i),
+              province:       vp.province_readonly(i),
+              country:        vp.country_readonly(i),
+              attention:      vp.address_attention_readonly(i),
+              url:            vp.address_url_readonly(i),
+              fax:            vp.fax_readonly(i),
+              email:          vp.email_readonly(i),
+              set_as_default: vp.default_address_readonly(i),
+              active:         yesno2setclear(vp.address_active_indicator_readonly(i))
           }
         else
           raise ArgumentError, "AddressLineObject does not know how to pull the provided existing address type (#{target})!"

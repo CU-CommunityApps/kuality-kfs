@@ -43,27 +43,27 @@ class ContractLineObject < DataFactory
       vp.new_contact_active_indicator.fit       @active
       fill_out_extended_attributes
       vp.add_contract
-      @number = vp.update_contract_number(vp.current_contracts_count - 1) # Contracts get tacked onto the end
+      @number = vp.contract_number_new(vp.current_contracts_count - 1) # Contracts get tacked onto the end
     end
   end
 
   def edit(opts={})
     on VendorPage do |vp|
       raise ArgumentError, 'Contract Numbers cannot be modified.' unless opts[:number].nil?
-      vp.update_contract_name(@line_number).fit                  opts[:name]
-      vp.update_contract_description(@line_number).fit           opts[:description]
-      vp.update_contract_campus_code(@line_number).pick!         opts[:campus_code]
-      vp.update_contract_begin_date(@line_number).fit            opts[:begin_date]
-      vp.update_contract_end_date(@line_number).fit              opts[:end_date]
-      vp.update_contract_manager(@line_number).pick!             opts[:manager]
-      vp.update_contract_po_cost_source(@line_number).pick!      opts[:po_cost_source]
-      vp.update_b2b_contract_indicator(@line_number).pick!       opts[:b2b]
-      vp.update_contract_payment_terms(@line_number).pick!       opts[:payment_terms]
-      vp.update_contract_shipping_terms(@line_number).pick!      opts[:shipping_terms]
-      vp.update_contract_shipping_title(@line_number).pick!      opts[:shipping_title]
-      vp.update_contract_extension_option_date(@line_number).fit opts[:extension_option_date]
-      vp.update_contract_default_apo_limit(@line_number).fit     opts[:default_apo_limit]
-      vp.update_contract_active_indicator(@line_number).fit      opts[:active]
+      vp.contract_name_update(@line_number).fit                  opts[:name]
+      vp.contract_description_update(@line_number).fit           opts[:description]
+      vp.contract_campus_code_update(@line_number).pick!         opts[:campus_code]
+      vp.contract_begin_date_update(@line_number).fit            opts[:begin_date]
+      vp.contract_end_date_update(@line_number).fit              opts[:end_date]
+      vp.contract_manager_update(@line_number).pick!             opts[:manager]
+      vp.contract_po_cost_source_update(@line_number).pick!      opts[:po_cost_source]
+      vp.b2b_contract_indicator_update(@line_number).pick!       opts[:b2b]
+      vp.contract_payment_terms_update(@line_number).pick!       opts[:payment_terms]
+      vp.contract_shipping_terms_update(@line_number).pick!      opts[:shipping_terms]
+      vp.contract_shipping_title_update(@line_number).pick!      opts[:shipping_title]
+      vp.contract_extension_option_date_update(@line_number).fit opts[:extension_option_date]
+      vp.contract_default_apo_limit_update(@line_number).fit     opts[:default_apo_limit]
+      vp.contract_active_indicator_update(@line_number).fit      opts[:active]
     end
     update_options(opts)
     update_extended_attributes(opts)
@@ -115,39 +115,39 @@ class ContractLineObjectCollection < LineObjectCollection
       case target
         when :old
           pulled_contract = {
-            number:                vp.old_contract_number(i),
-            name:                  vp.old_contract_name(i),
-            description:           vp.old_contract_description(i),
-            campus_code:           vp.old_contract_campus_code(i),
-            begin_date:            vp.old_contract_begin_date(i),
-            end_date:              vp.old_contract_end_date(i),
-            manager:               vp.old_contract_manager(i),
-            po_cost_source:        vp.old_contract_po_cost_source(i),
-            b2b:                   vp.old_b2b_contract_indicator(i),
-            payment_terms:         vp.old_contract_payment_terms(i),
-            shipping_terms:        vp.old_contract_shipping_terms(i),
-            shipping_title:        vp.old_contract_shipping_title(i),
-            extension_option_date: vp.old_contract_extension_option_date(i),
-            default_apo_limit:     vp.old_contract_default_apo_limit(i),
-            active:                yesno2setclear(vp.old_contract_active_indicator(i))
+            number:                vp.contract_number_old(i),
+            name:                  vp.contract_name_old(i),
+            description:           vp.contract_description_old(i),
+            campus_code:           vp.contract_campus_code_old(i),
+            begin_date:            vp.contract_begin_date_old(i),
+            end_date:              vp.contract_end_date_old(i),
+            manager:               vp.contract_manager_old(i),
+            po_cost_source:        vp.contract_po_cost_source_old(i),
+            b2b:                   vp.b2b_contract_indicator_old(i),
+            payment_terms:         vp.contract_payment_terms_old(i),
+            shipping_terms:        vp.contract_shipping_terms_old(i),
+            shipping_title:        vp.contract_shipping_title_old(i),
+            extension_option_date: vp.contract_extension_option_date_old(i),
+            default_apo_limit:     vp.contract_default_apo_limit_old(i),
+            active:                yesno2setclear(vp.contract_active_indicator_old(i))
           }
         when :new
           pulled_contract = {
-            number:                vp.update_contract_number(i),
-            name:                  vp.update_contract_name(i).value.strip,
-            description:           vp.update_contract_description(i).value.strip,
-            campus_code:           vp.update_contract_campus_code(i).selected_options.first.value,
-            begin_date:            vp.update_contract_begin_date(i).value.strip,
-            end_date:              vp.update_contract_end_date(i).value.strip,
-            manager:               vp.update_contract_manager(i).selected_options.first.text,
-            po_cost_source:        vp.update_contract_po_cost_source(i).selected_options.first.text,
-            b2b:                   vp.update_b2b_contract_indicator(i).selected_options.first.text,
-            payment_terms:         vp.update_contract_payment_terms(i).selected_options.first.text,
-            shipping_terms:        vp.update_contract_shipping_terms(i).selected_options.first.text,
-            shipping_title:        vp.update_contract_shipping_title(i).selected_options.first.text,
-            extension_option_date: vp.update_contract_extension_option_date(i).value.strip,
-            default_apo_limit:     vp.update_contract_default_apo_limit(i).value.strip,
-            active:                yesno2setclear(vp.update_contract_active_indicator(i).value)
+              number:                vp.contract_number_new(i),
+              name:                  vp.contract_name_new(i),
+              description:           vp.contract_description_new(i),
+              campus_code:           vp.contract_campus_code_new(i),
+              begin_date:            vp.contract_begin_date_new(i),
+              end_date:              vp.contract_end_date_new(i),
+              manager:               vp.contract_manager_new(i),
+              po_cost_source:        vp.contract_po_cost_source_new(i),
+              b2b:                   vp.b2b_contract_indicator_new(i),
+              payment_terms:         vp.ontract_payment_terms_new(i),
+              shipping_terms:        vp.contract_shipping_terms_new(i),
+              shipping_title:        vp.contract_shipping_title_new(i),
+              extension_option_date: vp.contract_extension_option_date_new(i),
+              default_apo_limit:     vp.contract_default_apo_limit_new(i),
+              active:                yesno2setclear(vp.contract_active_indicator_new(i))
           }
       end
     end

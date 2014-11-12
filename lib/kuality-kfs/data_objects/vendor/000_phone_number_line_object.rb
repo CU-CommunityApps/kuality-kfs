@@ -30,10 +30,10 @@ class PhoneLineObject < DataFactory
 
   def edit(opts={})
     on VendorPage do |vp|
-      vp.update_phone_type(@line_number).pick!           opts[:type]
-      vp.update_phone_number(@line_number).fit           opts[:number]
-      vp.update_phone_extension(@line_number).fit        opts[:extension]
-      vp.update_phone_active_indicator(@line_number).fit opts[:active]
+      vp.phone_type_update(@line_number).pick!           opts[:type]
+      vp.phone_number_update(@line_number).fit           opts[:number]
+      vp.phone_extension_update(@line_number).fit        opts[:extension]
+      vp.phone_active_indicator_update(@line_number).fit opts[:active]
     end
     update_options(opts)
   end
@@ -84,17 +84,17 @@ class PhoneLineObjectCollection < LineObjectCollection
       case target
         when :old
           pulled_phone = {
-              type:      vp.old_phone_type(i),
-              number:    vp.old_phone_number(i),
-              extension: vp.old_phone_extension(i),
-              active:    yesno2setclear(vp.old_phone_active_indicator(i))
+              type:      vp.phone_type_old(i),
+              number:    vp.phone_number_old(i),
+              extension: vp.phone_extension_old(i),
+              active:    yesno2setclear(vp.phone_active_indicator_old(i))
           }
         when :new
           pulled_phone = {
-              type:      vp.update_phone_type(i).selected_options.first.text,
-              number:    vp.update_phone_number(i).value.strip,
-              extension: vp.update_phone_extension(i).value.strip,
-              active:    yesno2setclear(vp.update_phone_active_indicator(i).value)
+              type:      vp.phone_type_new(i),
+              number:    vp.phone_number_new(i),
+              extension: vp.phone_extension_new(i),
+              active:    yesno2setclear(vp.phone_active_indicator_new(i))
           }
       end
     end
