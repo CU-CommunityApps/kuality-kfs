@@ -41,17 +41,17 @@ class ItemsTab < PageFactory
   element(:restricted) { |b| b.items_tab.checkbox(name: 'newPurchasingItemLine.itemRestrictedIndicator') }
   element(:assigned_to_trade_in) { |b| b.items_tab.checkbox(name: 'newPurchasingItemLine.itemAssignedToTradeInIndicator') }
 
-  element(:update_type) { |l=0, b| b.items_tab.select(id: "document.item[#{l}].itemTypeCode") }
-  element(:update_quantity) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemQuantity") }
-  element(:update_uom) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitOfMeasureCode") }
-  element(:update_catalog_number) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemCatalogNumber") }
-  element(:update_commodity_code) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].purchasingCommodityCode") }
-  element(:update_description) { |l=0, b| b.items_tab.textarea(id: "document.item[#{l}].itemDescription") }
-  element(:update_unit_cost) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitPrice") }
-  element(:update_extended_cost) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].extendedPrice").exists? ? b.items_tab.text_field(id: "document.item[#{l}].extendedPrice") : b.items_table[result_line_index_for(l, b)][item_col_for(b, :uom)].parent.parent.tds[8] } # This value is read-only. It'd be nice to be able to get at it without giving the index.
-  element(:update_extended_price) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitPrice") }
-  element(:update_restricted) { |l=0, b| b.items_tab.checkbox(id: "document.item[#{l}].itemRestrictedIndicator") }
-  element(:update_assigned_to_trade_in) { |l=0, b| b.items_tab.checkbox(id: "document.item[#{l}].itemAssignedToTradeInIndicator") }
+  element(:type_update) { |l=0, b| b.items_tab.select(id: "document.item[#{l}].itemTypeCode") }
+  element(:quantity_update) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemQuantity") }
+  element(:uom_update) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitOfMeasureCode") }
+  element(:catalog_number_update) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemCatalogNumber") }
+  element(:commodity_code_update) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].purchasingCommodityCode") }
+  element(:description_update) { |l=0, b| b.items_tab.textarea(id: "document.item[#{l}].itemDescription") }
+  element(:unit_cost_update) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitPrice") }
+  element(:extended_cost_update) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].extendedPrice").exists? ? b.items_tab.text_field(id: "document.item[#{l}].extendedPrice") : b.items_table[result_line_index_for(l, b)][item_col_for(b, :uom)].parent.parent.tds[8] } # This value is read-only. It'd be nice to be able to get at it without giving the index.
+  element(:extended_price_update) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitPrice") }
+  element(:restricted_update) { |l=0, b| b.items_tab.checkbox(id: "document.item[#{l}].itemRestrictedIndicator") }
+  element(:assigned_to_trade_in_update) { |l=0, b| b.items_tab.checkbox(id: "document.item[#{l}].itemAssignedToTradeInIndicator") }
 
   # TODO: Finish the read-only section when we are ready to write an #absorb! method
   class << self

@@ -72,16 +72,16 @@ class ItemLineObject < DataFactory
 
   def edit_attributes(opts = {})
     on ItemsTab do |page|
-      page.update_type(@line_number).pick!               opts[:type] unless opts[:type].nil?
-      page.update_quantity(@line_number).fit             opts[:quantity] unless opts[:quantity].nil?
-      page.update_uom(@line_number).fit                  opts[:uom] unless opts[:uom].nil?
-      page.update_catalog_number(@line_number).fit       opts[:catalog_number] unless opts[:catalog_number].nil?
-      page.update_commodity_code(@line_number).fit       opts[:commodity_code] unless opts[:commodity_code].nil?
-      page.update_description(@line_number).fit          opts[:description] unless opts[:description].nil?
-      page.update_unit_cost(@line_number).fit            opts[:unit_cost] unless opts[:unit_cost].nil?
-      page.update_extended_cost(@line_number).fit        opts[:extended_cost] unless opts[:extended_cost].nil?
-      page.update_restricted(@line_number).fit           opts[:restricted] unless opts[:restricted].nil?
-      page.update_assigned_to_trade_in(@line_number).fit opts[:assigned_to_trade_in] unless opts[:assigned_to_trade_in].nil?
+      page.type_update(@line_number).pick!               opts[:type] unless opts[:type].nil?
+      page.quantity_update(@line_number).fit             opts[:quantity] unless opts[:quantity].nil?
+      page.uom_update(@line_number).fit                  opts[:uom] unless opts[:uom].nil?
+      page.catalog_number_update(@line_number).fit       opts[:catalog_number] unless opts[:catalog_number].nil?
+      page.commodity_code_update(@line_number).fit       opts[:commodity_code] unless opts[:commodity_code].nil?
+      page.description_update(@line_number).fit          opts[:description] unless opts[:description].nil?
+      page.unit_cost_update(@line_number).fit            opts[:unit_cost] unless opts[:unit_cost].nil?
+      page.extended_cost_update(@line_number).fit        opts[:extended_cost] unless opts[:extended_cost].nil?
+      page.restricted_update(@line_number).fit           opts[:restricted] unless opts[:restricted].nil?
+      page.assigned_to_trade_in_update(@line_number).fit opts[:assigned_to_trade_in] unless opts[:assigned_to_trade_in].nil?
     end
     update_options(opts)
   end
