@@ -62,18 +62,18 @@ class VendorObject < KFSDataObject
     pulled_vendor = Hash.new
     on VendorPage do |vp|
       pulled_vendor = {
-        vendor_number: vp.old_vendor_number,
-        vendor_name:   vp.old_vendor_name.empty? ? "#{vp.old_vendor_last_name}, #{vp.old_vendor_first_name}" : vp.old_vendor_name,
-        vendor_last_name:  vp.old_vendor_last_name,
-        vendor_first_name: vp.old_vendor_first_name,
-        vendor_type: vp.old_vendor_type,
-        foreign:     vp.old_foreign,
-        tax_number:  vp.old_tax_number,
-        tax_number_type_fein: vp.old_tax_number_type_fein,
-        tax_number_type_ssn:  vp.old_tax_number_type_ssn,
-        tax_number_type_none: vp.old_tax_number_type_none,
-        ownership:   vp.old_ownership,
-        w9_received: vp.old_w9_received
+          vendor_number: vp.vendor_number_old,
+          vendor_name:   vp.vendor_name_old.empty? ? "#{vp.vendor_last_name_old}, #{vp.vendor_first_name_old}" : vp.vendor_name_old,
+          vendor_last_name:  vp.vendor_last_name_old,
+          vendor_first_name: vp.vendor_first_name_old,
+          vendor_type: vp.vendor_type_old,
+          foreign:     vp.foreign_old,
+          tax_number:  vp.tax_number_old,
+          tax_number_type_fein: vp.tax_number_type_fein_old,
+          tax_number_type_ssn:  vp.tax_number_type_ssn_old,
+          tax_number_type_none: vp.tax_number_type_none_old,
+          ownership:   vp.ownership_old,
+          w9_received: vp.w9_received_old
       }
     end
     pulled_vendor.merge(pull_vendor_extended_data(:old))

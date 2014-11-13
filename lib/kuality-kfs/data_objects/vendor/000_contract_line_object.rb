@@ -142,7 +142,7 @@ class ContractLineObjectCollection < LineObjectCollection
               manager:               vp.contract_manager_new(i),
               po_cost_source:        vp.contract_po_cost_source_new(i),
               b2b:                   vp.b2b_contract_indicator_new(i),
-              payment_terms:         vp.ontract_payment_terms_new(i),
+              payment_terms:         vp.contract_payment_terms_new(i),
               shipping_terms:        vp.contract_shipping_terms_new(i),
               shipping_title:        vp.contract_shipping_title_new(i),
               extension_option_date: vp.contract_extension_option_date_new(i),

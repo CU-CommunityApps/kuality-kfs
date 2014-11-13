@@ -61,13 +61,13 @@ class VendorPage < KFSBasePage
   element(:hidden_tax_number) { |b| b.frm.hidden(name: 'document.newMaintainableObject.vendorHeader.vendorTaxNumber') }
   alias_method :new_hidden_tax_number, :hidden_tax_number
 
-  element(:old_vendor_number) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorNumber.div').text.strip }
-  element(:old_vendor_name) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorName.div').text.strip }
-  element(:old_vendor_last_name) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorLastName.div').text.strip }
-  element(:old_vendor_first_name) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorFirstName.div').text.strip }
-  element(:old_vendor_type) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorTypeCode.div').text.strip }
-  element(:old_foreign) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorForeignIndicator.div').text.strip }
-  element(:old_tax_number) do |b|
+  element(:vendor_number_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorNumber.div').text.strip }
+  element(:vendor_name_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorName.div').text.strip }
+  element(:vendor_last_name_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorLastName.div').text.strip }
+  element(:vendor_first_name_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorFirstName.div').text.strip }
+  element(:vendor_type_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorTypeCode.div').text.strip }
+  element(:foreign_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorForeignIndicator.div').text.strip }
+  element(:tax_number_old) do |b|
     otn = ''
     if b.hidden_tax_number.exists?
       otn = b.hidden_tax_number.parent.tds[0].text.strip
@@ -76,12 +76,12 @@ class VendorPage < KFSBasePage
     end
     otn
   end
-  element(:old_tax_number_type) { |b| b.frm.input(name: 'document.oldMaintainableObject.vendorHeader.vendorTaxTypeCode').parent.tds[0].text.strip }
-  element(:old_tax_number_type_fein) { |b| (b.old_tax_number_type == 'FEIN') ? :set : :clear }
-  element(:old_tax_number_type_ssn) { |b| (b.old_tax_number_type == 'SSN') ? :set : :clear }
-  element(:old_tax_number_type_none) { |b| (b.old_tax_number_type == 'NONE') ? :set : :clear }
-  element(:old_ownership) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorOwnershipCode.div').text.strip }
-  element(:old_w9_received) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorW9ReceivedIndicator.div').text.strip }
+  element(:tax_number_type_old) { |b| b.frm.input(name: 'document.oldMaintainableObject.vendorHeader.vendorTaxTypeCode').parent.tds[0].text.strip }
+  element(:tax_number_type_fein_old) { |b| (b.tax_number_type_old == 'FEIN') ? :set : :clear }
+  element(:tax_number_type_ssn_old) { |b| (b.tax_number_type_old == 'SSN') ? :set : :clear }
+  element(:tax_number_type_none_old) { |b| (b.tax_number_type_old == 'NONE') ? :set : :clear }
+  element(:ownership_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorOwnershipCode.div').text.strip }
+  element(:w9_received_old) { |b| b.frm.span(id: 'document.oldMaintainableObject.vendorHeader.vendorW9ReceivedIndicator.div').text.strip }
 
   # Contracts Tab
   element(:contracts_tab) { |b| b.frm.div(id: 'tab-Contracts-div') }
@@ -123,6 +123,7 @@ class VendorPage < KFSBasePage
   element(:contract_active_indicator) { |b| b.contracts_tab.checkbox(name: 'document.newMaintainableObject.add.vendorContracts.active') }
   alias_method :new_contract_active_indicator, :contract_active_indicator
 
+  action(:contract_number_update) { |i=0, b| b.contracts_tab.text_field(name: "document.newMaintainableObject.vendorContracts[#{i}].vendorContractNumber") }
   action(:contract_name_update) { |i=0, b| b.contracts_tab.text_field(name: "document.newMaintainableObject.vendorContracts[#{i}].vendorContractName") }
   action(:contract_description_update) { |i=0, b| b.contracts_tab.text_field(name: "document.newMaintainableObject.vendorContracts[#{i}].vendorContractDescription") }
   action(:contract_campus_code_update) { |i=0, b| b.contracts_tab.select(name: "document.newMaintainableObject.vendorContracts[#{i}].vendorCampusCode") }
@@ -148,6 +149,7 @@ class VendorPage < KFSBasePage
   value(:contract_po_cost_source_new) { |i=0, b| b.contract_po_cost_source_update(i).exists? ? b.contract_po_cost_source_update(i).selected_options.first.value : b.contract_po_cost_source_readonly(i) }
   value(:b2b_contract_indicator_new) { |i=0, b| b.b2b_contract_indicator_update(i).exists? ? b.b2b_contract_indicator_update(i).selected_options.first.value : b.b2b_contract_indicator_readonly(i) }
   value(:contract_payment_terms_new) { |i=0, b| b.contract_payment_terms_update(i).exists? ? b.contract_payment_terms_update(i).selected_options.first.value : b.contract_payment_terms_readonly(i) }
+  value(:contract_shipping_terms_new) { |i=0, b| b.contract_shipping_terms_update(i).exists? ? b.contract_shipping_teerms_update(i).selected_options.first.value : b.contract_shipping_terms_readonly(i) }
   value(:contract_shipping_title_new) { |i=0, b| b.contract_shipping_title_update(i).exists? ? b.contract_shipping_title_update(i).selected_options.first.value : b.contract_shipping_title_readonly(i) }
   value(:contract_default_apo_limit_new) { |i=0, b| b.contract_default_apo_limit_update(i).exists? ? b.contract_default_apo_limit_update(i).value : b.contract_default_apo_limit_readonly(i) }
   value(:contract_active_indicator_new) { |i=0, b| b.contract_active_indicator_update(i).exists? ? b.contract_active_indicator_update(i).value : b.contract_active_indicator_readonly(i) }
@@ -278,7 +280,7 @@ class VendorPage < KFSBasePage
   alias_method :updated_address_1, :address_1_update
   action(:address_2_update) { |i=0, b| b.addresses_tab.text_field(name: "document.newMaintainableObject.vendorAddresses[#{i}].vendorLine2Address") }
   alias_method :updated_address_2, :address_2_update
-  value(:updated_2nd_address_2_update) { |b| b.update_address_2(1) }
+  value(:updated_2nd_address_2) { |b| b.address_2_update(1) }
   action(:city_update) { |i=0, b| b.addresses_tab.text_field(name: "document.newMaintainableObject.vendorAddresses[#{i}].vendorCityName") }
   action(:state_update) { |i=0, b| b.addresses_tab.text_field(name: "document.newMaintainableObject.vendorAddresses[#{i}].vendorStateCode") }
   action(:zipcode_update) { |i=0, b| b.addresses_tab.text_field(name: "document.newMaintainableObject.vendorAddresses[#{i}].vendorZipCode") }
@@ -314,7 +316,7 @@ class VendorPage < KFSBasePage
   value(:address_2_new) { |i=0, b| b.address_2_update(i).exists? ? b.address_2_update(i).value : b.address_2_readonly(i) }
   value(:city_new) { |i=0, b| b.city_update(i).exists? ? b.city_update(i).value : b.city_readonly(i) }
   value(:state_new) { |i=0, b| b.state_update(i).exists? ? b.state_update(i).value : b.state_readonly(i) }
-  value(:zipcod_new) { |i=0, b| b.zipcod_update(i).exists? ? b.zipcod_update(i).value : b.zipcod_readonly(i) }
+  value(:zipcode_new) { |i=0, b| b.zipcode_update(i).exists? ? b.zipcode_update(i).value : b.zipcode_readonly(i) }
   value(:province_new) { |i=0, b| b.province_update(i).exists? ? b.province_update(i).value : b.province_readonly(i) }
   value(:country_new) { |i=0, b| b.country_update(i).exists? ? b.country_update(i).selected_options.first.value : b.country_readonly(i) }
   value(:address_attention_new) { |i=0, b| b.address_attention_update(i).exists? ? b.address_attention_update(i).value : b.address_attention_readonly(i) }
@@ -454,10 +456,14 @@ class VendorPage < KFSBasePage
   element(:search_alias_name) { |b| b.frm.text_field(id: 'document.newMaintainableObject.add.vendorAliases.vendorAliasName') }
   alias_method :new_search_alias_name, :search_alias_name
 
-  action(:update_search_alias_active) { |i=0, b| b.search_alias_tab.checkbox(id: "document.newMaintainableObject.vendorAliases[#{i}].active").value }
-  action(:update_search_alias_name) { |i=0, b| b.search_alias_tab.span(id: "document.newMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
+  action(:search_alias_active_update) { |i=0, b| b.search_alias_tab.checkbox(id: "document.newMaintainableObject.vendorAliases[#{i}].active").value }
+  action(:search_alias_name_update) { |i=0, b| b.search_alias_tab.span(id: "document.newMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
+  action(:search_alias_active_readonly) { |i=0, b| b.search_alias_tab.span(id: "document.newMaintainableObject.vendorAliases[#{i}].active.div").text.strip }
+  action(:search_alias_name_readonly) { |i=0, b| b.search_alias_tab.span(id: "document.newMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
+  value(:search_alias_active_new) { |i=0, b| b.search_alias_active_update(i).exists? ? b.search_alias_active_update(i).value : b.search_alias_active_readonly(i) }
+  value(:search_alias_name_new) { |i=0, b| b.search_alias_name_update(i).exists? ? b.search_alias_name_update(i).value : b.search_alias_name_readonly(i) }
 
-  action(:old_search_alias_active) { |i=0, b| b.search_alias_tab.span(id: "document.oldMaintainableObject.vendorAliases[#{i}].active.div").text.strip }
-  action(:old_search_alias_name) { |i=0, b| b.search_alias_tab.span(id: "document.oldMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
+  action(:search_alias_active_old) { |i=0, b| b.search_alias_tab.span(id: "document.oldMaintainableObject.vendorAliases[#{i}].active.div").text.strip }
+  action(:search_alias_name_old) { |i=0, b| b.search_alias_tab.span(id: "document.oldMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
 
 end

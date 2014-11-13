@@ -83,8 +83,12 @@ end
 
 When /^I select Vendor document from my Action List$/ do
   visit(MainPage).action_list
-  on(ActionList).last if on(ActionList).last_link.exists? && !on(ActionList).result_item(@vendor.document_id).exists?
-  on(ActionList).open_item(@vendor.document_id)
+  sleep 3
+  on ActionList do |page|
+    page.close_parents
+    page.last if page.last_link.exists? && !page.result_item(@vendor.document_id).exists?
+    page.open_item(@vendor.document_id)
+  end
 end
 
 And /^the Address and Phone Number changes persist$/ do
@@ -325,13 +329,13 @@ And /^I edit a contract on Vendor Contract tab$/ do
                                po_cost_source: po_cost_source,
                                payment_terms: payment_terms
   on VendorPage do |vp|
-    vp.update_contract_name.value.should == contract_name
-    vp.update_contract_description.value.should == description
-    vp.update_contract_campus_code.selected_options.first.text.should == campus_code
-    vp.update_contract_begin_date.value.should == begin_date
-    vp.update_contract_end_date.value.should == end_date
-    vp.update_contract_manager.selected_options.first.text.should == manager
-    vp.update_contract_po_cost_source.selected_options.first.text.should == po_cost_source
-    vp.update_contract_payment_terms.selected_options.first.text.should == payment_terms
+    vp.contract_name_new.should == contract_name
+    vp.contract_description_new.should == description
+    vp.contract_campus_code_new.should == campus_code
+    vp.contract_begin_date_new.should == begin_date
+    vp.contract_end_date_new.should == end_date
+    vp.contract_manager_new.should == manager
+    vp.contract_po_cost_source_new.should == po_cost_source
+    vp.contract_payment_terms_new.should == payment_terms
   end
 end

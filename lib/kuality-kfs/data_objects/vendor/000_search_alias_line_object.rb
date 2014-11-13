@@ -26,7 +26,7 @@ class SearchAliasLineObject < DataFactory
 
   def edit(opts={})
     raise ArgumentError, 'Search Alias Names cannot be updated, only deleted!' unless opts[:name].nil?
-    on(VendorPage).update_search_alias_active(@line_number).fit opts[:active]
+    on(VendorPage).search_alias_active_update(@line_number).fit opts[:active]
     update_options(opts)
   end
 
@@ -76,13 +76,13 @@ class SearchAliasLineObjectCollection < LineObjectCollection
       case target
         when :old
           pulled_search_alias = {
-            name:   vp.old_search_alias_name(i),
-            active: yesno2setclear(vp.old_search_alias_active(i))
+            name:   vp.search_alias_name_old(i),
+            active: yesno2setclear(vp.search_alias_active_old(i))
           }
         when :new
           pulled_search_alias = {
-            name:   vp.update_search_alias_name(i),
-            active: yesno2setclear(vp.update_search_alias_active(i))
+            name:   vp.search_alias_name_new(i),
+            active: yesno2setclear(vp.search_alias_active_new(i))
           }
       end
     end
