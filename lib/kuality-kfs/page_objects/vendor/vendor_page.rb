@@ -149,7 +149,7 @@ class VendorPage < KFSBasePage
   value(:contract_po_cost_source_new) { |i=0, b| b.contract_po_cost_source_update(i).exists? ? b.contract_po_cost_source_update(i).selected_options.first.value : b.contract_po_cost_source_readonly(i) }
   value(:b2b_contract_indicator_new) { |i=0, b| b.b2b_contract_indicator_update(i).exists? ? b.b2b_contract_indicator_update(i).selected_options.first.value : b.b2b_contract_indicator_readonly(i) }
   value(:contract_payment_terms_new) { |i=0, b| b.contract_payment_terms_update(i).exists? ? b.contract_payment_terms_update(i).selected_options.first.value : b.contract_payment_terms_readonly(i) }
-  value(:contract_shipping_terms_new) { |i=0, b| b.contract_shipping_terms_update(i).exists? ? b.contract_shipping_teerms_update(i).selected_options.first.value : b.contract_shipping_terms_readonly(i) }
+  value(:contract_shipping_terms_new) { |i=0, b| b.contract_shipping_terms_update(i).exists? ? b.contract_shipping_terms_update(i).selected_options.first.value : b.contract_shipping_terms_readonly(i) }
   value(:contract_shipping_title_new) { |i=0, b| b.contract_shipping_title_update(i).exists? ? b.contract_shipping_title_update(i).selected_options.first.value : b.contract_shipping_title_readonly(i) }
   value(:contract_default_apo_limit_new) { |i=0, b| b.contract_default_apo_limit_update(i).exists? ? b.contract_default_apo_limit_update(i).value : b.contract_default_apo_limit_readonly(i) }
   value(:contract_active_indicator_new) { |i=0, b| b.contract_active_indicator_update(i).exists? ? b.contract_active_indicator_update(i).value : b.contract_active_indicator_readonly(i) }
