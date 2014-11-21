@@ -142,15 +142,15 @@ class VendorPage < KFSBasePage
   value(:contract_number_new) { |i=0, b| b.contract_number_update(i).exists? ? b.contract_number_update(i).value : b.contract_number_readonly(i) }
   value(:contract_name_new) { |i=0, b| b.contract_name_update(i).exists? ? b.contract_name_update(i).value : b.contract_name_readonly(i) }
   value(:contract_description_new) { |i=0, b| b.contract_description_update(i).exists? ? b.contract_description_update(i).value : b.contract_description_readonly(i) }
-  value(:contract_campus_code_new) { |i=0, b| b.contract_campus_code_update(i).exists? ? b.contract_campus_code_update(i).selected_options.first.value : b.contract_campus_code_readonly(i) }
+  value(:contract_campus_code_new) { |i=0, b| b.contract_campus_code_update(i).exists? ? b.contract_campus_code_update(i).selected_options.first.text : b.contract_campus_code_readonly(i) }
   value(:contract_begin_date_new) { |i=0, b| b.contract_begin_date_update(i).exists? ? b.contract_begin_date_update(i).value : b.contract_begin_date_readonly(i) }
   value(:contract_end_date_new) { |i=0, b| b.contract_end_date_update(i).exists? ? b.contract_end_date_update(i).value : b.contract_end_date_readonly(i) }
-  value(:contract_manager_new) { |i=0, b| b.contract_manager_update(i).exists? ? b.contract_manager_update(i).selected_options.first.value : b.contract_manager_readonly(i) }
-  value(:contract_po_cost_source_new) { |i=0, b| b.contract_po_cost_source_update(i).exists? ? b.contract_po_cost_source_update(i).selected_options.first.value : b.contract_po_cost_source_readonly(i) }
-  value(:b2b_contract_indicator_new) { |i=0, b| b.b2b_contract_indicator_update(i).exists? ? b.b2b_contract_indicator_update(i).selected_options.first.value : b.b2b_contract_indicator_readonly(i) }
-  value(:contract_payment_terms_new) { |i=0, b| b.contract_payment_terms_update(i).exists? ? b.contract_payment_terms_update(i).selected_options.first.value : b.contract_payment_terms_readonly(i) }
-  value(:contract_shipping_terms_new) { |i=0, b| b.contract_shipping_terms_update(i).exists? ? b.contract_shipping_terms_update(i).selected_options.first.value : b.contract_shipping_terms_readonly(i) }
-  value(:contract_shipping_title_new) { |i=0, b| b.contract_shipping_title_update(i).exists? ? b.contract_shipping_title_update(i).selected_options.first.value : b.contract_shipping_title_readonly(i) }
+  value(:contract_manager_new) { |i=0, b| b.contract_manager_update(i).exists? ? b.contract_manager_update(i).selected_options.first.text : b.contract_manager_readonly(i) }
+  value(:contract_po_cost_source_new) { |i=0, b| b.contract_po_cost_source_update(i).exists? ? b.contract_po_cost_source_update(i).selected_options.first.text : b.contract_po_cost_source_readonly(i) }
+  value(:b2b_contract_indicator_new) { |i=0, b| b.b2b_contract_indicator_update(i).exists? ? b.b2b_contract_indicator_update(i).selected_options.first.text : b.b2b_contract_indicator_readonly(i) }
+  value(:contract_payment_terms_new) { |i=0, b| b.contract_payment_terms_update(i).exists? ? b.contract_payment_terms_update(i).selected_options.first.text : b.contract_payment_terms_readonly(i) }
+  value(:contract_shipping_terms_new) { |i=0, b| b.contract_shipping_terms_update(i).exists? ? b.contract_shipping_terms_update(i).selected_options.first.text : b.contract_shipping_terms_readonly(i) }
+  value(:contract_shipping_title_new) { |i=0, b| b.contract_shipping_title_update(i).exists? ? b.contract_shipping_title_update(i).selected_options.first.text : b.contract_shipping_title_readonly(i) }
   value(:contract_default_apo_limit_new) { |i=0, b| b.contract_default_apo_limit_update(i).exists? ? b.contract_default_apo_limit_update(i).value : b.contract_default_apo_limit_readonly(i) }
   value(:contract_active_indicator_new) { |i=0, b| b.contract_active_indicator_update(i).exists? ? b.contract_active_indicator_update(i).value : b.contract_active_indicator_readonly(i) }
 
@@ -222,7 +222,7 @@ class VendorPage < KFSBasePage
   value(:phone_active_indicator_readonly) { |i=0, b| b.phone_numbers_tab.span(id: "document.newMaintainableObject.vendorPhoneNumbers[#{i}].active.div").text.strip }
 
   # New Phone
-  value(:phone_type_new) { |i=0, b| b.phone_type_update(i).exists? ? b.phone_type_update(i).selected_options.first.value : b.phone_type_readonly(i) }
+  value(:phone_type_new) { |i=0, b| b.phone_type_update(i).exists? ? b.phone_type_update(i).selected_options.first.text : b.phone_type_readonly(i) }
   value(:phone_number_new) { |i=0, b| b.phone_number_update(i).exists? ? b.phone_number_update(i).value : b.phone_number_readonly(i) }
   value(:phone_extension_new) { |i=0, b| b.phone_extension_update(i).exists? ? b.phone_extension_update(i).value : b.phone_extension_readonly(i) }
   value(:phone_active_indicator_new) { |i=0, b| b.phone_active_indicator_update(i).exists? ? b.phone_active_indicator_update(i).value : b.phone_active_indicator_readonly(i) }
@@ -311,19 +311,19 @@ class VendorPage < KFSBasePage
   value(:address_active_indicator_readonly) { |i=0, b| b.addresses_tab.span(id: "document.newMaintainableObject.vendorAddresses[#{i}].active.div").text.strip }
 
   # new
-  value(:address_type_new) { |i=0, b| b.address_type_update(i).exists? ? b.address_type_update(i).selected_options.first.value : b.address_type_readonly(i) }
+  value(:address_type_new) { |i=0, b| b.address_type_update(i).exists? ? b.address_type_update(i).selected_options.first.text : b.address_type_readonly(i) }
   value(:address_1_new) { |i=0, b| b.address_1_update(i).exists? ? b.address_1_update(i).value : b.address_1_readonly(i) }
   value(:address_2_new) { |i=0, b| b.address_2_update(i).exists? ? b.address_2_update(i).value : b.address_2_readonly(i) }
   value(:city_new) { |i=0, b| b.city_update(i).exists? ? b.city_update(i).value : b.city_readonly(i) }
   value(:state_new) { |i=0, b| b.state_update(i).exists? ? b.state_update(i).value : b.state_readonly(i) }
   value(:zipcode_new) { |i=0, b| b.zipcode_update(i).exists? ? b.zipcode_update(i).value : b.zipcode_readonly(i) }
   value(:province_new) { |i=0, b| b.province_update(i).exists? ? b.province_update(i).value : b.province_readonly(i) }
-  value(:country_new) { |i=0, b| b.country_update(i).exists? ? b.country_update(i).selected_options.first.value : b.country_readonly(i) }
+  value(:country_new) { |i=0, b| b.country_update(i).exists? ? b.country_update(i).selected_options.first.text : b.country_readonly(i) }
   value(:address_attention_new) { |i=0, b| b.address_attention_update(i).exists? ? b.address_attention_update(i).value : b.address_attention_readonly(i) }
   value(:address_url_new) { |i=0, b| b.address_url_update(i).exists? ? b.address_url_update(i).value : b.address_url_readonly(i) }
   value(:fax_new) { |i=0, b| b.fax_update(i).exists? ? b.fax_update(i).value : b.fax_readonly(i) }
   value(:email_new) { |i=0, b| b.email_update(i).exists? ? b.email_update(i).value : b.email_readonly(i) }
-  value(:default_address_new) { |i=0, b| b.default_address_update(i).exists? ? b.default_address_update(i).selected_options.first.value : b.default_address_readonly(i) }
+  value(:default_address_new) { |i=0, b| b.default_address_update(i).exists? ? b.default_address_update(i).selected_options.first.text : b.default_address_readonly(i) }
   value(:address_active_indicator_new) { |i=0, b| b.address_active_indicator_update(i).exists? ? b.address_active_indicator_update(i).value : b.address_active_indicator_readonly(i) }
 
   #old
@@ -410,7 +410,7 @@ class VendorPage < KFSBasePage
   value(:contact_active_indicator_readonly) { |i=0, b| b.contacts_tab.span(id: "document.newMaintainableObject.vendorContacts[#{i}].active.div").text.strip }
 
   # new
-  value(:contact_type_new) { |i=0, b| b.contact_type_update(i).exists? ? b.contact_type_update(i).selected_options.first.value : b.contact_type_readonly(i) }
+  value(:contact_type_new) { |i=0, b| b.contact_type_update(i).exists? ? b.contact_type_update(i).selected_options.first.text : b.contact_type_readonly(i) }
   value(:contact_name_new) { |i=0, b| b.contact_name_update(i).exists? ? b.contact_name_update(i).value : b.contact_name_readonly(i) }
   value(:contact_email_new) { |i=0, b| b.contact_email_update(i).exists? ? b.contact_email_update(i).value : b.contact_email_readonly(i) }
   value(:contact_address_1_new) { |i=0, b| b.contact_address_1_update(i).exists? ? b.contact_address_1_update(i).value : b.contact_address_1_readonly(i) }
@@ -419,7 +419,7 @@ class VendorPage < KFSBasePage
   value(:contact_state_new) { |i=0, b| b.contact_state_update(i).exists? ? b.contact_state_update(i).value : b.contact_state_readonly(i) }
   value(:contact_zipcode_new) { |i=0, b| b.contact_zipcode_update(i).exists? ? b.contact_zipcode_update(i).value : b.contact_zipcode_readonly(i) }
   value(:contact_province_new) { |i=0, b| b.contact_province_update(i).exists? ? b.contact_province_update(i).value : b.contact_province_readonly(i) }
-  value(:contact_country_new) { |i=0, b| b.contact_country_update(i).exists? ? b.contact_country_update(i).selected_options.first.value : b.contact_country_readonly(i) }
+  value(:contact_country_new) { |i=0, b| b.contact_country_update(i).exists? ? b.contact_country_update(i).selected_options.first.text : b.contact_country_readonly(i) }
   value(:contact_attention_new) { |i=0, b| b.contact_attention_update(i).exists? ? b.contact_attention_update(i).value : b.contact_attention_readonly(i) }
   value(:contact_comments_new) { |i=0, b| b.contact_comments_update(i).exists? ? b.contact_comments_update(i).value : b.contact_comments_readonly(i) }
   value(:contact_active_indicator_new) { |i=0, b| b.contact_active_indicator_update(i).exists? ? b.contact_active_indicator_update(i).value : b.contact_active_indicator_readonly(i) }
