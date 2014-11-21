@@ -457,11 +457,10 @@ class VendorPage < KFSBasePage
   alias_method :new_search_alias_name, :search_alias_name
 
   action(:search_alias_active_update) { |i=0, b| b.search_alias_tab.checkbox(id: "document.newMaintainableObject.vendorAliases[#{i}].active").value }
-  action(:search_alias_name_update) { |i=0, b| b.search_alias_tab.span(id: "document.newMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
   action(:search_alias_active_readonly) { |i=0, b| b.search_alias_tab.span(id: "document.newMaintainableObject.vendorAliases[#{i}].active.div").text.strip }
   action(:search_alias_name_readonly) { |i=0, b| b.search_alias_tab.span(id: "document.newMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
   value(:search_alias_active_new) { |i=0, b| b.search_alias_active_update(i).exists? ? b.search_alias_active_update(i).value : b.search_alias_active_readonly(i) }
-  value(:search_alias_name_new) { |i=0, b| b.search_alias_name_update(i).exists? ? b.search_alias_name_update(i).value : b.search_alias_name_readonly(i) }
+  alias_method :search_alias_name_new, :search_alias_name_readonly
 
   action(:search_alias_active_old) { |i=0, b| b.search_alias_tab.span(id: "document.oldMaintainableObject.vendorAliases[#{i}].active.div").text.strip }
   action(:search_alias_name_old) { |i=0, b| b.search_alias_tab.span(id: "document.oldMaintainableObject.vendorAliases[#{i}].vendorAliasName.div").text.strip }
