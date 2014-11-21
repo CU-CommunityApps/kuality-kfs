@@ -11,7 +11,7 @@ class SubAccountObject < KFSDataObject
                 #== Edit CG ICR tab ==#
                 :icr_identifier, :icr_type_code, :icr_off_campus_indicator,
                 #== ==#
-                :adhoc_approver_userid
+                :adhoc_approver_userid   #TODO This singleton data element is a collection on the page and needs to be coded as such.
 
 #add if needed                :fin_reporting_chart_code, :fin_reporting_org_code, :fin_reporting_code,
 
@@ -65,7 +65,7 @@ class SubAccountObject < KFSDataObject
   def absorb!(target={})
     super
     update_options(on(SubAccountPage).send("sub_account_data_#{target.to_s}"))
-    update_line_objects_from_page!(target == :new ? :new : target)
+    update_line_objects_from_page!(target)
   end
 
   include IndirectCostRecoveryLinesMixin

@@ -34,10 +34,6 @@ class SubAccountPage < KFSBasePage
   element(:ad_hoc_person) { |b| b.frm.text_field(name: 'newAdHocRoutePerson.id') }
   action(:ad_hoc_person_add) { |b| b.frm.button(name: 'methodToCall.insertAdHocRoutePerson').click }
 
-  #New
-  #TODO remove following line when 000_base_page.rb is refactored to conform to naming convention
-  alias_method :description_new, :description
-
   value(:chart_code_new) { |b| b.chart_code.exists? ? b.chart_code.value : b.chart_code_readonly }
   value(:account_number_new) { |b| b.account_number.exists? ? b.account_number.value : b.account_number_readonly }
   value(:sub_account_number_new) { |b| b.sub_account_number.exists? ? b.sub_account_number.value : b.sub_account_number_readonly }

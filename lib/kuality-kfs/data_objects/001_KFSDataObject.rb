@@ -128,7 +128,7 @@ class KFSDataObject < DataFactory
       description =  case target
                        when :new
                          b.description_new
-                       when :old
+                       when :old, :readonly
                          b.description_readonly
                      end
       update_options({
