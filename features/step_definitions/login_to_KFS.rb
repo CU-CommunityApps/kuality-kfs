@@ -207,3 +207,10 @@ end
 And /^I am logged in as the remembered user$/ do
   perform_backdoor_login(@remembered_logged_in_user)
 end
+
+Given /^I am logged in as a KFS User who is not a Contracts & Grants Processor$/ do
+  kfs_users = get_principal_name_for_role('KFS-SYS', 'User')
+  cg_processors = get_principal_name_for_role('KFS-SYS', 'Contracts & Grants Processor')
+  kfs_users_who_are_not_cd_processors = kfs_users - cg_processors
+  perform_backdoor_login(kfs_users_who_are_not_cd_processors.sample)
+end

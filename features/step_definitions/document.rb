@@ -36,6 +36,11 @@ When /^I view the (.*) document$/ do |document|
   document_object_for(document).view
 end
 
+When /^I display the (.*) document$/ do |document|
+  document_object_for(document).view
+  document_object_for(document).absorb! :new
+end
+
 When /^I (#{BasePage::available_buttons}) the (.*) document$/ do |button, document|
   button.gsub!(' ', '_')
   document_object_for(document).send(button)

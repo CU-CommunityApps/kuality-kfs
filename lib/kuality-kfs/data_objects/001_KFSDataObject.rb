@@ -127,9 +127,9 @@ class KFSDataObject < DataFactory
     on KFSBasePage do |b|
       description =  case target
                        when :new
-                         b.description.value
-                       when :old
-                         b.readonly_description
+                         b.description_new
+                       when :old, :readonly
+                         b.description_readonly
                      end
       update_options({
         document_id: b.document_id,

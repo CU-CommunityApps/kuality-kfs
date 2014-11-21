@@ -62,7 +62,6 @@ And /^I (#{SubAccountPage::available_buttons}) a Sub-Account with an adhoc appro
   options = {
       account_number:                      account_number,
       cost_sharing_chart_of_accounts_code: get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
-      cost_share_account_number:           account_number,
       sub_account_type_code:               'CS',
       cost_sharing_account_number:         account_number,
       adhoc_approver_userid:               @adhoc_user,
@@ -78,10 +77,24 @@ And /^I create a Sub-Account with Sub-Account Type Code (\w+)$/ do |sub_account_
   options = {
       account_number:                      account_number,
       cost_sharing_chart_of_accounts_code: get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-      cost_share_account_number:           account_number, # just need some account to fill in this required field
       sub_account_type_code:               sub_account_type,
       cost_sharing_account_number:         account_number,
       press:                               'save'
   }
   @sub_account = create SubAccountObject, options
+end
+
+
+And /^I lookup the Sub-Account I want to edit$/ do
+  #get the sub-account we want to edit
+  visit(MainPage).sub_account
+  on SubAccountLookupPage do |page|
+    page.chart_code.fit           @sub_account.chart_code
+    page.account_number.fit       @sub_account.account_number
+    page.sub_account_number.fit   @sub_account.sub_account_number
+    page.search
+    # sub_account_number could be an alpha-numeric, Watir is not able to find the item in the table of values
+    # returned by the lookup unless the sub_account_number matches even on case of letters (i.e. aBc != ABC)
+    page.edit_item(@sub_account.sub_account_number.upcase)
+  end
 end

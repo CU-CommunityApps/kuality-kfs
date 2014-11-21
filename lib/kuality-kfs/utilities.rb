@@ -141,6 +141,10 @@ module Utilities
         get_kuali_business_object('KFS-COA','Account','organizationCode=01**&subFundGroupCode=CG*&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
       when 'Endowed Grant'
         get_kuali_business_object('KFS-COA','Account','accountTypeCode=EN&organizationCode=01**&subFundGroupCode=CG*&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
+      when 'Cost Sharing Account'
+        ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&accountName=*cost share*&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
+      when 'General Appropriated Account'
+        ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=GN&subFundGroupCode=GNAPPR&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
       else
         nil
     end
