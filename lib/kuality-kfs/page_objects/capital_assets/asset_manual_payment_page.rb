@@ -36,6 +36,8 @@ class AssetManualPaymentPage < KFSBasePage
   element(:post_date) { |b| b.frm.text_field(name: 'newSourceLine.expenditureFinancialDocumentPostedDate') }
 
   action(:add_acct_line) { |b| b.frm.button(alt: 'Add Source Accounting Line').click }
-  action(:update_amount) { |i=0, b| b.frm.text_field(name: "document.sourceAccountingLines[#{i}].amount") }
+  action(:amount_update) { |i=0, b| b.frm.text_field(name: "document.sourceAccountingLines[#{i}].amount") }
+  value(:amount_readonly) { |i=0, b| b.frm.span(id: "document.sourceAccountingLines[#{i}].amount.div").text.strip }
+  value(:amount_new) { |b| b.amount_update.exists? ? b.amount_update.value : b.amount_readonly }
 
 end

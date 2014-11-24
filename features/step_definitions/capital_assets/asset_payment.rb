@@ -22,6 +22,6 @@ And /^I add an Accounting Line to the Asset Manual Payment with Amount (\w+)$/ d
 end
 
 And /^I change the Account Amount for Accounting Line (\d+) to (\w+) for Asset Manual Payment$/ do |line_number, new_value|
-  on(AssetManualPaymentPage).update_amount(line_number.to_i - 1).fit new_value
+  on(AssetManualPaymentPage).amount_update(line_number.to_i - 1).fit new_value
 end
 
