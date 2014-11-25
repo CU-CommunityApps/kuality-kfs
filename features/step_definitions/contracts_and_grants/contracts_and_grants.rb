@@ -40,7 +40,7 @@ And /^I change the Contract and Grant Reporting Code on a Contract and Grant Obj
     page.cg_reporting_code.fit @contract_grant_reporting_code.code
 
     @object_code.document_id = page.document_id
-    @object_code.object_code = page.object_code_value.text.strip
+    @object_code.object_code = page.object_code_new
     @object_code.level_code = contracts_grants_level_code
     @object_code.cg_reporting_code = @contract_grant_reporting_code.code
   end
