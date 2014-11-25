@@ -31,8 +31,8 @@ When /^I inactivate an Organization Code with closed accounts$/ do
   on OrganizationPage do |page|
     @organization = make OrganizationObject
     @organization.document_id = page.document_id
-    @organization.chart_code = page.ro_chart_code
-    @organization.organization_code = page.ro_org_code
+    @organization.chart_code = page.chart_code_new
+    @organization.organization_code = page.organization_code_new
     page.description.fit random_alphanums(40, 'AFT')
     page.active.set
     page.blanket_approve
@@ -48,8 +48,8 @@ When /^I inactivate an Organization Code with closed accounts$/ do
   on OrganizationPage do |page|
     @organization = make OrganizationObject
     @organization.document_id = page.document_id
-    @organization.chart_code = page.ro_chart_code
-    @organization.organization_code = page.ro_org_code
+    @organization.chart_code = page.chart_code_new
+    @organization.organization_code = page.organization_code_new
     page.description.fit random_alphanums(40, 'AFT')
     page.active.clear
     page.blanket_approve
