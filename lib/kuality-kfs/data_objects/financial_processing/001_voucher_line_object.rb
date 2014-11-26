@@ -9,7 +9,7 @@ class VoucherLineObject < AccountingLineObject
     mappings
   end
 
-  def extended_update_mappings
+  def extended_update_mappings(opts={})
     mappings = Hash.new
     mappings.merge!({"update_#{@type}_debit".to_sym => opts[:debit]}) unless opts[:debit].nil?
     mappings.merge!({"update_#{@type}_credit".to_sym => opts[:credit]}) unless opts[:credit].nil?

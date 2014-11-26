@@ -205,3 +205,8 @@ And /^I create an Account and leave blank for the fields of Guidelines and Purpo
                                    purpose_text:           '',
                                    press:                  nil
 end
+
+And /^the Account document's Sub Fund Program code is uppercased$/ do
+  on(AccountPage).sub_fund_group_code_new.should == @account.sub_fund_group_code.upcase
+  @account.sub_fund_group_code = on(AccountPage).sub_fund_group_code_new # Grab the update, if necessary
+end

@@ -74,11 +74,16 @@ class FinancialProcessingPage < KFSBasePage
       action(:update_source_month_11) { |i=0, b| b.update_month_11('source', i, b) }
       action(:update_source_month_12) { |i=0, b| b.update_month_12('source', i, b) }
 
-      action(:add_source_accounting_line) { |b| b.frm.button(name: 'methodToCall.insertSourceLine.anchoraccountingSourceAnchor').click }
-      action(:delete_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.deleteSourceLine.line#{l}.anchoraccountingSourceAnchor").click }
-      action(:balance_inquiry_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.performBalanceInquiryForSourceLine.line#{l}.anchoraccountingSourceexistingLineLineAnchor#{l}").click }
-      action(:refresh_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.refresh.line#{l}.anchoraccountingSourceAnchor").click }
-      action(:copy_source_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.copyAccountingLine.line#{l}.anchoraccountingSourceAnchor").click }
+      element(:add_source_accounting_line_button) { |b| b.frm.button(name: 'methodToCall.insertSourceLine.anchoraccountingSourceAnchor') }
+      action(:add_source_accounting_line) { |b| b.add_source_accounting_line_button.click }
+      element(:delete_source_accounting_line_button) { |sl=0, b| b.frm.button(name: "methodToCall.deleteSourceLine.line#{sl}.anchoraccountingSourceAnchor") }
+      action(:delete_source_accounting_line) { |sl=0, b| b.delete_source_accounting_line_button(sl).click }
+      element(:balance_inquiry_source_accounting_line_button) { |sl=0, b| b.frm.button(name: "methodToCall.performBalanceInquiryForSourceLine.line#{sl}.anchoraccountingSourceexistingLineLineAnchor#{sl}") }
+      action(:balance_inquiry_source_accounting_line) { |sl=0, b| b.balance_inquiry_source_accounting_line_button(sl).click }
+      element(:refresh_source_accounting_line_button) { |sl=0, b| b.frm.button(name: "methodToCall.refresh.line#{sl}.anchoraccountingSourceAnchor") }
+      action(:refresh_source_accounting_line) { |sl=0, b| b.refresh_source_accounting_line_button(sl).click }
+      element(:copy_source_accounting_line_button) { |sl=0, b| b.frm.button(name: "methodToCall.copyAccountingLine.line#{sl}.anchoraccountingSourceAnchor") }
+      action(:copy_source_accounting_line) { |sl=0, b| b.copy_source_accounting_line_button(sl).click }
 
       #ACCOUNTING LINES TO/INCREASE
       element(:target_chart_code) { |b| b.frm.select(name: 'newTargetLine.chartOfAccountsCode') }
@@ -137,10 +142,16 @@ class FinancialProcessingPage < KFSBasePage
       action(:update_target_month_11) { |i=0, b| b.update_month_11('target', i, b) }
       action(:update_target_month_12) { |i=0, b| b.update_month_12('target', i, b) }
 
-      action(:add_target_accounting_line) { |b| b.frm.button(name: 'methodToCall.insertTargetLine.anchoraccountingTargetAnchor').click }
-      action(:delete_target_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.deleteTargetLine.line#{l}.anchoraccountingTargetAnchor").click }
-      action(:balance_inquiry_target_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.performBalanceInquiryForTargetLine.line#{l}.anchoraccountingTargetexistingLineLineAnchor#{l}").click }
-      action(:refresh_target_accounting_line) { |l=0, b| b.frm.button(name: "methodToCall.refresh.line#{l}.anchoraccountingTargetAnchor").click }
+      element(:add_target_accounting_line_button) { |b| b.frm.button(name: 'methodToCall.insertTargetLine.anchoraccountingTargetAnchor') }
+      action(:add_target_accounting_line) { |b| b.add_target_accounting_line_button.click }
+      element(:delete_target_accounting_line_button) { |tl=0, b| b.frm.button(name: "methodToCall.deleteTargetLine.line#{tl}.anchoraccountingTargetAnchor") }
+      action(:delete_target_accounting_line) { |tl=0, b| b.delete_target_accounting_line_button(tl).click }
+      element(:balance_inquiry_target_accounting_line_button) { |tl=0, b|
+        b.frm.button(name: "methodToCall.performBalanceInquiryForTargetLine.line#{tl}.anchoraccountingTargetexistingLineLineAnchor#{tl}")
+      }
+      action(:balance_inquiry_target_accounting_line) { |tl=0, b| b.balance_inquiry_target_accounting_line_button(tl).click }
+      element(:refresh_target_accounting_line_button) { |tl=0, b| b.frm.button(name: "methodToCall.refresh.line#{tl}.anchoraccountingTargetAnchor") }
+      action(:refresh_target_accounting_line) { |tl=0, b| b.refresh_target_accounting_line_button(tl).click }
 
       action(:update_chart_code) { |t='source', i=0, b| b.frm.select(name: "document.#{t}AccountingLine[#{i}].chartOfAccountsCode") }
       action(:update_account_number) { |t='source', i=0, b| b.frm.text_field(name: "document.#{t}AccountingLine[#{i}].accountNumber") }
