@@ -4,7 +4,7 @@ class ProposalPage < ContractAndGrantBasePage
     #PROPOSAL MAINTENANCE - OLD NEW
   element(:status) { |b| b.frm.select(name: 'document.newMaintainableObject.proposalStatusCode') }
   element(:proposal_number) { |b| b.frm.text_field(name: 'document.newMaintainableObject.proposalNumber') }
-  element(:project_title) { |b| b.frm.text_field(name: 'document.newMaintainableObject.proposalProjectTitle') }
+  element(:project_title) { |b| b.frm.textarea(name: 'document.newMaintainableObject.proposalProjectTitle') }
   element(:start_date) { |b| b.frm.text_field(name: 'document.newMaintainableObject.proposalBeginningDate') }
   element(:stop_date) { |b| b.frm.text_field(name: 'document.newMaintainableObject.proposalEndingDate') }
   element(:direct_cost_amount) { |b| b.frm.text_field(name: 'document.newMaintainableObject.proposalDirectCostAmount') }
