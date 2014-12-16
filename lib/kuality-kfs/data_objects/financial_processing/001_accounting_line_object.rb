@@ -80,7 +80,7 @@ class AccountingLineObject < DataFactory
       end
 
       edit_extended_attributes
-      page.send("refresh_#{@type}_accounting_line")
+      page.send("refresh_#{@type}_accounting_line") if page.send("refresh_#{@type}_accounting_line_button").present?
       unless @account_expired_override.nil?
         page.send("#{@type}_account_expired_override").set
         page.send("refresh_#{@type}_accounting_line")

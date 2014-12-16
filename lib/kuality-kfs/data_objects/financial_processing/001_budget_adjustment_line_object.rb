@@ -20,7 +20,7 @@ class BudgetAdjustmentLineObject < AccountingLineObject
     mappings
   end
 
-  def extended_update_mappings
+  def extended_update_mappings(opts={})
     mappings = Hash.new
     mappings.merge!({"update_#{@type}_month_1".to_sym => opts[:month_1]}) unless opts[:month_1].nil?
     mappings.merge!({"update_#{@type}_month_2".to_sym => opts[:month_2]}) unless opts[:month_2].nil?

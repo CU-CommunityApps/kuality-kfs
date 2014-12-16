@@ -25,4 +25,12 @@ class ProposalLookupPage < Lookups
   element(:subcontractor_number) { |b| b.frm.text_field(name: 'proposalSubcontractors.subcontractor.subcontractorNumber') }
   element(:project_director_principal_name) { |b| b.frm.text_field(name: 'lookupPerson.principalName') }
 
+
+  action(:find_proposal_by_proposal_and_grant) do |proposal_number, grant_number, b|
+    #want all defaults that are loaded for page left
+    b.proposal_number.fit proposal_number
+    b.grant_number.fit    grant_number
+    b.search
+  end
+
 end
