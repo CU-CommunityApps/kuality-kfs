@@ -306,7 +306,12 @@ module GlobalConfig
   end
 
   def perform_backdoor_login(user)
-    visit(BackdoorLoginPage).login_as(user)
-    set_current_user(user)
+    visit (MainPage)
+    on BackdoorLoginPage do |backdoorPage|
+      backdoorPage.username.set user
+      backdoorPage.login
+      set_current_user(user)
+    end
   end
+
 end
