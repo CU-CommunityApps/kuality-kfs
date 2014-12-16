@@ -247,7 +247,7 @@ And /^a Salary Expense Transfer initiator inside the organization can view the d
 end
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.
-And /^I update the Salary Expense Transfer document with the following:$/ do
+And /^I update the Labor Object Code on the Salary Expense Transfer Document$/ do
   # do not continue, required parameter not set
   fail ArgumentError, 'Required parameter #{@test_data_parameter_name} does not specify required test input data value for labor_object_code.' if @test_input_data[:labor_object_code].nil? || @test_input_data[:labor_object_code].empty?
 
