@@ -306,10 +306,17 @@ module GlobalConfig
   end
 
   def perform_backdoor_login(user)
+    # do not continue, required parameter not sent
+    fail ArgumentError, 'Required parameter "user" was not specified for perform_backdoor_login.' if user.nil?
+
     visit (MainPage)
     on BackdoorLoginPage do |backdoorPage|
-      backdoorPage.username.set user
+      backdoorPage.username.fit user
       backdoorPage.login
+
+      #Verify that the requested login actually happened and fail when it doesn't
+      (backdoorPage.login_info_readonly.include? user).should be true
+
       set_current_user(user)
     end
   end
