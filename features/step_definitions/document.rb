@@ -83,7 +83,9 @@ end
 Then /^the (.*) document goes to (PROCESSED|ENROUTE|FINAL|INITIATED|SAVED)$/ do |document, doc_status|
   sleep 20
   document_object_for(document).view
-  on(page_class_for(document)).document_status.should == doc_status
+  on page_class_for(document) do |page|
+    page.document_status.should == doc_status
+  end
 end
 
 Then /^the (.*) document goes to one of the following statuses:$/ do |document, required_statuses|

@@ -317,7 +317,7 @@ module GlobalConfig
       backdoorPage.login
 
       #Verify that the requested login actually happened and fail when it doesn't
-      (backdoorPage.login_info_readonly.include? user_lowercase).should be true
+      (backdoorPage.impersonating_user.include? user_lowercase).should be true
 
       set_current_user(user_lowercase)
     end
