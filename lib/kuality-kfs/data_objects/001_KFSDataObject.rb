@@ -184,7 +184,7 @@ class KFSDataObject < DataFactory
 
   def view
     visit(MainPage).doc_search
-    sleep 3
+    sleep 6
     on DocumentSearch do |search|
       search.close_parents
       search.document_type.fit ''
