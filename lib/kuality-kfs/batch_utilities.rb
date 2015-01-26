@@ -143,14 +143,6 @@ module BatchUtilities
     run_unscheduled_job('clearLaborPendingEntriesJob', wait_for_completion)
   end
 
-  def run_nightly_out(wait_for_completion = false)
-    run_unscheduled_job('nightlyOutJob', wait_for_completion)
-  end
-
-  def run_poster(wait_for_completion = false)
-    run_unscheduled_job('posterJob', wait_for_completion)
-  end
-
   def run_clear_pending_entries(wait_for_completion = false)
     run_unscheduled_job('clearPendingEntriesJob', wait_for_completion)
   end
