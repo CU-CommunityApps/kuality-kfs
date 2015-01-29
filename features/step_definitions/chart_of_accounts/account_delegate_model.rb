@@ -5,7 +5,6 @@ end
 And /^I edit an Account Delegate Model$/ do
   visit(MainPage).account_delegate_model
   on AccountDelegateModelLookupPage do |page|
-    # TODO: make random select of edit, as currently need all three variables to select edit button
     page.chart_of_accounts_code.fit      get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
     page.search
     page.edit_random

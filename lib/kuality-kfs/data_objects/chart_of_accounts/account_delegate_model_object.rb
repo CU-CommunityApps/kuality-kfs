@@ -7,14 +7,15 @@ class AccountDelegateModelObject < KFSDataObject
   def initialize(browser, opts={})
     @browser = browser
 
+    #Blank/Empty attribute values are being set in the merge of parameter defaults for the object
     defaults = {
       description:                          random_alphanums(40, 'AFT'),
       chart_of_accounts_code:               get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-      organization_code:                    '0100',       #TODO replace with bootstrap data
+      organization_code:                    '',
       account_delegate_model_name:          random_alphanums(40, 'AFT'),
-      document_type_name:                   'IB',
-      account_delegate_start_date:          '01/01/2010', #TODO replace with bootstrap data
-      account_delegate_principal_name:      'JMD11',      #TODO replace with bootstrap data
+      document_type_name:                   '',
+      account_delegate_start_date:          '',
+      account_delegate_principal_name:      '',
       active_indicator:                     :set,
       active:                               :set
     }
@@ -33,5 +34,18 @@ class AccountDelegateModelObject < KFSDataObject
                      :approval_to_this_account, :account_delegate_principal_name, :active
     end
   end
+
+  # Class Methods:
+  class << self
+
+    # Attributes that are required for a successful save/submit.
+    # @return [Array] List of Symbols for attributes that are required
+    def required_attributes
+      superclass.required_attributes | [ :chart_of_accounts_code, :organization_code, :account_delegate_model_name,
+                                         :document_type_name, :account_delegate_start_date, :account_delegate_principal_name,
+                                         :active_indicator, :active ]
+    end
+
+  end #class<<self
 
 end
