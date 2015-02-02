@@ -3,17 +3,13 @@ class AccountDelegateGlobalObject < KFSDataObject
   attr_accessor :doc_type, :primary_route, :start_date,
                 :principal_name, :chart_code, :account_number
 
-  def initialize(browser, opts={})
-    @browser = browser
-
-    defaults = {
-        description:    random_alphanums(20, 'AFT'),
-        doc_type:       'KFST',
-        principal_name: get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
-        chart_code:     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
-        account_number: get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER)
-    }
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_DELEGATE_GLOBAL)).merge(opts))
+  def defaults
+    super.merge({
+      description:    random_alphanums(20, 'AFT'),
+      principal_name: get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
+      chart_code:     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
+      account_number: get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER)
+    }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_DELEGATE_GLOBAL))
   end
 
   def build
@@ -42,4 +38,16 @@ class AccountDelegateGlobalObject < KFSDataObject
   #    end
   #  end
   #end
+
+  # Class Methods:
+  class << self
+
+    # Attributes that are required for a successful save/submit.
+    # @return [Array] List of Symbols for attributes that are required
+    def required_attributes
+      superclass.required_attributes | [ :start_date, :doc_type, :principal_name, :chart_code, :account_number]
+    end
+
+  end #class<<self
+
 end

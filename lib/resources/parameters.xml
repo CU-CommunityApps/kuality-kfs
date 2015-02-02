@@ -393,8 +393,8 @@
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="organization_code=0100;account_delegate_start_date=01/01/2010;account_delegate_principal_name=JMD11"/>
-      <column name="PARM_DESC_TXT" value="Defaults for the account delegate model object"/>
+      <column name="VAL" value="organization_code=0100;account_delegate_start_date=07/01/2014;account_delegate_principal_name=JMD11;document_type_name=IB"/>
+      <column name="PARM_DESC_TXT" value="Defaults for the account delegate model object. account_delegate_start_date should be first day of current fiscal year."/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
     <insert tableName="KRCR_PARM_T">
@@ -405,9 +405,21 @@
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="start_date=01/01/2014"/>
-      <column name="PARM_DESC_TXT" value="Defaults for the account delegate object"/>
+      <column name="VAL" value="start_date=07/01/2014;doc_type_name=IB"/>
+      <column name="PARM_DESC_TXT" value="Defaults for the account delegate object. start_date should be first day of current fiscal year."/>
       <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+       <column name="NMSPC_CD" value="KFS-AFTEST"/>
+       <column name="CMPNT_CD" value="All"/>
+       <column name="PARM_NM" value="DEFAULTS_FOR_ACCOUNT_DELEGATE_GLOBAL"/>
+       <column name="APPL_ID" value="KFS"/>
+       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+       <column name="VER_NBR" value="1"/>
+       <column name="PARM_TYP_CD" value="VALID"/>
+       <column name="VAL" value="start_date=07/01/2014;doc_type=KFST"/>
+       <column name="PARM_DESC_TXT" value="Defaults for the account delegate global object. start_date should be first day of current fiscal year."/>
+       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
     <insert tableName="KRCR_PARM_T">
       <column name="NMSPC_CD" value="KFS-AFTEST"/>
