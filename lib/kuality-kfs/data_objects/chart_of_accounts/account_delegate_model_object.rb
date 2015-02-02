@@ -4,22 +4,14 @@ class AccountDelegateModelObject < KFSDataObject
                 :account_delegate_primary_route, :account_delegate_start_date, :approval_from_this_account,
                 :approval_to_this_account, :account_delegate_principal_name, :active
 
-  def initialize(browser, opts={})
-    @browser = browser
-
-    #Blank/Empty attribute values are being set in the merge of parameter defaults for the object
-    defaults = {
-      description:                          random_alphanums(40, 'AFT'),
-      chart_of_accounts_code:               get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-      organization_code:                    '',
-      account_delegate_model_name:          random_alphanums(40, 'AFT'),
-      document_type_name:                   '',
-      account_delegate_start_date:          '',
-      account_delegate_principal_name:      '',
-      active_indicator:                     :set,
-      active:                               :set
-    }
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_DELEGATE_MODEL)).merge(opts))
+  def defaults
+    super.merge({
+        description:                          random_alphanums(40, 'AFT'),
+        chart_of_accounts_code:               get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
+        account_delegate_model_name:          random_alphanums(40, 'AFT'),
+        active_indicator:                     :set,
+        active:                               :set
+      }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_DELEGATE_MODEL))
   end
 
   def build
