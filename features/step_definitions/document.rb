@@ -32,6 +32,19 @@ And /^I copy a random (.*) document with (.*) status/ do |document, doc_status|
 
 end
 
+And /^I open the document with ID (\d+)$/ do |document_id|
+  visit(MainPage).doc_search
+  sleep 6
+  on DocumentSearch do |search|
+    search.close_parents
+    search.document_type.fit ''
+    search.document_id.fit   document_id
+    search.search
+    search.wait_for_search_results
+    search.open_doc document_id
+  end
+end
+
 When /^I view the (.*) document$/ do |document|
   document_object_for(document).view
 end

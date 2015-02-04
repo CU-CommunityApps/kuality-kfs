@@ -134,12 +134,12 @@ class SalaryExpenseTransferObject < KFSDataObject
       llpe_debit_credit_code, account, object, period, balance_type, amount, debit_credit_code)
 
     # return true only when all input parameters match;
-    # period values could be zero length strings; amounts could be floats; rest should be string values
+    # period values could be zero length strings; amounts could be floats with zeros in parts of cents; rest should be string values
     # Note: LLPE clearing line zero dollar amounts were observed as debits when they should be credits
     #       taking this into consideration because test will fail unless both debit and credit are allowed for zero dollar amounts.
     if (llpe_account == account) && (llpe_object == object) && (llpe_balance_type == balance_type) &&
         ( (llpe_period.empty? && period.empty?) || (!llpe_period.empty? && !period.empty? && llpe_period == period)  ) &&
-        ( (llpe_amount.to_s == '0.00') || ((llpe_amount.to_s == amount.to_s) && (llpe_debit_credit_code == debit_credit_code)) )
+        ( (llpe_amount.to_s == '0.00') || (((llpe_amount.to_f).to_s == (amount.to_f).to_s) && (llpe_debit_credit_code == debit_credit_code)) )
         return true
     else
       return false

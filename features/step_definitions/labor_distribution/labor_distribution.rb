@@ -178,16 +178,14 @@ And /^I set transfer from account number to '(.*)' on Benefit Expense Transfer d
 end
 
 Then /^I run the nightly Labor batch process$/ do
-  steps %Q{
-    Given I am logged in as a KFS Operations
-    And I run the Labor Enterprise Feed Process
-    And I run the Labor Nightly Out Process
-    And I run the Labor Scrubber Process
-    And I run the Labor Poster Process
-    And I run the Labor Balancing Job
-    And I run the Labor Feed Job
-    And I run the Labor Clear Pending Entries Job
-   }
+  step "I am logged in as a KFS Operations"
+  step "I run the Labor Enterprise Feed Process"
+  step "I run the Labor Nightly Out Process"
+  step "I run the Labor Scrubber Process"
+  step "I run the Labor Poster Process"
+  step "I run the Labor Balancing Job"
+  step "I run the Labor Feed Job"
+  step "I run the Labor Clear Pending Entries Job"
 
   # GL nightly is deferred; See QA-830
   #step "I run the GL Nightly Processes"
@@ -244,6 +242,7 @@ And /^a Salary Expense Transfer initiator inside the organization can view the d
 
   step "I am logged in as \"#{@test_input_data[:user_inside_organization]}\""
   step "I open the document with ID #{@remembered_document_id}"
+  step "I should not get an Authorization Exception Report error"
 end
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.

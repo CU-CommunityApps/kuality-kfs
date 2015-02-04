@@ -94,17 +94,6 @@ And /^I print out all "(field|textarea|button|select|checkbox|radio|link)" on th
   end
 end #print all
 
-And /^I open the document with ID (\d+)$/ do |document_id|
-  visit(MainPage).doc_search
-  on DocumentSearch do |search|
-    search.document_type.fit ''
-    search.document_id.fit   document_id
-    search.search
-    search.wait_for_search_results
-    search.open_doc document_id
-  end
-end
-
 And /^I open the (.*) document with ID (\d+)$/ do |document, document_id|
   doc_object = snake_case document
   object_klass = object_class_for(document)
