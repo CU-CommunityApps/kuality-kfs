@@ -45,14 +45,12 @@ And /^I change (.*) target account number to '(.*)'$/ do |document, account_numb
   on(target_page).update_target_account_number.fit account_number
 end
 
-And /^I transfer the Salary to another Account in my Organization$/ do |table|
-  arguments = table.rows_hash
-  @to_account = arguments['To Account']
+# This step requires that the global hash @test_input_data exist and hold the input data required.
+And /^I transfer the Salary to another Account in my Organization$/ do
+  # do not continue, required parameter not sent
+  fail ArgumentError, "Required parameter #{@test_data_parameter_name} does not specify required test input data value for to_account_in_organization." if @test_input_data[:to_account_in_organization].nil? || @test_input_data[:to_account_in_organization].empty?
 
-  # do not continue, required parameters not sent
-  fail ArgumentError, 'Required parameter "To Account" was not specified.' if @to_account.nil?
-
-  step "I change Salary Expense Transfer target account number to '#@to_account'"
+  step "I change Salary Expense Transfer target account number to '#{@test_input_data[:to_account_in_organization]}'"
 end
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.
@@ -178,16 +176,22 @@ And /^I set transfer from account number to '(.*)' on Benefit Expense Transfer d
 end
 
 Then /^I run the nightly Labor batch process$/ do
-  steps %Q{
-    Given I am logged in as a KFS Operations
-    And I run the Labor Enterprise Feed Process
-    And I run the Labor Nightly Out Process
-    And I run the Labor Scrubber Process
-    And I run the Labor Poster Process
-    And I run the Labor Balancing Job
-    And I run the Labor Feed Job
-    And I run the Labor Clear Pending Entries Job
-   }
+  step "I am logged in as a KFS Operations"
+  sleep 10
+  step "I run the Labor Enterprise Feed Process"
+  sleep 10
+  step "I run the Labor Nightly Out Process"
+  sleep 10
+  step "I run the Labor Scrubber Process"
+  sleep 10
+  step "I run the Labor Poster Process"
+  sleep 10
+  step "I run the Labor Balancing Job"
+  sleep 10
+  step "I run the Labor Feed Job"
+  sleep 10
+  step "I run the Labor Clear Pending Entries Job"
+  sleep 10
 
   # GL nightly is deferred; See QA-830
   #step "I run the GL Nightly Processes"
@@ -244,6 +248,7 @@ And /^a Salary Expense Transfer initiator inside the organization can view the d
 
   step "I am logged in as \"#{@test_input_data[:user_inside_organization]}\""
   step "I open the document with ID #{@remembered_document_id}"
+  step "I should not get an Authorization Exception Report error"
 end
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.

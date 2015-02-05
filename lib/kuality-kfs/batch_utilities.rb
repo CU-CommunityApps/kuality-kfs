@@ -14,6 +14,7 @@ module BatchUtilities
 
   def run_unscheduled_job(job_name, wait_for_completion, max_retries=12)
     @browser.goto "#{$base_url}batchModify.do?methodToCall=start&name=#{job_name}&group=unscheduled"
+    sleep 5
     on SchedulePage do |page|
       page.run_job
       if wait_for_completion == true
