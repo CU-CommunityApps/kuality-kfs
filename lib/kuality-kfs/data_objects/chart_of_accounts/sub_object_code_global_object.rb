@@ -6,26 +6,19 @@ class SubObjectCodeGlobalObject < KFSDataObject
                  :noc_fiscal_year, :noc_chart_code, :noc_object_code,
                  :na_chart_code, :na_account_number
 
-  def initialize(browser, opts={})
-    @browser = browser
-
-    defaults = {
+  def defaults
+    super.merge({
         description:                    random_alphanums(40, 'AFT'),
         new_chart_code:                 get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
         organization_document_number:   get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER),
-        new_fiscal_year:                get_aft_parameter_value('CURRENT_FISCAL_YEAR'),
-        new_sub_object_code:            'tst',
+        new_fiscal_year:                get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
         new_sub_object_code_name:       random_alphanums(20, 'AFT'),
         new_sub_object_code_short_name: random_alphanums(5, 'ATF'),
-        noc_fiscal_year:                get_aft_parameter_value('CURRENT_FISCAL_YEAR'),
+        noc_fiscal_year:                get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
         noc_chart_code:                 get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
-        noc_object_code:                '1000', #TODO replace with bootstrap data
         na_chart_code:                  get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
         na_account_number:              get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER),
-        press:                          :save
-
-    }
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_SUB_ACCOUNT_CODE_GLOBAL)).merge(opts))
+    }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_SUB_OBJECT_CODE_GLOBAL))
   end
 
   def build
