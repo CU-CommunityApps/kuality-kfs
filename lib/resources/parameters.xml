@@ -645,7 +645,7 @@
          <column name="OBJ_ID" valueNumeric="sys_guid()"/>
          <column name="VER_NBR" value="1"/>
          <column name="PARM_TYP_CD" value="VALID"/>
-         <column name="VAL" value="organizationCode=9002"/>
+         <column name="VAL" value="organizationCode=9005"/>
          <column name="PARM_DESC_TXT" value="The specific data values required for Scenario: Create a Sub-Object Code Global using an organization hierarchy"/>
          <column name="EVAL_OPRTR_CD" value="A"/>
        </insert>

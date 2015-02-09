@@ -1,6 +1,6 @@
-# And /^I start an empty Sub-Object Code Global document$/ do
-#   @sub_object_code_global = create SubObjectCodeGlobalObject
-# end
+And /^I start an empty Sub-Object Code Global document$/ do
+  @sub_object_code_global = create SubObjectCodeGlobalObject
+end
 
 
 When /^I add multiple account lines using an Organization Code$/ do
@@ -15,10 +15,9 @@ end
 
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.
-Then /^retrieved accounts equal all Active Accounts for these Organization Codes$/ do
-  organization_code = get_aft_parameter_value(ParameterConstants::TEST_CREATE_SUB_OBJ_CD_GBL_WITH_ORG_HIERARCHY)
-  #get the accounts we should validate against
-  accounts_hash = get_kuali_business_objects('KFS-COA','Account',"organizationCode=#{organization_code}&closed=N")
+Then /^retrieved accounts equal all Active Accounts for the Organization Code$/ do
+  #get the accounts we should validate against using the previously obtained test_input_data values
+  accounts_hash = get_kuali_business_objects('KFS-COA','Account',"organizationCode=#{@test_input_data[:organizationCode]}&closed=N")
   accounts = accounts_hash['org.kuali.kfs.coa.businessobject.Account']
 
   #ensure accounts were found
