@@ -90,12 +90,6 @@ Given  /^I create a Salary Expense Transfer with following:$/ do |table|
   @salary_expense_transfer.remembered_employee_id = @employee_id
 end
 
-# This step causes the global hash @test_input_data to come into existence.
-# This is a Hash of the Parameter Values in the Parameter table for the specified Parameter Name.
-Given /^I obtain (.*) data values required for the test from the Parameter table$/ do |parameter_name|
-  @test_input_data = get_aft_parameter_values_as_hash(parameter_name)
-end
-
 # This step requires that the global hash @test_input_data exist and hold the input data required.
 Given /^I create a Salary Expense Transfer as a Salary Transfer Initiator$/ do |table|
   arguments = table.rows_hash
