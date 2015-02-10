@@ -3,21 +3,21 @@ And /^I start an empty Sub-Object Code Global document$/ do
 end
 
 
-When /^I add multiple account lines using an Organization Code$/ do
+When /^I add multiple account lines to the Sub Object Code Global document using an Organization Code$/ do
   step "I obtain #{ParameterConstants::TEST_CREATE_SUB_OBJ_CD_GBL_WITH_ORG_HIERARCHY} data values required for the test from the Parameter table"
 
   #do not continue if input data required for next step in test was not specified in the Parameter table
   fail ArgumentError, "Parameter #{ParameterConstants::TEST_CREATE_SUB_OBJ_CD_GBL_WITH_ORG_HIERARCHY} required for this test does not exist in the Parameter table." if @test_input_data.nil? || @test_input_data.empty?
-  fail ArgumentError, "Parameter #{ParameterConstants::TEST_CREATE_SUB_OBJ_CD_GBL_WITH_ORG_HIERARCHY} does not specify required input test data value for organizationCode" if @test_input_data[:organizationCode].nil? || @test_input_data[:organizationCode].empty?
+  fail ArgumentError, "Parameter #{ParameterConstants::TEST_CREATE_SUB_OBJ_CD_GBL_WITH_ORG_HIERARCHY} does not specify required input test data value for organization_code" if @test_input_data[:organization_code].nil? || @test_input_data[:organization_code].empty?
 
-  @sub_object_code_global.add_multiple_account_lines(@test_input_data[:organizationCode])
+  @sub_object_code_global.add_multiple_account_lines(@test_input_data[:organization_code])
 end
 
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.
 Then /^retrieved accounts equal all Active Accounts for the Organization Code$/ do
   #get the accounts we should validate against using the previously obtained test_input_data values
-  accounts_hash = get_kuali_business_objects('KFS-COA','Account',"organizationCode=#{@test_input_data[:organizationCode]}&closed=N")
+  accounts_hash = get_kuali_business_objects('KFS-COA','Account',"organizationCode=#{@test_input_data[:organization_code]}&closed=N")
   accounts = accounts_hash['org.kuali.kfs.coa.businessobject.Account']
 
   #ensure accounts were found
