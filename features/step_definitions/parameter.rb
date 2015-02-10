@@ -43,3 +43,9 @@ And /^I finalize the Parameter document$/ do
   step 'I approve the Parameter document'
   step 'the Parameter document goes to FINAL'
 end
+
+# This step causes the global hash @test_input_data to come into existence.
+# This is a Hash of the Parameter Values in the Parameter table for the specified Parameter Name.
+Given /^I obtain (.*) data values required for the test from the Parameter table$/ do |parameter_name|
+  @test_input_data = get_aft_parameter_values_as_hash(parameter_name)
+end

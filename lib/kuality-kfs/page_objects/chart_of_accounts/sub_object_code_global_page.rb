@@ -22,6 +22,11 @@ class SubObjectCodeGlobalPage < KFSBasePage
   action(:na_add_account) { |b| b.frm.button(name: 'methodToCall.addLine.accountGlobalDetails.(!!org.kuali.kfs.coa.businessobject.AccountGlobalDetail!!)').click }
 
   action(:add_multiple_account_lines) { |b| b.frm.button(title: 'Multiple Value Search on Account').click }
+
   #Using this to verify account numbers were added when user adds multiple account lines
-  element(:verify_account_number) { |chart_code=get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE), account_number, b| b.frm.link(title: "show inquiry for Account Chart Code=#{chart_code} Account Number=#{account_number} ") }
+  element(:verify_account_number) do |chart_code, account_number, b|
+    chart_code.nil?.should_not
+    b.frm.link(title: "show inquiry for Account Chart Code=#{chart_code} Account Number=#{account_number} ")
+  end
+
 end
