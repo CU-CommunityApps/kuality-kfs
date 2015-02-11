@@ -14,7 +14,6 @@ module BatchUtilities
 
   def run_unscheduled_job(job_name, wait_for_completion, max_retries=12)
     @browser.goto "#{$base_url}batchModify.do?methodToCall=start&name=#{job_name}&group=unscheduled"
-    sleep 5
     on SchedulePage do |page|
       page.run_job
       if wait_for_completion == true
@@ -133,7 +132,11 @@ module BatchUtilities
   end
 
   def run_labor_balance(wait_for_completion = false)
-    run_unscheduled_job('laborBalancingJob', wait_for_completion)
+    #Labor balancing job runs for a long time (observed as much as 10+ minutes).
+    #To prevent intermittent failures, set max number of retries to 240 so that
+    #it has enough time to complete before the next batch job is started,
+    # i.e. reties * 5secLoopWait in run_unscheduled_job = 240*5 = 1200 sec should be enough
+    run_unscheduled_job('laborBalancingJob', wait_for_completion, 240)
   end
 
   def run_labor_feed(wait_for_completion = false)

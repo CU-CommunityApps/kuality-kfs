@@ -171,21 +171,13 @@ end
 
 Then /^I run the nightly Labor batch process$/ do
   step "I am logged in as a KFS Operations"
-  sleep 10
   step "I run the Labor Enterprise Feed Process"
-  sleep 10
   step "I run the Labor Nightly Out Process"
-  sleep 10
   step "I run the Labor Scrubber Process"
-  sleep 10
   step "I run the Labor Poster Process"
-  sleep 10
   step "I run the Labor Balancing Job"
-  sleep 10
   step "I run the Labor Feed Job"
-  sleep 10
   step "I run the Labor Clear Pending Entries Job"
-  sleep 10
 
   # GL nightly is deferred; See QA-830
   #step "I run the GL Nightly Processes"
