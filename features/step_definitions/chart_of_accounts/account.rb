@@ -44,15 +44,6 @@ And /^I edit an Account with a Sub-Fund Group Code of (.*)/ do |sub_fund_group_c
   end
 end
 
-When /^I enter (.*) as an invalid Labor Benefit Rate Category Code$/  do |labor_benefit_rate_category_code|
-  on AccountPage do |page|
-    @account = make AccountObject
-    page.description.set random_alphanums(40, 'AFT')
-    page.labor_benefit_rate_category_code.fit labor_benefit_rate_category_code
-    page.save
-  end
-end
-
 And /^I edit an Account$/ do
   visit(MainPage).account
   on AccountLookupPage do |page|
@@ -61,18 +52,15 @@ And /^I edit an Account$/ do
   end
   on AccountPage do |page|
     @account = make AccountObject
-    page.description.set random_alphanums(40, 'AFT')
+    page.description.set @account.description
     @account.document_id = page.document_id
-    @account.description = page.description
+    @account.absorb! :old
+    @account.absorb! :new
   end
 end
 
 And /^I enter Sub Fund Group Code of (.*)/ do |sub_fund_group_code|
   on(AccountPage).sub_fund_group_code.set sub_fund_group_code
-end
-
-And /^I enter Sub Fund Program Code of (.*)/  do |subfund_program_code|
-  on(AccountPage).subfund_program_code.set subfund_program_code
 end
 
 And /^I close the Account$/ do
@@ -118,8 +106,7 @@ And /^I enter a Continuation Chart Of Accounts Code that equals the Chart of Acc
 end
 
 And /^I enter a Continuation Account Number that equals the Account Number$/ do
-  #on(AccountPage) { |page| page.continuation_account_number.fit page.original_account_number }
-  @account.edit continuation_account_number: on(AccountPage).account_number_old # TODO: It may be more reliable to pull this from the webservice
+  @account.edit continuation_account_number: on(AccountPage).account_number_old
 end
 
 And /^I clone a random Account with the following changes:$/ do |table|
@@ -127,7 +114,6 @@ And /^I clone a random Account with the following changes:$/ do |table|
 end
 
 And /^I extend the Expiration Date of the Account document (\d+) days$/ do |days|
-  #on(AccountPage).account_expiration_date.fit (@account.account_expiration_date + days.to_i).strftime('%m/%d/%Y')
   @account.edit account_expiration_date: (@account.account_expiration_date + days.to_i).strftime('%m/%d/%Y')
 end
 
@@ -141,62 +127,19 @@ And /^I clone a random Account with name, chart code, and description changes$/ 
 end
 
 And /^I edit an Account with a random Sub-Fund Group Code$/ do
-  account_number = get_kuali_business_object('KFS-COA',
-                                             'Account',
-                                             'subFundGroupCode=*&extension.programCode=*&closed=N&extension.appropriationAccountNumber=*&active=Y&accountExpirationDate=NULL')['accountNumber'].sample
   visit(MainPage).account
   on AccountLookupPage do |page|
-    page.account_number.fit account_number
+    page.chart_code.fit get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
+    page.account_number.fit get_account_of_type('Random Sub-Fund Group Code')
     page.search
     page.edit_random
   end
-end
-
-When /^I enter an invalid (.*)$/  do |field_name|
-  case field_name
-    when 'Sub-Fund Program Code'
-      step "I enter a Sub-Fund Program Code of #{random_alphanums(4, 'XX').upcase}"
-    when 'Major Reporting Category Code'
-      step "I enter #{random_alphanums(6, 'XX').upcase} as an invalid Major Reporting Category Code"
-    when 'Appropriation Account Number'
-      step "I enter #{random_alphanums(6, 'XX').upcase} as an invalid Appropriation Account Number"
-    when 'Labor Benefit Rate Code'
-      step "I enter #{random_alphanums(1, 'X').upcase} as an invalid Labor Benefit Rate Category Code"
-  end
-end
-
-
-Then /^I should get (invalid|an invalid) (.*) errors?$/ do |invalid_ind, error_field|
   on AccountPage do |page|
-    case error_field
-      when 'Sub-Fund Program Code'
-        page.errors.should include "Sub-Fund Program Code #{page.subfund_program_code.value} is not associated with Sub-Fund Group Code #{page.sub_fund_group_code.value}."
-      when 'Major Reporting Category Code'
-        page.errors.should include "Major Reporting Category Code (#{page.major_reporting_category_code.value}) does not exist."
-      when 'Appropriation Account Number'
-        page.errors.should include "Appropriation Account Number #{page.appropriation_account_number.value} is not associated with Sub-Fund Group Code #{page.sub_fund_group_code.value}."
-      when 'Labor Benefit Rate Code'
-        page.errors.should include 'Invalid Labor Benefit Rate Code'
-        page.errors.should include "The specified Labor Benefit Rate Category Code #{page.labor_benefit_rate_category_code.value} does not exist."
-    end
+    @account = make AccountObject
+    page.description.set @account.description
+    @account.absorb! :old
+    @account.absorb! :new
   end
-end
-
-
-And /^I enter (Sub Fund Program Code|Sub Fund Program Code and Appropriation Account Number) that (is|are) associated with a random Sub Fund Group Code$/ do |codes, is_are|
-  account = get_kuali_business_object('KFS-COA','Account','subFundGroupCode=*&extension.programCode=*&closed=N&extension.appropriationAccountNumber=*&active=Y&accountExpirationDate=NULL')
-  on AccountPage do |page|
-    page.sub_fund_group_code.set account['subFundGroup.codeAndDescription'].sample.split('-')[0].strip
-    page.subfund_program_code.set account['extension.programCode'].sample
-    unless codes == 'Sub Fund Program Code'
-      page.appropriation_account_number.set account['extension.appropriationAccountNumber'].sample
-    end
-  end
-end
-
-And /^I enter Appropriation Account Number that is not associated with the Sub Fund Group Code$/  do
-  # the account# is not used as its own appropriation account#
-  @account.edit appropriation_account_number: on(AccountPage).account_number_old # TODO: It may be more reliable to pull this from the webservice
 end
 
 And /^I create an Account and leave blank for the fields of Guidelines and Purpose tab$/ do
