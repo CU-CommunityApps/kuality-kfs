@@ -22,27 +22,15 @@ class AccountObject < KFSDataObject
                   chart_code:                        get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
                   number:                            random_alphanums(7),
                   name:                              random_alphanums(10),
-                  organization_code:                 '01G0',  #TODO replace with bootstrap data
                   campus_code:                       get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_CODE),
-                  effective_date:                    '01/01/2010',
                   postal_code:                       get_random_postal_code('*'),
                   city:                              get_generic_city,
                   state:                             get_random_state_code,
                   address:                           get_generic_address_1,
                   type_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_TYPE_CODE),
-                  sub_fund_group_code:               'ADMSYS', #TODO replace with bootstrap data
-                  higher_ed_funct_code:              '4000',   #TODO replace with bootstrap data
-                  restricted_status_code:            'U - Unrestricted',  #TODO replace with bootstrap data
                   fo_principal_name:                 get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
                   supervisor_principal_name:         get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
                   manager_principal_name:            get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER),
-                  budget_record_level_code:          'C - Consolidation', #TODO replace with bootstrap data
-                  sufficient_funds_code:             'C - Consolidation', #TODO replace with bootstrap data
-                  expense_guideline_text:            'expense guideline text',
-                  income_guideline_text:             'income guideline text',
-                  purpose_text:                      'purpose text',
-                  account_expiration_date:           '',
-                  press:                             :save
                 }).merge(default_icr_accounts)
                   .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT))
   end

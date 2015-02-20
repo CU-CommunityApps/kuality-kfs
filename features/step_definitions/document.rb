@@ -55,10 +55,12 @@ When /^I display the (.*) document$/ do |document|
 end
 
 When /^I (#{BasePage::available_buttons}) the (.*) document$/ do |button, document|
+  doc_object = snake_case document
   button.gsub!(' ', '_')
-  document_object_for(document).send(button)
+  get(doc_object).send(button)
   on(YesOrNoPage).yes if button == 'cancel'
-  sleep 20 if (button == 'blanket approve' || button == 'approve' || 'submit')
+  sleep 20 if (button == 'approve' || 'submit')
+  sleep 30 if (button == 'blanket approve')
 
   @requisition_id = on(RequisitionPage).requisition_id if document == 'Requisition' && button == 'submit'
 end
