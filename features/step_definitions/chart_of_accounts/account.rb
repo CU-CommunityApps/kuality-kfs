@@ -127,14 +127,10 @@ And /^I clone a random Account with name, chart code, and description changes$/ 
 end
 
 And /^I edit an Account with a random Sub-Fund Group Code$/ do
-  chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-  account_number = get_kuali_business_object('KFS-COA',
-                                             'Account',
-                                             "chartCode=#{chart_code}&subFundGroupCode=*&extension.programCode=*&closed=N&extension.appropriationAccountNumber=*&active=Y&accountExpirationDate=NULL")['accountNumber'].sample
   visit(MainPage).account
   on AccountLookupPage do |page|
-    page.chart_code.fit chart_code
-    page.account_number.fit account_number
+    page.chart_code.fit get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
+    page.account_number.fit get_account_of_type('Random Sub-Fund Group Code')
     page.search
     page.edit_random
   end
