@@ -74,13 +74,37 @@
     <insert tableName="KRCR_PARM_T">
       <column name="NMSPC_CD" value="KFS-AFTEST"/>
       <column name="CMPNT_CD" value="All"/>
-      <column name="PARM_NM" value="DFAULT_SUB_ACCOUNT_TYPE_CODE"/>
+      <column name="PARM_NM" value="DEFAULT_EXPENSE_SUB_ACCOUNT_TYPE_CODE"/>
       <column name="APPL_ID" value="KFS"/>
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="CS"/>
-      <column name="PARM_DESC_TXT" value="Default sub account type code for automated functional testing"/>
+      <column name="VAL" value="EX"/>
+      <column name="PARM_DESC_TXT" value="Default expense sub account type code for automated functional testing."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+       <column name="NMSPC_CD" value="KFS-AFTEST"/>
+       <column name="CMPNT_CD" value="All"/>
+       <column name="PARM_NM" value="DEFAULT_COST_SHARE_SUB_ACCOUNT_TYPE_CODE"/>
+       <column name="APPL_ID" value="KFS"/>
+       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+       <column name="VER_NBR" value="1"/>
+       <column name="PARM_TYP_CD" value="VALID"/>
+       <column name="VAL" value="CS"/>
+       <column name="PARM_DESC_TXT" value="Default cost share sub account type code for automated functional testing"/>
+       <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_COST_SHARE_SUB_FUND_GROUP_CODE"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="APFEDL"/>
+      <column name="PARM_DESC_TXT" value="Only certain sub-fund group codes are acceptable for the cost share sub-account type code. This parameter specifies a valid sub-fund group code that can be used with the cost share sub-account type code value in automated functional testing."/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
     <insert tableName="KRCR_PARM_T">
