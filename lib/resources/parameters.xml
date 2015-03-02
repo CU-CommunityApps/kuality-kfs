@@ -769,6 +769,18 @@
          <column name="PARM_DESC_TXT" value="Defaults for the Award"/>
          <column name="EVAL_OPRTR_CD" value="A"/>
        </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULT_PRE_ENCUMBRANCE_REVENUE_OBJECT_CODE_PARAMETER_AND_VALUE"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="namespace_code=KFS-FP;component=Pre-Encumbrance;parameter_name=OBJECT_TYPES;parameter_value=EX,IC"/>
+         <column name="PARM_DESC_TXT" value="Automated functional testing parameter used to specify the KFS application parameter to allow revenue object codes on a Pre-Encumbrance document. Parameter values delimiter of comma will be changed to semicolon by testing code."/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
 
 	<modifySql dbms="mysql">
 		<replace replace="sys_guid()" with="uuid()" />
