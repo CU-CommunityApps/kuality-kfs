@@ -14,7 +14,6 @@ module BatchUtilities
           sleep loop_wait_seconds.to_i
           page.refresh
           x += 1
-puts x
         end
       end
     end
