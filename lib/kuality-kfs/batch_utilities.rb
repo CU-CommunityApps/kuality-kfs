@@ -1,26 +1,17 @@
 module BatchUtilities
 
-  def run_nightly_out(wait_for_completion = false)
-    run_unscheduled_job('nightlyOutJob', wait_for_completion)
-  end
-
-  def run_poster(wait_for_completion = false)
-    run_unscheduled_job('posterJob', wait_for_completion)
-  end
-
-  def run_scrubber(wait_for_completion = false)
-    run_unscheduled_job('scrubberJob', wait_for_completion)
-  end
-
-  def run_unscheduled_job(job_name, wait_for_completion, max_retries=12)
+  #Default values will allow for maximum processing time of 15 minutes (900 seconds) before returning regardless of completion status.
+  def run_unscheduled_job(job_name, wait_for_completion=true, max_seconds_wait=900, loop_wait_seconds=5)
+    max_retries = (max_seconds_wait.to_i / loop_wait_seconds.to_i).ceil
     @browser.goto "#{$base_url}batchModify.do?methodToCall=start&name=#{job_name}&group=unscheduled"
     on SchedulePage do |page|
       page.run_job
       if wait_for_completion == true
         x = 0
-        while x < max_retries # Hell, let's give it a whole minute if it needs it.
+        while x < max_retries
           break if (page.job_status =~ /Succeeded/) == 0
-          sleep 5
+          break if (page.job_status =~ /Failed/) == 0
+          sleep loop_wait_seconds.to_i
           page.refresh
           x += 1
         end
@@ -28,26 +19,75 @@ module BatchUtilities
     end
   end
 
-  def run_unscheduled_job_until(job_name, seconds, refresh_rate=2)
-    refresh_attempts = (seconds.to_i/refresh_rate.to_i).ceil
-    @browser.goto "#{$base_url}batchModify.do?methodToCall=start&name=#{job_name}&group=unscheduled"
-    on SchedulePage do |page|
-      page.run_job
-      x = 0
-      while x < refresh_attempts
-        break if (page.job_status =~ /Succeeded/) == 0
-        sleep refresh_rate.to_i
-        page.refresh
-        x += 1
-      end
-    end
+
+################
+# GL Batch Jobs
+################
+  def run_nightly_out(wait_for_completion = false)
+    run_unscheduled_job('nightlyOutJob', wait_for_completion)
   end
+
+  def run_scrubber(wait_for_completion = false)
+    run_unscheduled_job('scrubberJob', wait_for_completion)
+  end
+
+  def run_poster(wait_for_completion = false)
+    run_unscheduled_job('posterJob', wait_for_completion)
+  end
+
+  def run_poster_balancing(wait_for_completion = false)
+    run_unscheduled_job('posterBalancingJob', wait_for_completion, 1200)
+  end
+
+  def run_clear_pending_entries(wait_for_completion = false)
+    run_unscheduled_job('clearPendingEntriesJob', wait_for_completion)
+  end
+
+
+##################
+# Labor Batch Jobs
+##################
+  def run_labor_enterprise_feed(wait_for_completion = false)
+    run_unscheduled_job('laborEnterpriseFeedJob', wait_for_completion)
+  end
+
+  def run_labor_nightly_out(wait_for_completion = false)
+    run_unscheduled_job('laborNightlyOutJob', wait_for_completion)
+  end
+
+  def run_labor_scrubber(wait_for_completion = false)
+    run_unscheduled_job('laborScrubberJob', wait_for_completion)
+  end
+
+  def run_labor_poster(wait_for_completion = false)
+    run_unscheduled_job('laborPosterJob', wait_for_completion)
+  end
+
+  def run_labor_balance(wait_for_completion = false)
+    #Labor balancing job runs for a long time (observed as much as 10+ minutes).
+    #To prevent intermittent failures, set max_seconds_wait to 1200 so that
+    #it has enough time to complete before the next batch job is started,
+    # i.e. reties * 5secLoopWait default in run_unscheduled_job = 1200/5 = 240 should be enough
+    run_unscheduled_job('laborBalancingJob', wait_for_completion, 1200)
+  end
+
+  def run_labor_feed(wait_for_completion = false)
+    run_unscheduled_job('laborFeedJob', wait_for_completion)
+  end
+
+  def run_labor_clear_pending_entries(wait_for_completion = false)
+    run_unscheduled_job('clearLaborPendingEntriesJob', wait_for_completion)
+  end
+
+
+
+
 
   # TODO : Following batch jobs are commented out for testing
   # FIXME: Why? This seems wrong for the master branch...
 
   def run_auto_approve_preq(wait_for_completion = false)
-    run_unscheduled_job('autoApprovePaymentRequestsJob', wait_for_completion, 120)
+    run_unscheduled_job('autoApprovePaymentRequestsJob', wait_for_completion, 600)
   end
 
   def run_electronic_invoice_extract(wait_for_completion = false)
@@ -113,42 +153,6 @@ module BatchUtilities
   def run_pdp_clear_pending_transaction(wait_for_completion = false)
     warn 'Would have run #run_pdp_clear_pending_transaction'
     #run_unscheduled_job('pdpClearPendingTransactionsJob', wait_for_completion)
-  end
-
-  def run_labor_enterprise_feed(wait_for_completion = false)
-    run_unscheduled_job('laborEnterpriseFeedJob', wait_for_completion)
-  end
-
-  def run_labor_nightly_out(wait_for_completion = false)
-    run_unscheduled_job('laborNightlyOutJob', wait_for_completion)
-  end
-
-  def run_labor_scrubber(wait_for_completion = false)
-    run_unscheduled_job('laborScrubberJob', wait_for_completion)
-  end
-
-  def run_labor_poster(wait_for_completion = false)
-    run_unscheduled_job('laborPosterJob', wait_for_completion)
-  end
-
-  def run_labor_balance(wait_for_completion = false)
-    #Labor balancing job runs for a long time (observed as much as 10+ minutes).
-    #To prevent intermittent failures, set max number of retries to 240 so that
-    #it has enough time to complete before the next batch job is started,
-    # i.e. reties * 5secLoopWait in run_unscheduled_job = 240*5 = 1200 sec should be enough
-    run_unscheduled_job('laborBalancingJob', wait_for_completion, 240)
-  end
-
-  def run_labor_feed(wait_for_completion = false)
-    run_unscheduled_job('laborFeedJob', wait_for_completion)
-  end
-
-  def run_labor_clear_pending_entries(wait_for_completion = false)
-    run_unscheduled_job('clearLaborPendingEntriesJob', wait_for_completion)
-  end
-
-  def run_clear_pending_entries(wait_for_completion = false)
-    run_unscheduled_job('clearPendingEntriesJob', wait_for_completion)
   end
 
   def run_cab_extract(wait_for_completion = false)
