@@ -33,10 +33,12 @@ Then /^I run the nightly Labor batch process$/ do
 end
 
 
+# This step will not invoke the first batch job unless all previous batch job run requests were successfully completed.
 # This step will not invoke the next batch job unless previous job completed successfully.
 # This is to take into account long running or failed jobs.
 # Caller is responsible for logging in as a user with security to run the batch jobs.
 And /^Nightly GL Critical Path Batch Jobs run$/ do
+  step 'There Should Be No Incomplete Batch Job Executions'
   step 'I run Nightly Out'
   step 'the last Nightly Batch Job should have succeeded'
   step 'I run Scrubber'
@@ -50,11 +52,13 @@ And /^Nightly GL Critical Path Batch Jobs run$/ do
 end
 
 
+# This step will not invoke the first batch job unless all previous batch job run requests were successfully completed.
 # This step only executes the Labor jobs. It does not execute the GL jobs that should be run after the labor jobs.
 # This step will not invoke the next batch job unless previous job completed successfully.
 # This is to take into account long running or failed jobs.
 # Caller is responsible for logging in as a user with security to run the batch jobs.
 And /^Nightly Labor Batch Jobs run$/ do
+  step 'There Should Be No Incomplete Batch Job Executions'
   #all the labor jobs
   step 'I run the Labor Enterprise Feed Process'
   step 'the last Nightly Batch Job should have succeeded'
@@ -73,8 +77,20 @@ And /^Nightly Labor Batch Jobs run$/ do
 end
 
 
+# This step is intended to be called in between successive batch job invocations within the same step.
 Then /^the last Nightly Batch Job should have succeeded$/ do
   on(SchedulePage).job_status.should match(/Succeeded/)
+end
+
+
+# This step is intended to be executed before any batch job is requested for a given test.
+# This step will prevent that new batch job request from starting by failing the test when previous batch job execution
+# requests do not complete successfully.
+And /^There Should Be No Incomplete Batch Job Executions$/ do
+  visit(AdministrationPage).schedule
+  is_batch_job?('Failed').should_not == true
+  is_batch_job?('Running').should_not == true
+  is_batch_job?('Cancelled').should_not == true
 end
 
 
