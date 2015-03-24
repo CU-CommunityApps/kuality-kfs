@@ -38,7 +38,7 @@ end
 # This is to take into account long running or failed jobs.
 # Caller is responsible for logging in as a user with security to run the batch jobs.
 And /^Nightly GL Critical Path Batch Jobs run$/ do
-  step 'There Should Be No Incomplete Batch Job Executions'
+  step 'There are no incomplete Batch Job executions'
   step 'I run Nightly Out'
   step 'the last Nightly Batch Job should have succeeded'
   step 'I run Scrubber'
@@ -58,7 +58,7 @@ end
 # This is to take into account long running or failed jobs.
 # Caller is responsible for logging in as a user with security to run the batch jobs.
 And /^Nightly Labor Batch Jobs run$/ do
-  step 'There Should Be No Incomplete Batch Job Executions'
+  step 'There are no incomplete Batch Job executions'
   #all the labor jobs
   step 'I run the Labor Enterprise Feed Process'
   step 'the last Nightly Batch Job should have succeeded'
@@ -86,7 +86,7 @@ end
 # This step is intended to be executed before any batch job is requested for a given test.
 # This step will prevent that new batch job request from starting by failing the test when previous batch job execution
 # requests do not complete successfully.
-And /^There Should Be No Incomplete Batch Job Executions$/ do
+And /^There are no incomplete Batch Job executions$/ do
   visit(AdministrationPage).schedule
   is_batch_job?('Failed').should_not == true
   is_batch_job?('Running').should_not == true
