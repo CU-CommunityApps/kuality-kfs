@@ -80,7 +80,20 @@ module BatchUtilities
   end
 
 
-
+  ###################
+  # Batch Job Lookup
+  ###################
+  def is_batch_job?(status='Failed')
+    job_with_status_found = true
+    on BatchJobLookup do |lookup|
+      lookup.job_status.select_value(/#{status}/m)
+      lookup.search
+      if lookup.no_result_table_returned?
+        job_with_status_found = false
+      end
+    end
+    job_with_status_found  #return our findings
+  end
 
 
   # TODO : Following batch jobs are commented out for testing
