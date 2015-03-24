@@ -4,6 +4,8 @@ class AdministrationPage < BasePage
 
   links 'Person', 'Group', 'Role',
         # Parameters
-        'Namespace', 'Parameter', 'Parameter Component', 'Parameter Type'
+        'Namespace', 'Parameter', 'Parameter Component', 'Parameter Type',
+        #Batch / Scheduled Jobs
+        'Schedule'
 
 end

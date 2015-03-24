@@ -169,34 +169,6 @@ And /^I set transfer from account number to '(.*)' on Benefit Expense Transfer d
   on(BenefitExpenseTransferPage).account_number.fit account_number
 end
 
-Then /^I run the nightly Labor batch process$/ do
-  step "I am logged in as a KFS Operations"
-  step "I run the Labor Enterprise Feed Process"
-  step "I run the Labor Nightly Out Process"
-  step "I run the Labor Scrubber Process"
-  step "I run the Labor Poster Process"
-  step "I run the Labor Balancing Job"
-  step "I run the Labor Feed Job"
-  step "I run the Labor Clear Pending Entries Job"
-
-  # GL nightly is deferred; See QA-830
-  #step "I run the GL Nightly Processes"
-end
-
-And /^I run the GL Nightly Processes$/ do
-  # generate output files batch jobs
-  steps %Q{
-    And   I generate the ACH XML File
-    And   I generate the Check XML File
-    And   I generate the Cancelled Check XML File
-    And   I send EMAIL Notices to ACH Payees
-    And   I process Cancels and Paids
-    And   I generate the GL Files from PDP
-    And   I populate the ACH Bank Table
-    And   I clear out PDP Temporary Tables
- }
-
-end
 
 Then /^the labor ledger pending entry for employee is empty$/ do
   employee_id = ""
