@@ -57,7 +57,7 @@ Then /^the (.*) document accounting lines equal the General Ledger Pending entri
   on page_klass do |page|
     page.expand_all
 
-    # verify number of resuls is twice the number of accounting lines
+    # verify number of results is twice the number of accounting lines
     (page.glpe_results_table.rows.length-1).should == (doc_object.accounting_lines[:source].length + doc_object.accounting_lines[:target].length) * 2
 
     all_accounting_lines = doc_object.accounting_lines[:source] + doc_object.accounting_lines[:target]

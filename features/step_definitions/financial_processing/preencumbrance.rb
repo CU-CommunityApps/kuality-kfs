@@ -10,16 +10,31 @@ When /^I start an empty Pre\-Encumbrance document$/ do
 end
 
 When /^I (.*) a Pre-Encumbrance document with an Encumbrance Accounting Line for the current Month$/ do |button|
-  step "I #{button} a Pre-Encumbrance document that encumbers Account G003704" # This works because the default is the current month
+  step "I #{button} a Pre-Encumbrance document that encumbers a random Account" # This works because the default is the current month
 end
 
-And /^I do an Open Encumbrances lookup for the Pre-Encumbrance document with Balance Type (.*) and Include All Pending Entries$/ do |balance_type|
+Then /^the Open Encumbrances lookup for the Pre-Encumbrance document with Balance Type (.*) should Include All Pending Entries$/ do |balance_type|
   visit(MainPage).open_encumbrances
   on OpenEncumbranceLookupPage do |page|
     page.doc_number.set @pre_encumbrance.document_id
     page.balance_type_code.set balance_type
     page.active_indicator_all.set
     page.search
+
+    fiscal_year_col = page.results_table.keyed_column_index(:fiscal_year)
+    chart_code_col = page.results_table.keyed_column_index(:chart_code)
+    account_number_col = page.results_table.keyed_column_index(:account_number)
+    object_code_col = page.results_table.keyed_column_index(:object_code)
+    document_number_col = page.results_table.keyed_column_index(:document_number)
+    # first row is column headers, rest is data
+    page.results_table.rows.length.should == 2
+    page.results_table.rest.each do |row|
+      row[document_number_col].text.strip.should == @pre_encumbrance.document_id &&
+      row[chart_code_col].text.strip.should == @account.chart_code &&
+      row[account_number_col].text.strip.should == @account.number &&
+      row[fiscal_year_col].text.strip.should == @object_code_object.fiscal_year &&
+      row[object_code_col].text.strip.should == @object_code_object.object_code
+    end
   end
 end
 
@@ -33,14 +48,11 @@ And /^I add the (encumbrance|disencumbrance) to the stack$/ do |type|
   end
 end
 
-Then /^Open Encumbrance Lookup Results for the Account just used with Balance Type (.*) for (No|Approved|All) Pending Entries and (Include|Exclude) Zeroed Out Encumbrances will display the disencumbered amount in both open and closed amounts with outstanding amount zero:$/ do |balance_type, pending_option, zeroed_option, table|
-  account_used_info = table.rows_hash
-  account_used_info.delete_if { |k,v| v.empty? }
-
+Then /^Open Encumbrance Lookup Results for the Account just used with Balance Type (.*) for (No|Approved|All) Pending Entries and (Include|Exclude) Zeroed Out Encumbrances will display the disencumbered amount in both open and closed amounts with outstanding amount zero$/ do |balance_type, pending_option, zeroed_option|
   visit(MainPage).open_encumbrances
   on OpenEncumbranceLookupPage do |page|
-    page.chart_code.set get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-    page.account_number.set account_used_info['Number']
+    page.chart_code.set @account.chart_code
+    page.account_number.set @account.number
     page.balance_type_code.set balance_type
     if pending_option == 'Approved'
       page.active_indicator_approved.set
@@ -56,6 +68,7 @@ Then /^Open Encumbrance Lookup Results for the Account just used with Balance Ty
     end
     page.search
 
+    # obtain column values once and reuse
     doc_num_col = page.results_table.keyed_column_index(:document_number)
     open_amt_col = page.results_table.keyed_column_index(:open_amount)
     closed_amt_col = page.results_table.keyed_column_index(:closed_amount)
@@ -63,15 +76,22 @@ Then /^Open Encumbrance Lookup Results for the Account just used with Balance Ty
     #determine whether data returned by search is what we expected
     disencumbered_valid = false
     new_encumbered_valid = false
-
     # The open encumbrance lookup should display the disencumbered amount in both open and closed amounts with outstanding amount zero.
     # The open encumbrance lookup should display the total encumbrance amount in the open amount column for the new encumbrance.
-    # Since some of the accounts may have other encumbrances listed, the description on the pre-encumbrance edoc will match the
-    # description on the lookup, to identify the line on which the dollars outlined above should appear.
+    # Convert all amounts to numeric cents for comparison because string compare of 250.00 will NOT equal 250.0 even though they are technically equal
+    expected_open_encumbered_amount = @encumbrance_amount.to_i * 100
+    expected_outstanding_disencumbered_amount = ("0.00").to_i * 100
+    expected_disencumbered_amount = @disencumbrance_amount.to_i * 100
+
+    # Since some of the accounts may have other encumbrances listed, the description on the pre-encumbrance edoc will
+    # match the description on the lookup, to identify the line on which the dollars outlined above should appear.
     page.results_table.rest.each do |row|
-      if row[doc_num_col].text.strip == @remembered_document_id and row[open_amt_col].text.strip == account_used_info['Disencumbered Amount'] and row[closed_amt_col].text.strip == account_used_info['Disencumbered Amount'] and row[outstanding_amt_col].text.strip == account_used_info['Outstanding Amount']
+      row_open_amount = ((row[open_amt_col].text).delete(",")).to_i * 100
+      row_closed_amount = ((row[closed_amt_col].text).delete(",")).to_i * 100
+      row_outstanding_amount = ((row[outstanding_amt_col].text).delete(",")).to_i * 100
+      if row[doc_num_col].text.strip == @remembered_document_id and row_open_amount == expected_disencumbered_amount and row_closed_amount == expected_disencumbered_amount and row_outstanding_amount == expected_outstanding_disencumbered_amount
         disencumbered_valid = true
-      elsif row[doc_num_col].text.strip == @retained_document_id and  row[open_amt_col].text.strip == account_used_info['Disencumbered Amount']
+      elsif row[doc_num_col].text.strip == @retained_document_id and row_open_amount == expected_open_encumbered_amount
         new_encumbered_valid = true
       else
         #do nothing

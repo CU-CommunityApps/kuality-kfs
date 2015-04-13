@@ -111,3 +111,20 @@ Then /^I should only see the Object Code document with the searched for CG Repor
     #cg reporting code in results 
   end
 end
+
+
+And /^I find a random Pre-Encumbrance Object Code Object$/ do
+  # This step will make a global object code object by calling the web service that obtains a pre-encumbrance object
+  # code object.  Global object naming of @object_code_object is not ideal but is the only way to distinguish in the
+  # Ruby code between a global data item representing the four character attribute value versus the entire object
+  # since the attribute within the object is also called object_code.
+  random_attributes_hash = Hash.new
+  random_attributes_hash = ObjectCodeObject.webservice_item_to_hash(get_random_object_code_object_for_pre_encumbrance)
+  @object_code_object = make ObjectCodeObject, random_attributes_hash
+  step "I add the object code object to the stack"
+end
+
+
+And /^I add the object code object to the stack$/ do
+  @object_code_objects = @object_code_objects.nil? ? [@object_code_object] : @object_code_objects + [@object_code_object]
+end

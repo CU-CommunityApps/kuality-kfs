@@ -53,7 +53,7 @@ end
 
 
 When /^I update an application Parameter to allow revenue object codes on a Pre-Encumbrance document$/ do
-  system_parameter = get_aft_parameter_values_as_hash(ParameterConstants::DEFAULT_PRE_ENCUMBRANCE_REVENUE_OBJECT_CODE_PARAMETER_AND_VALUE)
+  system_parameter = get_aft_parameter_values_as_hash(ParameterConstants::DEFAULT_PREENCUMBRANCE_REVENUE_OBJECT_CODE_PARAMETER_AND_VALUE)
   step "I update the #{system_parameter[:parameter_name]} Parameter for the #{system_parameter[:component]} component in the #{system_parameter[:namespace_code]} namespace with the values #{system_parameter[:parameter_value]}"
 end
 
