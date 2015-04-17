@@ -248,4 +248,10 @@ module Utilities
     item.to_s[0]=='@' ? item : "@#{snake_case(item.to_s)}"
   end
 
+  # @param [String] amount Money amount as a string in US dollars and cents.
+  # @return [Integer] Money amount converted to an integer represented as US cents.
+  def to_cents_i(amount)
+    ((amount).delete(",")).to_i * 100
+  end
+
 end

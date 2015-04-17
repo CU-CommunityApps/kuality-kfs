@@ -13,7 +13,7 @@ When /^I (.*) a Pre-Encumbrance document with an Encumbrance Accounting Line for
   step "I #{button} a Pre-Encumbrance document that encumbers a random Account" # This works because the default is the current month
 end
 
-Then /^the Open Encumbrances lookup for the Pre-Encumbrance document with Balance Type (.*) should Include All Pending Entries$/ do |balance_type|
+Then /^the Open Encumbrances lookup for the Pre-Encumbrance document with Balance Type (.*) Includes All Pending Entries$/ do |balance_type|
   visit(MainPage).open_encumbrances
   on OpenEncumbranceLookupPage do |page|
     page.doc_number.set @pre_encumbrance.document_id
@@ -32,8 +32,8 @@ Then /^the Open Encumbrances lookup for the Pre-Encumbrance document with Balanc
       row[document_number_col].text.strip.should == @pre_encumbrance.document_id &&
       row[chart_code_col].text.strip.should == @account.chart_code &&
       row[account_number_col].text.strip.should == @account.number &&
-      row[fiscal_year_col].text.strip.should == @object_code_object.fiscal_year &&
-      row[object_code_col].text.strip.should == @object_code_object.object_code
+      row[fiscal_year_col].text.strip.should == @object_code.fiscal_year &&
+      row[object_code_col].text.strip.should == @object_code.object_code
     end
   end
 end
@@ -79,16 +79,16 @@ Then /^Open Encumbrance Lookup Results for the Account just used with Balance Ty
     # The open encumbrance lookup should display the disencumbered amount in both open and closed amounts with outstanding amount zero.
     # The open encumbrance lookup should display the total encumbrance amount in the open amount column for the new encumbrance.
     # Convert all amounts to numeric cents for comparison because string compare of 250.00 will NOT equal 250.0 even though they are technically equal
-    expected_open_encumbered_amount = @encumbrance_amount.to_i * 100
-    expected_outstanding_disencumbered_amount = ("0.00").to_i * 100
-    expected_disencumbered_amount = @disencumbrance_amount.to_i * 100
+    expected_open_encumbered_amount =  to_cents_i(@encumbrance_amount)
+    expected_outstanding_disencumbered_amount = to_cents_i("0.00")
+    expected_disencumbered_amount = to_cents_i(@disencumbrance_amount)
 
     # Since some of the accounts may have other encumbrances listed, the description on the pre-encumbrance edoc will
     # match the description on the lookup, to identify the line on which the dollars outlined above should appear.
     page.results_table.rest.each do |row|
-      row_open_amount = ((row[open_amt_col].text).delete(",")).to_i * 100
-      row_closed_amount = ((row[closed_amt_col].text).delete(",")).to_i * 100
-      row_outstanding_amount = ((row[outstanding_amt_col].text).delete(",")).to_i * 100
+      row_open_amount = to_cents_i(row[open_amt_col].text)
+      row_closed_amount = to_cents_i(row[closed_amt_col].text)
+      row_outstanding_amount = to_cents_i(row[outstanding_amt_col].text)
       if row[doc_num_col].text.strip == @remembered_document_id and row_open_amount == expected_disencumbered_amount and row_closed_amount == expected_disencumbered_amount and row_outstanding_amount == expected_outstanding_disencumbered_amount
         disencumbered_valid = true
       elsif row[doc_num_col].text.strip == @retained_document_id and row_open_amount == expected_open_encumbered_amount
