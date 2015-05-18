@@ -4,16 +4,18 @@ And /^I find a value for a parameter named (.*) for the (.*) document$/ do |para
 end
 
 
-And /^I (update|restore) the (.*) Parameter for the (.*) component in the (.*) namespace with the values (.*)$/ do |action, parameter_name, component, namespace_code, parameter_values|
-  step "I lookup the #{parameter_name} Parameter for the #{component} component in the #{namespace_code} namespace"
+And /^I (update|restore) the (.*) Parameter for the (.*) component in the (.*) namespace with the values (.*) and (.*) description$/ do |action, parameter_name, component_name, namespace_code, parameter_values, parm_description|
+  step "I lookup the #{parameter_name} Parameter for the #{component_name} component in the #{namespace_code} namespace"
 
   @parameter = make ParameterObject
   @parameter.absorb! :old
+  #need to set component_name attribute used in the lookup
+  @parameter.component_name = component_name
 
   options = {
-        description:            'Temporary change for AFT value.',
-        parameter_description:  'Temporary change for automated functional tests.',
-        parameter_value:        @parameter.update_values_remembering_original(parameter_values)
+        description:            (action.eql?('update')) ? 'Temporary NEW parameter for AFT' : "Restoring original parameter in AFT",
+        parameter_description:  @parameter.update_description_remembering_original(parm_description),
+        parameter_value:        @parameter.update_value_remembering_original(parameter_values)
   }
 
   @parameter.edit options
@@ -54,10 +56,11 @@ end
 
 When /^I update an application Parameter to allow revenue object codes on a Pre-Encumbrance document$/ do
   system_parameter = get_aft_parameter_values_as_hash(ParameterConstants::DEFAULT_PREENCUMBRANCE_REVENUE_OBJECT_CODE_PARAMETER_AND_VALUE)
-  step "I update the #{system_parameter[:parameter_name]} Parameter for the #{system_parameter[:component]} component in the #{system_parameter[:namespace_code]} namespace with the values #{system_parameter[:parameter_value]}"
+  system_parameter.to_a.empty?.should_not == true  #fail the test if the parameter was not found
+  step "I update the #{system_parameter[:parameter_name]} Parameter for the #{system_parameter[:component]} component in the #{system_parameter[:namespace_code]} namespace with the values #{system_parameter[:parameter_value]} and #{system_parameter[:parameter_description]} description"
 end
 
 
 And /^I restore the application parameter to its original value$/ do
-  step "I update the #{@parameter.parameter_name} Parameter for the #{@parameter.component} component in the #{@parameter.namespace_code} namespace with the values #{@parameter.original_parameter_value}"
+  step "I restore the #{@parameter.parameter_name} Parameter for the #{@parameter.component_name} component in the #{@parameter.namespace_code} namespace with the values #{@parameter.original_parameter_value} and #{@parameter.original_parameter_description} description"
 end

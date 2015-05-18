@@ -4,15 +4,22 @@ class ParameterObject < KFSDataObject
                 :parameter_name, :parameter_value, :parameter_description,
                 :parameter_type_code, :parameter_constraint_code_allowed, :parameter_constraint_code_denied,
 
-                #during a test a parameter value may need to to be changed, this attribute is used to hold the
-                #original value for restoration at the end of the test
-                :original_parameter_value
+                #Label 'component' is used interchangeably for both data attribute 'component' and 'component_name'.
+                #Lookup requires component_name and is currently only used for updating and restoring parameter
+                #values needed for a specific AFT; therefore, this attribute is being maintained in those steps
+                #This may need to be revisited in the future.
+                :component_name,
+
+                #during a test a parameter attributes may need to to be changed, these attributes are used to hold the
+                #original values for restoration at the end of the test
+                :original_parameter_value, :original_parameter_description
 
 
   def defaults
     super.merge({
                   namespace_code:                     '',
                   component:                          '',
+                  component_name:                     '',
                   application_id:                     '',
                   parameter_name:                     '',
                   parameter_description:              '',
@@ -50,7 +57,7 @@ class ParameterObject < KFSDataObject
       page.expand_all
       case target
         when :new
-          @namespace_code                    = page.new_namespace_code
+          @namespace_code                    = get_option_value_from_namespace_code(page.new_namespace_code)
           @component                         = page.new_component
           @application_id                    = page.new_application_id
           @parameter_name                    = page.new_parameter_name
@@ -61,7 +68,7 @@ class ParameterObject < KFSDataObject
           @parameter_constraint_code_denied  = page.new_parameter_constraint_code == 'Denied' ? :set : :clear
 
         when :old
-          @namespace_code                    = page.old_namespace_code
+          @namespace_code                    = get_option_value_from_namespace_code(page.old_namespace_code)
           @component                         = page.old_component
           @application_id                    = page.old_application_id
           @parameter_name                    = page.old_parameter_name
@@ -86,9 +93,27 @@ class ParameterObject < KFSDataObject
   end
 
 
-  def update_values_remembering_original(value)
+  def update_value_remembering_original(value)
     @original_parameter_value = @parameter_value
     @parameter_value = value.to_s.gsub(',', ';')
+  end
+
+
+  def update_description_remembering_original(description)
+    description.nil? ? 'Temporary change for automated functional tests.' : @original_parameter_description = @parameter_description
+    @parameter_description = description
+  end
+
+
+  def get_option_value_from_namespace_code(namespace_code)
+    option_value = ''
+    if namespace_code.nil? or namespace_code.eql?('')
+      option_value = ''
+    else
+      options = namespace_code.split(" ")
+      option_value = options[0].strip
+    end
+    option_value
   end
 
 
