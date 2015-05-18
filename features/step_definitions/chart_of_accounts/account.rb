@@ -153,3 +153,10 @@ And /^the Account document's Sub Fund Program code is uppercased$/ do
   on(AccountPage).sub_fund_group_code_new.should == @account.sub_fund_group_code.upcase
   @account.sub_fund_group_code = on(AccountPage).sub_fund_group_code_new # Grab the update, if necessary
 end
+
+And /^I find a random Pre-Encumbrance Account$/ do
+  random_attributes_hash = Hash.new
+  random_attributes_hash = AccountObject.webservice_item_to_hash(get_random_account_for_pre_encumbrance)
+  @account = make AccountObject, random_attributes_hash
+  step "I add the account to the stack"
+end

@@ -111,3 +111,16 @@ Then /^I should only see the Object Code document with the searched for CG Repor
     #cg reporting code in results 
   end
 end
+
+
+And /^I find a random Pre-Encumbrance Object Code$/ do
+  random_attributes_hash = Hash.new
+  random_attributes_hash = ObjectCodeObject.webservice_item_to_hash(get_random_object_code_object_for_pre_encumbrance)
+  @object_code = make ObjectCodeObject, random_attributes_hash
+  step "I add the object code to the stack"
+end
+
+
+And /^I add the object code to the stack$/ do
+  @object_codes = @object_codes.nil? ? [@object_code] : @object_codes + [@object_code]
+end
