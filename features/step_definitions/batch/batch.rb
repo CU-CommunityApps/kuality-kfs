@@ -1,49 +1,100 @@
-
 include BatchUtilities
 
+
+
+# This is the step that should be added to and used when ALL nightly batch job processing must be performed.
+# Currently, ensures both Labor and GL processing is completed.
+And /^All Nightly Batch Jobs are run$/ do
+  step 'I am logged in as a KFS Operations'
+  step 'Nightly Labor Batch Jobs run'
+  step 'Nightly GL Critical Path Batch Jobs run'
+end
+
+
+# Step is mis-named. It is really just executing the GL batch jobs.
+# Currently we are wrapping the appropriate GL batch processing step.
 And /^Nightly Batch Jobs run$/ do
-  # TODO: It would be nice to be able to switch back to the User
-  #       that we were logged in as at the beginning of the batch
-  #       jobs with out saying so explicitly.
   step 'I am logged in as a KFS Operations'
-  step 'I run Nightly Out'
+  step 'Nightly GL Critical Path Batch Jobs run'
+end
+
+
+Then /^I run the nightly Labor batch process$/ do
+  step 'I am logged in as a KFS Operations'
+  #all the labor jobs
+  step 'Nightly Labor Batch Jobs run'
+  #all the gl jobs required after labor runs
   step 'I run Scrubber'
+  step 'the last Nightly Batch Job should have succeeded'
   step 'I run Poster'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run Poster Balancing'
+  step 'the last Nightly Batch Job should have succeeded'
 end
 
-And /^Nightly Batch Jobs run, waiting at most (\d+) seconds for each step$/ do |seconds|
-  # TODO: It would be nice to be able to switch back to the User
-  #       that we were logged in as at the beginning of the batch
-  #       jobs with out saying so explicitly.
-  step 'I am logged in as a KFS Operations'
-  step "I run Nightly Out, waiting at most #{seconds} seconds"
-  step "I run Scrubber, waiting at most #{seconds} seconds"
-  step "I run Poster, waiting at most #{seconds} seconds"
+
+# This step will not invoke the first batch job unless all previous batch job run requests were successfully completed.
+# This step will not invoke the next batch job unless previous job completed successfully.
+# This is to take into account long running or failed jobs.
+# Caller is responsible for logging in as a user with security to run the batch jobs.
+And /^Nightly GL Critical Path Batch Jobs run$/ do
+  step 'There are no incomplete Batch Job executions'
+  step 'I run Nightly Out'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run Scrubber'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run Poster'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run Poster Balancing'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run Clear Pending Entries'
+  step 'the last Nightly Batch Job should have succeeded'
 end
 
-And /^I run (Nightly Out|Scrubber|Poster), waiting at most (\d+) seconds$/ do |action, seconds|
-  case action
-    when 'Nightly Out'
-      run_unscheduled_job_until('nightlyOutJob', seconds)
-    when 'Scrubber'
-      run_unscheduled_job_until('scrubberJob', seconds)
-    when 'Poster'
-      run_unscheduled_job_until('posterJob', seconds)
-  end
+
+# This step will not invoke the first batch job unless all previous batch job run requests were successfully completed.
+# This step only executes the Labor jobs. It does not execute the GL jobs that should be run after the labor jobs.
+# This step will not invoke the next batch job unless previous job completed successfully.
+# This is to take into account long running or failed jobs.
+# Caller is responsible for logging in as a user with security to run the batch jobs.
+And /^Nightly Labor Batch Jobs run$/ do
+  step 'There are no incomplete Batch Job executions'
+  #all the labor jobs
+  step 'I run the Labor Enterprise Feed Process'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run the Labor Nightly Out Process'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run the Labor Scrubber Process'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run the Labor Poster Process'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run the Labor Balancing Job'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run the Labor Feed Job'
+  step 'the last Nightly Batch Job should have succeeded'
+  step 'I run the Labor Clear Pending Entries Job'
+  step 'the last Nightly Batch Job should have succeeded'
 end
 
-And /^I run (Nightly Out|Scrubber|Poster), not waiting for completion$/ do |action|
 
-  case action
-  when 'Nightly Out'
-    run_nightly_out(false)
-  when 'Scrubber'
-    run_scrubber(false)
-  when 'Poster'
-    run_poster(false)
-  end
-
+# This step is intended to be called in between successive batch job invocations within the same step.
+Then /^the last Nightly Batch Job should have succeeded$/ do
+  on(SchedulePage).job_status.should match(/Succeeded/)
 end
+
+
+# This step is intended to be executed before any batch job is requested for a given test.
+# This step will prevent that new batch job request from starting by failing the test when previous batch job execution
+# requests do not complete successfully.
+And /^There are no incomplete Batch Job executions$/ do
+  visit(AdministrationPage).schedule
+  is_batch_job?('Failed').should_not == true
+  is_batch_job?('Running').should_not == true
+  is_batch_job?('Cancelled').should_not == true
+end
+
+
+###### General Ledger Batch Jobs
 
 And /^I run Nightly Out$/ do
   run_nightly_out(true)
@@ -57,9 +108,47 @@ And /^I run Poster$/ do
   run_poster(true)
 end
 
-Then /^the last Nightly Batch Job should have succeeded$/ do
-  on(SchedulePage).job_status.should match(/Succeeded/)
+And /^I run Poster Balancing$/ do
+  run_poster_balancing(true)
 end
+
+And /^I run Clear Pending Entries$/ do
+  run_clear_pending_entries(true)
+end
+
+
+###### Labor Batch Jobs
+
+And /^I run the Labor Enterprise Feed Process$/ do
+  run_labor_enterprise_feed(true)
+end
+
+And /^I run the Labor Nightly Out Process$/ do
+  run_labor_nightly_out(true)
+end
+
+And /^I run the Labor Scrubber Process$/ do
+  run_labor_scrubber(true)
+end
+
+And /^I run the Labor Poster Process$/ do
+  run_labor_poster(true)
+end
+
+And /^I run the Labor Balancing Job$/ do
+  run_labor_balance(true)
+end
+
+And /^I run the Labor Feed Job$/ do
+  run_labor_feed(true)
+end
+
+And /^I run the Labor Clear Pending Entries Job$/ do
+  run_labor_clear_pending_entries(true)
+end
+
+
+###### Other batch jobs
 
 And /^I run Auto Approve PREQ$/ do
   run_auto_approve_preq(true)
@@ -129,35 +218,6 @@ And /^I clear out PDP Temporary Tables$/ do
   run_pdp_clear_pending_transaction(true)
 end
 
-
-And /^I run the Labor Enterprise Feed Process$/ do
-  run_labor_enterprise_feed(true)
-end
-
-And /^I run the Labor Nightly Out Process$/ do
-  run_labor_nightly_out(true)
-end
-
-And /^I run the Labor Scrubber Process$/ do
-  run_labor_scrubber(true)
-end
-
-And /^I run the Labor Poster Process$/ do
-  run_labor_poster(true)
-end
-
-And /^I run the Labor Balancing Job$/ do
-  run_labor_balance(true)
-end
-
-And /^I run the Labor Feed Job$/ do
-  run_labor_feed(true)
-end
-
-And /^I run the Labor Clear Pending Entries Job$/ do
-  run_labor_clear_pending_entries(true)
-end
-
 And /^I collect the Capital Asset Documents$/ do
   run_nightly_out(true)
 end
@@ -170,11 +230,6 @@ And /^I move the Plant Fund Entries to Posted Entries$/ do
   run_poster(true)
 end
 
-And /^I clear Pending Entries$/ do
-  run_clear_pending_entries(true)
-end
-
 And /^I create entries for CAB$/ do
   run_cab_extract(true)
 end
-

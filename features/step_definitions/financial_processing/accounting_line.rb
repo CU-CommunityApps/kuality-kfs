@@ -124,9 +124,7 @@ And /^I open the (.*) General Ledger Balance Lookup in the Available Balances lo
   case snake_case(column)
     when :encumbrance_amount
       on(AvailableBalancesLookupPage) do |p|
-        p.item_row(doc_object.accounting_lines[alt].first.object)[col]
-        .link
-        .click
+        p.item_row(doc_object.accounting_lines[alt].first.object)[col].link.click
         p.use_new_tab
         p.close_parents
       end
@@ -141,7 +139,9 @@ And /^the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line on 
   col = on(GeneralLedgerBalanceLookupPage).column_index(snake_case('Transaction Ledger Entry Amount'))
 
   on GeneralLedgerBalanceLookupPage do |p|
-    p.item_row(document_object_for(document).document_id)[col].text.to_f.should == doc_object.accounting_lines[alt].first.amount.to_f
+    # Amounts must be compared as cents because "to_f" will truncate to a whole number in certain cases.
+    # example: "4,000.00".to_f becomes 4.0 which does not represent the amount correctly.
+    to_cents_i(p.item_row(document_object_for(document).document_id)[col].text).should == to_cents_i(doc_object.accounting_lines[alt].first.amount)
   end
 end
 
@@ -160,9 +160,11 @@ And /^the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line ent
     ((entry_page.send("result_#{alt.to_s}_line_description")).should == doc_object.accounting_lines[alt].first.line_description) unless doc_object.accounting_lines[alt].first.line_description.nil?
     ((entry_page.send("result_#{alt.to_s}_reference_origin_code")).should == doc_object.accounting_lines[alt].first.reference_origin_code) unless doc_object.accounting_lines[alt].first.reference_origin_code.nil?
     ((entry_page.send("result_#{alt.to_s}_reference_number")).should == doc_object.accounting_lines[alt].first.reference_number) unless doc_object.accounting_lines[alt].first.reference_number.nil?
-    ((entry_page.send("result_#{alt.to_s}_amount")).to_f.should == doc_object.accounting_lines[alt].first.amount.to_f) unless doc_object.accounting_lines[alt].first.amount.nil?
-    ((entry_page.send("result_#{alt.to_s}_base_amount")).to_f.should == doc_object.accounting_lines[alt].first.base_amount.to_f) unless doc_object.accounting_lines[alt].first.base_amount.nil?
-    ((entry_page.send("result_#{alt.to_s}_current_amount")).to_f.should == doc_object.accounting_lines[alt].first.current_amount.to_f) unless doc_object.accounting_lines[alt].first.current_amount.nil?
+    # Amounts must be compared as cents because "to_f" will truncate to a whole number in certain cases.
+    # example: "4,000.00".to_f becomes 4.0 which does not represent the amount correctly.
+    (to_cents_i(entry_page.send("result_#{alt.to_s}_amount")).should == to_cents_i(doc_object.accounting_lines[alt].first.amount)) unless doc_object.accounting_lines[alt].first.amount.nil?
+    (to_cents_i(entry_page.send("result_#{alt.to_s}_base_amount")).should == to_cents_i(doc_object.accounting_lines[alt].first.base_amount)) unless doc_object.accounting_lines[alt].first.base_amount.nil?
+    (to_cents_i(entry_page.send("result_#{alt.to_s}_current_amount")).should == to_cents_i(doc_object.accounting_lines[alt].first.current_amount)) unless doc_object.accounting_lines[alt].first.current_amount.nil?
   end
 end
 

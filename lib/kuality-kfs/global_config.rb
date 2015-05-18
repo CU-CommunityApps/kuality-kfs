@@ -252,6 +252,24 @@ module GlobalConfig
     # TODO : it took long time for asset search, so put several criteria to speed up the lookup
     get_kuali_business_object('KFS-CAM','Asset',"active=true&capitalAssetTypeCode=A&inventoryStatusCode=A&conditionCode=E&campusCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")['capitalAssetNumber'].sample
   end
+
+  def get_random_account_for_pre_encumbrance
+    get_kuali_business_object('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountName=*EXPENSE*&fundGroup=GN&closed=N&accountExpirationDate=NULL")
+  end
+
+  def get_random_account_number_for_pre_encumbrance
+    get_random_account_for_pre_encumbrance['accountNumber'][0]
+  end
+
+  # All ObjectCodeObject attributes are obtained and returned
+  def get_random_object_code_object_for_pre_encumbrance
+    get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&financialObjectCodeName=Supplies*&active=Y&financialObjectTypeCode=EX&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")
+  end
+  # Only the four character object code value is returned from the call to get all of a random object code object's attributes
+  def get_random_object_code_for_pre_encumbrance
+    get_random_object_code_object_for_pre_encumbrance['financialObjectCode'][0]
+  end
+
   def get_principal_names_for_role(name_space, role_name)
     role_service.getRoleMemberPrincipalIds(name_space, role_name, StringMapEntryListType.new).getPrincipalNames().to_a
   end

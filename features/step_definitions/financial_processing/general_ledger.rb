@@ -26,17 +26,15 @@ Then /^the (.*) document GL Entry Lookup matches the document's GL entry$/ do |d
     peai_col = page.results_table.keyed_column_index(:pending_entry_approved_indicator)
     rdn_col = page.results_table.keyed_column_index(:reference_document_number)
 
-    page.results_table
-        .column(tled_col)
-        .rest
-        .map(&:text)
-        .should include 'TP Generated Offset' # This verifies that the offset was actually generated.
+    page.results_table.column(tled_col).rest.map(&:text).should include 'TP Generated Offset' # This verifies that the offset was actually generated.
 
     document_object_for(document).accounting_lines.each_value do |als|
       als.each do |al|
         page.item_row(al.object)[oc_col].text.should == al.object
         page.item_row(al.object)[tled_col].text.should == al.line_description
-        page.item_row(al.object)[tlea_col].text.to_f.should == al.amount.to_f
+        # Amounts must be compared as cents because "to_f" will truncate to a whole number in certain cases.
+        # example: "4,000.00".to_f becomes 4.0 which does not represent the amount correctly.
+        to_cents_i(page.item_row(al.object)[tlea_col].text).should == to_cents_i(al.amount)
         page.item_row(al.object)[peai_col].text.should == ''
         page.item_row(al.object)[rdn_col].text.should == document_object_for(document).document_id
       end
@@ -57,25 +55,20 @@ And /^I lookup the offset for the (.*) document in the document's GLPE entry$/ d
     tled_col = page.results_table.keyed_column_index(:transaction_ledger_entry_description)
     tlea_col = page.results_table.keyed_column_index(:transaction_ledger_entry_amount)
 
-    page.results_table
-        .column(tled_col)
-        .rest
-        .length.should == 2 # We must get two lines to know the offset was generated.
-    page.results_table
-        .column(tled_col)
-        .rest
-        .map(&:text)
-        .should include 'TP Generated Offset' # This verifies that the offset was actually generated.
+    page.results_table.column(tled_col).rest.length.should == 2 # We must get two lines to know the offset was generated.
+    page.results_table.column(tled_col).rest.map(&:text).should include 'TP Generated Offset' # This verifies that the offset was actually generated.
 
     document_object_for(document).accounting_lines.each_value do |als|
       als.each do |al|
-        @glpe_offset_amount = al.amount.to_f if @glpe_offset_amount.nil? # Grab it on the first go.
+        # Amounts must be compared as cents because "to_f" will truncate to a whole number in certain cases.
+        # example: "4,000.00".to_f becomes 4.0 which does not represent the amount correctly.
+        @glpe_offset_amount = to_cents_i(al.amount) if @glpe_offset_amount.nil? # Grab it on the first go.
 
-        @glpe_offset_amount.should == al.amount.to_f # If this gets tripped, we added multiple lines and we probably need to refactor.
+        @glpe_offset_amount.should == to_cents_i(al.amount) # If this gets tripped, we added multiple lines and we probably need to refactor.
 
         # Now match both lines.
-        page.item_row(al.line_description)[tlea_col].text.to_f.should == @glpe_offset_amount
-        page.item_row('TP Generated Offset')[tlea_col].text.to_f.should == @glpe_offset_amount
+        to_cents_i(page.item_row(al.line_description)[tlea_col].text).should == @glpe_offset_amount
+        to_cents_i(page.item_row('TP Generated Offset')[tlea_col].text).should == @glpe_offset_amount
 
       end
     end
@@ -89,25 +82,20 @@ And /^I lookup the offset for the (.*) document in the document's GL entry$/ do 
     tled_col = page.results_table.keyed_column_index(:transaction_ledger_entry_description)
     tlea_col = page.results_table.keyed_column_index(:transaction_ledger_entry_amount)
 
-    page.results_table
-        .column(tled_col)
-        .rest
-        .length.should == 2 # We must get two lines to know the offset was generated.
-    page.results_table
-        .column(tled_col)
-        .rest
-        .map(&:text)
-        .should include 'TP Generated Offset' # This verifies that the offset was actually generated.
+    page.results_table.column(tled_col).rest.length.should == 2 # We must get two lines to know the offset was generated.
+    page.results_table.column(tled_col).rest.map(&:text).should include 'TP Generated Offset' # This verifies that the offset was actually generated.
 
     document_object_for(document).accounting_lines.each_value do |als|
       als.each do |al|
-        @gl_offset_amount = al.amount.to_f if @gl_offset_amount.nil? # Grab it on the first go.
+        # Amounts must be compared as cents because "to_f" will truncate to a whole number in certain cases.
+        # example: "4,000.00".to_f becomes 4.0 which does not represent the amount correctly.
+        @gl_offset_amount = to_cents_i(al.amount) if @gl_offset_amount.nil? # Grab it on the first go.
 
-        @gl_offset_amount.should == al.amount.to_f # If this gets tripped, we added multiple lines and we probably need to refactor.
+        @gl_offset_amount.should == to_cents_i(al.amount) # If this gets tripped, we added multiple lines and we probably need to refactor.
 
         # Now match both lines.
-        page.item_row(al.line_description)[tlea_col].text.to_f.should == @gl_offset_amount
-        page.item_row('TP Generated Offset')[tlea_col].text.to_f.should == @gl_offset_amount
+        to_cents_i(page.item_row(al.line_description)[tlea_col].text).should == @gl_offset_amount
+        to_cents_i(page.item_row('TP Generated Offset')[tlea_col].text).should == @gl_offset_amount
 
       end
     end
@@ -122,11 +110,7 @@ And /^the Object Codes for the (.*) document appear in the document's GLPE entry
       als.each do |al|
         # This pulls the text of the Object Code column and makes sure the
         # Object Codes in each Accounting Line of the object are in that column.
-        page.results_table
-            .column(page.results_table.keyed_column_index(:object_code))
-            .rest
-            .map(&:text)
-            .should include al.object
+        page.results_table.column(page.results_table.keyed_column_index(:object_code)).rest.map(&:text).should include al.object
       end
     end
   end
@@ -146,6 +130,7 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
     page.reference_document_number.fit doc_object.document_id
     page.pending_entry_all.set
     page.search
+    page.wait_for_search_results
   end
 end
 
@@ -163,6 +148,7 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
     page.reference_document_number.fit doc_object.document_id
     page.pending_entry_approved_indicator_all
     page.search
+    page.wait_for_search_results
   end
 end
 
@@ -170,7 +156,6 @@ And /^the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line app
   doc_object = document_object_for(document)
   alt = AccountingLineObject::get_type_conversion(al_type)
   step "I lookup the #{al_type} Accounting Line of the #{document} document in the #{entry_lookup}"
-
   case entry_lookup
     when 'GLPE'
       on(GeneralLedgerPendingEntryLookupPage).open_item_via_text(doc_object.accounting_lines[alt].first.line_description, doc_object.document_id)
@@ -179,7 +164,6 @@ And /^the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line app
     else
       %w('GLPE', 'GL').any? { |opt| opt.include? entry_lookup }
   end
-
   step "the #{al_type} Accounting Line entry matches the #{document} document's entry"
 end
 
@@ -189,7 +173,10 @@ When /^I lookup all entries for the current month in the General Ledger Balance 
 end
 
 Then /^the General Ledger Balance lookup displays the document ID for the (.*) document$/ do |document|
-  on(GeneralLedgerBalanceLookupPage).item_row(document_object_for(document).document_id).should
+  # on(GeneralLedgerBalanceLookupPage).item_row(document_object_for(document).document_id).should
+  on(GeneralLedgerBalanceLookupPage) do |page|
+    page.item_row(document_object_for(document).document_id).should
+  end
 end
 
 And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line of the (.*) document in the General Ledger Balance$/ do |al_type, document|
@@ -206,6 +193,7 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
     page.reference_document_number.fit doc_object.document_id
     page.pending_entry_all.set
     page.search
+    page.wait_for_search_results
   end
 end
 
