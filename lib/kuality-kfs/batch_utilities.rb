@@ -88,7 +88,7 @@ module BatchUtilities
     on BatchJobLookup do |lookup|
       lookup.job_status.select_value(/#{status}/m)
       lookup.search
-      if lookup.no_result_table_returned?
+      if lookup.no_values_match_this_search?
         job_with_status_found = false
       end
     end
