@@ -40,7 +40,12 @@ module GlobalConfig
     paramKey.setNamespaceCode(namespace_code)
     paramKey.setComponentCode(component_code)
     paramKey.setName(parameter_name)
-    parameter_service.getParameterValuesAsString(paramKey).getValue().to_a
+    begin
+      parameter_service.getParameterValuesAsString(paramKey).getValue().to_a
+    rescue Java::JavaxXmlWs::WebServiceException
+      # long running web service data request, timeout must have been hit
+      raise StandardError.new("Java::JavaxXmlWs::WebServiceException caught long running web service data request for [get_parameter_values] namespace_code=#{namespace_code}= component_code=#{component_code}= parameter_name=#{parameter_name}=")
+    end
   end
   # Used to get any of the AFT-specific parameters - should be used with a constant, not passing in a string
   # get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ASSET_GLOBAL)
