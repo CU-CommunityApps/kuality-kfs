@@ -148,7 +148,7 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
     page.reference_document_number.fit doc_object.document_id
     page.pending_entry_approved_indicator_all
     page.search
-    page.wait_for_search_results
+    page.wait_for_search_results(60)
   end
 end
 
