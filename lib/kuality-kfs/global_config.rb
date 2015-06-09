@@ -52,7 +52,7 @@ module GlobalConfig
   def get_aft_parameter_values(parameter_name)
     get_parameter_values('KFS-AFTEST', parameter_name)
   end
-  # same as above but ureturns a hash which is easier to work with
+  # same as above but returns a hash which is easier to work with
   def get_aft_parameter_values_as_hash(parameter_name)
     h = {}
     get_parameter_values('KFS-AFTEST', parameter_name).each do |key_val_pair|
@@ -165,6 +165,8 @@ module GlobalConfig
     end
     principal_name
   end
+
+  #Calls the webservice to obtain a hash of multiple business objects having the requested attributes.
   def get_kuali_business_objects(namespace_code, object_type, identifiers)
     # Create new mechanize agent and hit the main page
     # then login once directed to CUWA
@@ -185,6 +187,7 @@ module GlobalConfig
     XmlSimple.xml_in(page.body)
   end
 
+  #Returns a single random business object with the requested attributes.
   def get_kuali_business_object(namespace_code, object_type, identifiers)
     business_objects = get_kuali_business_objects(namespace_code, object_type, identifiers)
     if business_objects.values[0].nil?
@@ -242,12 +245,6 @@ module GlobalConfig
   def get_root_action_requests(document_number)
     workflow_document_service.getRootActionRequests(document_number)
   end
-  def fetch_random_account_number
-    fetch_random_acount['accountNumber']
-  end
-  def fetch_random_acount
-    get_kuali_business_object('KFS-COA','Account',"active=Y&accountExpirationDate=NULL&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")
-  end
   def fetch_random_capital_asset_object_code
     current_fiscal_year   = get_aft_parameter_value('CURRENT_FISCAL_YEAR')
     chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
@@ -261,16 +258,31 @@ module GlobalConfig
   def get_random_account_for_pre_encumbrance
     get_kuali_business_object('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountName=*EXPENSE*&fundGroup=GN&closed=N&accountExpirationDate=NULL")
   end
-
   def get_random_account_number_for_pre_encumbrance
     get_random_account_for_pre_encumbrance['accountNumber'][0]
   end
 
+  def get_random_account
+    get_kuali_business_object('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&closed=N&accountExpirationDate=NULL&active=Y")
+  end
+  def get_random_account_number
+    get_random_account['accountNumber'][0]
+  end
+
   # All ObjectCodeObject attributes are obtained and returned
+  def get_random_object_code_object(object_sub_type_code='')
+    get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&financialObjectSubTypeCode=#{object_sub_type_code}&active=Y")
+  end
+  # Only the four character object code value is returned from the call to get all of a random object code object's attributes
+  def get_random_object_code(object_sub_type_code='')
+    get_random_object_code_object(object_sub_type_code)['financialObjectCode'][0]
+  end
+
+  # All ObjectCodeObject attributes for a pre-encumbrance object code are obtained and returned
   def get_random_object_code_object_for_pre_encumbrance
     get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&financialObjectCodeName=Supplies*&active=Y&financialObjectTypeCode=EX&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")
   end
-  # Only the four character object code value is returned from the call to get all of a random object code object's attributes
+  # Only the four character object code value is returned from the call to get all of a random pre-encumbrance object code object's attributes
   def get_random_object_code_for_pre_encumbrance
     get_random_object_code_object_for_pre_encumbrance['financialObjectCode'][0]
   end
@@ -344,6 +356,28 @@ module GlobalConfig
 
       set_current_user(user_lowercase)
     end
+  end
+
+  # @param [String] code_and_description: String containing a code and description delimited by a single hyphen.
+  # Description could contain one or more hyphens.
+  #
+  # @return [Hash] A hash of :code, :description where :code is the the portion of the string represented by everything
+  # up to the first hyphen with trailing white space removed and :description is the portion of the string represented
+  # by everything after the first hyphen with leading white space removed.
+  def split_code_description_at_first_hyphen(code_and_description)
+    split_data_array = code_and_description.to_s.split( /- */, 2)
+    unless (split_data_array[0]).rstrip.nil?
+      #there is trailing white space
+      split_data_array[0] = (split_data_array[0]).rstrip
+    end
+    unless (split_data_array[1]).lstrip.nil?
+      #there is leading white space
+      split_data_array[1] = (split_data_array[1]).lstrip
+    end
+    code_description_hash = {
+        code:         split_data_array[0],
+        description:  split_data_array[1]
+    }
   end
 
 end

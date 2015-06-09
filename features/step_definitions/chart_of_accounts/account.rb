@@ -64,20 +64,20 @@ And /^I enter Sub Fund Group Code of (.*)/ do |sub_fund_group_code|
 end
 
 And /^I close the Account$/ do
+   # First, let's get a random continuation account
   random_continuation_account_number = @account.number
+  begin
+    random_continuation_account_number = get_random_account_number
+  end while random_continuation_account_number == @account.number
+
+  # Now, let's try to close that account
   visit(MainPage).account
   on AccountLookupPage do |page|
-    # First, let's get a random continuation account
-    begin
-      random_continuation_account_number = page.get_random_account_number
-    end while random_continuation_account_number == @account.number
-
-    # Now, let's try to close that account
     page.chart_code.fit     @account.chart_code
     page.account_number.fit @account.number
-    page.closed_no.set # There's no point in doing this if the account is already closed. Probably want an error, if a search with this setting fails.
+    page.closed_no.set
     page.search
-    page.edit_random # should only select the guy we want, after all
+    page.edit_random  # should have only found the single account we requested
   end
   @account.edit description:                 "Closing Account #{@account.number}",
                 continuation_account_number: random_continuation_account_number,

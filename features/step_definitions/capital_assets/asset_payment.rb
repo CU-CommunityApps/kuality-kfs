@@ -13,10 +13,10 @@ end
 
 And /^I add an Accounting Line to the Asset Manual Payment with Amount (\w+)$/ do |amount|
   on AssetManualPaymentPage do |page|
-    page.account_number.fit  fetch_random_account_number
-    page.object.fit fetch_random_capital_asset_object_code
-    page.amount.fit amount
-    page.post_date.fit right_now[:date_w_slashes] # add_source_line does not have this.  This is required
+    page.account_number.fit  get_random_account_number
+    page.object.fit          fetch_random_capital_asset_object_code
+    page.amount.fit          amount
+    page.post_date.fit       right_now[:date_w_slashes] # add_source_line does not have this.  This is required
     page.add_acct_line
   end
 end
