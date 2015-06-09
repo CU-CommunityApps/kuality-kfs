@@ -358,26 +358,4 @@ module GlobalConfig
     end
   end
 
-  # @param [String] code_and_description: String containing a code and description delimited by a single hyphen.
-  # Description could contain one or more hyphens.
-  #
-  # @return [Hash] A hash of :code, :description where :code is the the portion of the string represented by everything
-  # up to the first hyphen with trailing white space removed and :description is the portion of the string represented
-  # by everything after the first hyphen with leading white space removed.
-  def split_code_description_at_first_hyphen(code_and_description)
-    split_data_array = code_and_description.to_s.split( /- */, 2)
-    unless (split_data_array[0]).rstrip.nil?
-      #there is trailing white space
-      split_data_array[0] = (split_data_array[0]).rstrip
-    end
-    unless (split_data_array[1]).lstrip.nil?
-      #there is leading white space
-      split_data_array[1] = (split_data_array[1]).lstrip
-    end
-    code_description_hash = {
-        code:         split_data_array[0],
-        description:  split_data_array[1]
-    }
-  end
-
 end
