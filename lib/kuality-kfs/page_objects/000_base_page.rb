@@ -140,7 +140,6 @@ class BasePage < PageFactory
       action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
       action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
       action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click; b.use_new_tab; b.close_parents }
-      action(:return_random_row) { |b| b.results_table[rand(b.results_table.to_a.length - 1) + 1] }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
 
       action(:search_and_return_random) { |b| b.search; b.return_random }
@@ -157,9 +156,15 @@ class BasePage < PageFactory
 
       action(:sort_results_by) { |title_text, b| b.results_table.link(text: title_text).when_present.click }
 
-      value(:no_result_table_returned) { |b| b.frm.divs(id: 'lookup')[0].parent.text.match /No values match this search/m }
-      alias_method :no_result_table_returned?, :no_result_table_returned
+      # Use to determine whether area where results table should be is blank...nothing present on the page in that area
+      value(:results_returned) { |b| b.frm.divs(id: 'lookup')[0] }
+      alias_method :results_returned?, :results_returned
 
+      # Use to determine whether area where results table should be has the phrase "No Values match this search"
+      value(:no_values_match_this_search) { |b| b.frm.divs(id: 'lookup')[0].parent.text.match /No values match this search/m }
+      alias_method :no_values_match_this_search?, :no_values_match_this_search
+
+      # Use to determine whether area where results table should be has the phrase "There were no results found"
       value(:no_results_found) { |b| b.frm.divs(id: 'lookup')[0].parent.text.match /There were no results found/m }
       alias_method :no_results_found?, :no_results_found
 

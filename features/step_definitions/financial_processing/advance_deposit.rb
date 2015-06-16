@@ -3,6 +3,5 @@ Then /^the AD document submits with no errors$/ do
 end
 
 When /^I start an empty Advance Deposit document$/ do
-  visit(MainPage).advance_deposit
   @advance_deposit = create AdvanceDepositObject, initial_lines: []
 end

@@ -23,14 +23,14 @@ class Lookups < BasePage
   element(:lookup_title) { |b| b.frm.div(id: /headerarea/).h1.text }
   action(:on_a_lookup?) { |b| b.lookup_title.include?('Lookup') }
 
-  action(:wait_for_search_results) do |attempts=30, b|
-    while b.no_result_table_returned? && attempts > 0
-      # Wait a bit and check, may be having timing issues.
-      sleep 1
-      attempts -= 1
-      b.search
+  # wait_timeout is in seconds
+  action(:wait_for_search_results) do |wait_timeout=30, b|
+    begin
+      b.results_returned.wait_until_present(timeout=wait_timeout)
+    rescue Watir::Wait::TimeoutError
+      # search request still processing after wait_timeout expired, long running search
+      raise StandardError.new("Watir::Wait::TimeoutError caught in [000_lookups.wait_for_search_results] due search request still running after waiting for =#{wait_timeout}= seconds")
     end
-    raise StandardError.new('No results returned from the lookup!') if b.no_result_table_returned?
   end
 
   class << self

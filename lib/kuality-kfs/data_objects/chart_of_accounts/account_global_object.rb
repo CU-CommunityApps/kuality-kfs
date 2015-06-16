@@ -8,13 +8,10 @@ class AccountGlobalObject < KFSDataObject
                 :trans_processing_sufficient_funds_code, :labor_benefit_rate_category_code,
                 :new_chart_code, :new_number
 
-  def initialize(browser, opts={})
-    @browser = browser
-
-    defaults = {
-        description:                            random_alphanums(20, 'AFT'),
+  def defaults
+    super.merge({
         new_chart_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-        new_number:                             fetch_random_account_number,
+        new_number:                             get_random_account_number,
         supervisor_principal_name:              get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
         manager_principal_name:                 get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER),
         organization_code:                      get_aft_parameter_value(ParameterConstants::DEFAULT_ORGANIZATION_CODE),
@@ -33,10 +30,7 @@ class AccountGlobalObject < KFSDataObject
         sufficient_funds_code:                  'C - Consolidation',
         trans_processing_sufficient_funds_code: '',
         labor_benefit_rate_category_code:       '',
-        press:                                  :save
-
-    }
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_GLOBAL)).merge(opts))
+    }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_GLOBAL))
   end
 
   def build

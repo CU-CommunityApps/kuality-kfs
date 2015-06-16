@@ -54,15 +54,22 @@ class AccountObject < KFSDataObject
 
 
   def edit(opts={})
+    # Verify what we are being asked to edit is one of our attributes
+    opt_keys_to_update = opts.keys
+    super_class_attribute_keys = self.class.superclass.attributes - self.class.superclass.read_only_attributes - self.class.notes_and_attachments_tab_mixin_attributes
+    class_attribute_keys = self.class.attributes - self.class.read_only_attributes - self.class.icra_mixin_attributes
+    missing_attribute_keys = opt_keys_to_update - super_class_attribute_keys - class_attribute_keys
+    raise ArgumentError, "AccountObject was requested to edit attribute(s) #{missing_attribute_keys} which are undefined." if missing_attribute_keys.length != 0
+
+    # Get this class's attributes keys/symbols that are specified in the opts parameter for editing.
+    # Do not include the super class keys/symbols as those attributes will be edited via the call to the superclass
+    # and will cause those same attributes to be updated a second time by this sub-class if included.
+    keys_to_update = opt_keys_to_update & class_attribute_keys #intersection of two symbol arrays is what should be edited by this class
+
     super # Edit anything editable in KFSDataObject
 
-    # Because AccountObject::attributes we're not doing anything fancy, we can just do this:
-    on(AccountPage) { |p| edit_fields opts, p, *((self.class.superclass.attributes -
-                                                  self.class.superclass.read_only_attributes -
-                                                  self.class.notes_and_attachments_tab_mixin_attributes) +
-                                                 self.class.attributes -
-                                                 self.class.read_only_attributes -
-                                                 self.class.icra_mixin_attributes) }
+    on(AccountPage) { |p| edit_fields opts, p, *keys_to_update }
+
     # This does mean that you can't update stuff from the ICRA Mixin via #edit, though.
     update_options(opts)
   end
@@ -92,29 +99,6 @@ class AccountObject < KFSDataObject
     # @return [Array] List of Symbols for attributes that aren't copied to the new side of a copy
     def uncopied_attributes
       superclass.uncopied_attributes | [:chart_code, :number, :effective_date]
-    end
-
-
-    # @param [String] code_and_description: String containing a code and description delimited by a single hyphen.
-    # Description could contain one or more hyphens.
-    #
-    # @return [Hash] A hash of :code, :description where :code is the the portion of the string represented by everything
-    # up to the first hyphen with trailing white space removed and :description is the portion of the string represented
-    # by everything after the first hyphen with leading white space removed.
-    def split_code_description_at_first_hyphen(code_and_description)
-      split_data_array = code_and_description.to_s.split( /- */, 2)
-      unless (split_data_array[0]).rstrip.nil?
-        #there is trailing white space
-        split_data_array[0] = (split_data_array[0]).rstrip
-      end
-      unless (split_data_array[1]).lstrip.nil?
-        #there is leading white space
-        split_data_array[1] = (split_data_array[1]).lstrip
-      end
-      code_description_hash = {
-          code:         split_data_array[0],
-          description:  split_data_array[1]
-      }
     end
 
 
