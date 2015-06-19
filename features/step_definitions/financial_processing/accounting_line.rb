@@ -97,6 +97,7 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
     lookup.send("consolidation_option_#{snake_case(table.rows_hash['Consolidation Option']).to_s}") unless table.rows_hash['Consolidation Option'].nil?
     lookup.send("include_pending_entry_approved_indicator_#{table.rows_hash['Include Pending Ledger Entry'].downcase}") unless table.rows_hash['Include Pending Ledger Entry'].nil?
     lookup.search
+    lookup.wait_for_search_results(90)
   end
 end
 
