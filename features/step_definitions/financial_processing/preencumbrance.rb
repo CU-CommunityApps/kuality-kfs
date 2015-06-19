@@ -20,6 +20,7 @@ Then /^the Open Encumbrances lookup for the Pre-Encumbrance document with Balanc
     page.balance_type_code.set balance_type
     page.active_indicator_all.set
     page.search
+    page.wait_for_search_results(90)
 
     fiscal_year_col = page.results_table.keyed_column_index(:fiscal_year)
     chart_code_col = page.results_table.keyed_column_index(:chart_code)
