@@ -35,12 +35,24 @@ When /^Accounts should be returned$/ do
 end
 
 When /^I lookup an Account with (.*)$/ do |field_name|
+
+  @test_data_parameter_name = 'TEST_ACCOUNT_LOOKUP_CORNELL_SPECIFIC_FIELDS'
+  step "I obtain #{@test_data_parameter_name} data values required for the test from the Parameter table"
+  #do not continue if input data required for next step in test was not specified in the Parameter table
+  fail ArgumentError, "Parameter #{@test_data_parameter_name} required for this test does not exist in the Parameter table." if @test_input_data.nil? || @test_input_data.empty?
+
   on AccountLookupPage do |page|
     case field_name
       when 'Account Manager Principal Name'
-        page.acct_manager_principal_name.fit get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER)
+        # Only continue if data needed for test is specified in parameter
+        fail ArgumentError, "Parameter #{@test_data_parameter_name} does not specify required input test data value for account manager principal name" if @test_input_data[:acct_manager_principal_name].nil? || @test_input_data[:acct_manager_principal_name].empty?
+        page.acct_manager_principal_name.fit @test_input_data[:acct_manager_principal_name]
       when 'Account Supervisor Principal Name'
-        page.acct_supervisor_principal_name.fit get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR)
+        # Only continue if data needed for test is specified in parameter
+        fail ArgumentError, "Parameter #{@test_data_parameter_name} does not specify required input test data value for account supervisor principal name" if @test_input_data[:acct_supervisor_principal_name].nil? || @test_input_data[:acct_supervisor_principal_name].empty?
+        page.acct_supervisor_principal_name.fit @test_input_data[:acct_supervisor_principal_name]
+      else
+        fail ArgumentError, "Step I lookup an Account with #{field_name} is not coded to handle that field name."
     end
     page.search
   end
