@@ -147,8 +147,16 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
     page.account_number.fit            '*'
     page.reference_document_number.fit doc_object.document_id
     page.pending_entry_approved_indicator_all
-    page.search
-    page.wait_for_search_results(90)
+    begin
+      page.search
+    rescue Timeout::Error
+      raise StandardError.new("Timeout::Error caught for page.search in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
+    end
+    begin
+      page.wait_for_search_results(180)
+    rescue Timeout::Error
+      raise StandardError.new("Timeout::Error caught for page.wait_for_search_results(90) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
+    end
   end
 end
 
@@ -164,7 +172,11 @@ And /^the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line app
     else
       %w('GLPE', 'GL').any? { |opt| opt.include? entry_lookup }
   end
-  step "the #{al_type} Accounting Line entry matches the #{document} document's entry"
+  begin
+    step "the #{al_type} Accounting Line entry matches the #{document} document's entry"
+  rescue Timeout::Error
+    raise StandardError.new("Timeout::Error caught for call to validation step [the #{al_type} Accounting Line entry matches the #{document} document's entry]")
+  end
 end
 
 When /^I lookup all entries for the current month in the General Ledger Balance lookup entry$/ do
