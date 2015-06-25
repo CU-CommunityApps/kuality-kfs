@@ -5,11 +5,9 @@ class AccountDelegateObject < KFSDataObject
 
   def defaults
     super.merge({
-        description:          random_alphanums(40, 'AFT'),
         chart_code:           get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
         number:               random_alphanums(7),
         principal_name:       get_random_principal_name_for_role('KFS-SYS', 'User'),
-        press:                :save
     }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_DELEGATE))
   end
 
