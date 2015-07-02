@@ -26,7 +26,14 @@ Then /^I should get these error messages:$/ do |error_msgs|
 end
 
 Then /^I should get an error that starts with "([^"]*)"$/ do |error_msg|
-  $current_page.errors.any? { |s| s.include?(error_msg) }
+  #getting errors from page is expensive, obtain reference once that can be reused
+  page_errors = $current_page.errors
+  #we are expecting an error message, fail when there are none
+  page_errors.empty?.should_not == true
+  #search for what we are looking for
+  exists = page_errors.any? { |s| s.include?(error_msg) }
+  #we are expecting our error message to be there, fail if it is not
+  exists.should == true
 end
 
 And /^I should get an Authorization Exception Report error$/ do
