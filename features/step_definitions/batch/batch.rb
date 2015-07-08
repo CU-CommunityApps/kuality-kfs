@@ -82,6 +82,12 @@ Then /^the last Nightly Batch Job should have succeeded$/ do
   on(SchedulePage).job_status.should match(/Succeeded/)
 end
 
+# This step is intended to be executed in the Gherkin validation scenario that occurs after the batch jobs execute in
+# each individual feature file. It performs appropriate user login and verifies that all batch jobs completed successfully.
+And /^All Nightly Batch Jobs have completed successfully$/ do
+  step 'I am logged in as a KFS Operations'
+  step 'There are no incomplete Batch Job executions'
+end
 
 # This step is intended to be executed before any batch job is requested for a given test.
 # This step will prevent that new batch job request from starting by failing the test when previous batch job execution
