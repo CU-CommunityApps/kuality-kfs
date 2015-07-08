@@ -155,7 +155,7 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
     begin
       page.wait_for_search_results(180)
     rescue Timeout::Error
-      raise StandardError.new("Timeout::Error caught for page.wait_for_search_results(90) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
+      raise StandardError.new("Timeout::Error caught for page.wait_for_search_results(180) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
     end
   end
 end
@@ -185,7 +185,6 @@ When /^I lookup all entries for the current month in the General Ledger Balance 
 end
 
 Then /^the General Ledger Balance lookup displays the document ID for the (.*) document$/ do |document|
-  # on(GeneralLedgerBalanceLookupPage).item_row(document_object_for(document).document_id).should
   on(GeneralLedgerBalanceLookupPage) do |page|
     page.item_row(document_object_for(document).document_id).should
   end
