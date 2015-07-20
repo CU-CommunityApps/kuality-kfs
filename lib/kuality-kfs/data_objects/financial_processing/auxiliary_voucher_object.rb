@@ -22,13 +22,10 @@ class AuxiliaryVoucherObject < KFSDataObject
   end
 
 
+  def defaults
+    super.merge!(default_accounting_lines)
+         .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_AUXILIARY_VOUCHER))
 
-  def initialize(browser, opts={})
-    @browser = browser
-
-    defaults = { description: random_alphanums(40, 'AFT') }.merge!(default_accounting_lines)
-
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_AUXILIARY_VOUCHER)).merge(opts))
   end
 
   def build
