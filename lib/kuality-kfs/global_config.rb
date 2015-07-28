@@ -47,15 +47,27 @@ module GlobalConfig
       raise StandardError.new("Java::JavaxXmlWs::WebServiceException caught long running web service data request for [get_parameter_values] namespace_code=#{namespace_code}= component_code=#{component_code}= parameter_name=#{parameter_name}=")
     end
   end
+  # Intended to only be invoked internal to this module from mdethods get_aft_parameter_values,
+  # get_aft_parameter_values_as_hash, or get_aft_parameter_value so that a cache of AFT parameters already looked up
+  # via the web service will be used first and the web service will be called only when the requested parameter is not
+  # found in the cache.
+  def aft_parameter_retrieval(parameter_name)
+    if $AFT_PARAMETER_CONSTANTS[parameter_name.to_sym].nil?
+      $AFT_PARAMETER_CONSTANTS[parameter_name.to_sym] = get_parameter_values(ParameterConstants::AFT_PARAMETER_NAMESPACE, parameter_name)
+      $AFT_PARAMETER_CONSTANTS[parameter_name.to_sym]
+    else #AFT parameter already looked up, return what is cached
+      $AFT_PARAMETER_CONSTANTS[parameter_name.to_sym]
+    end
+  end
   # Used to get any of the AFT-specific parameters - should be used with a constant, not passing in a string
   # get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ASSET_GLOBAL)
   def get_aft_parameter_values(parameter_name)
-    get_parameter_values('KFS-AFTEST', parameter_name)
+    aft_parameter_retrieval(parameter_name)
   end
   # same as above but returns a hash which is easier to work with
   def get_aft_parameter_values_as_hash(parameter_name)
     h = {}
-    get_parameter_values('KFS-AFTEST', parameter_name).each do |key_val_pair|
+    aft_parameter_retrieval(parameter_name).each do |key_val_pair|
       k,v = key_val_pair.split('=')
       h[k.to_sym] = v
     end
@@ -63,7 +75,7 @@ module GlobalConfig
   end
   # Same as the first one but used when you know there is only a single value in the parameter
   def get_aft_parameter_value(parameter_name)
-    get_parameter_values('KFS-AFTEST', parameter_name)[0]
+    aft_parameter_retrieval(parameter_name)[0]
   end
   # returns a list of assignees for a group
   def get_permission_assignees_by_template(namespace_code, template_name, permission_details)
