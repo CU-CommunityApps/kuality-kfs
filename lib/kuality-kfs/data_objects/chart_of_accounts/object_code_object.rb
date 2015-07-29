@@ -20,7 +20,7 @@ class ObjectCodeObject < KFSDataObject
 
   def defaults
     super.merge({
-                      fiscal_year:                        get_aft_parameter_value('CURRENT_FISCAL_YEAR'),
+                      fiscal_year:                        get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
                       new_chart_code:                     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
                       object_code:                        random_alphanums(4), #if object code matches data user gets an error 'This document cannot be Saved or Routed because a record with the same primary key already exists.'
                       object_code_name:                   random_alphanums(10, 'AFT'),

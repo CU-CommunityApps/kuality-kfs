@@ -164,17 +164,15 @@ module Utilities
   def get_object_type_of_type(type, cap_asset_allowed=false)
     case type
       when 'Expenditure', 'Passes requirements for Requisition'
-        object_consolidations = get_aft_parameter_values('REQS_OBJECT_CONSOLIDATIONS')
-        object_levels         = get_aft_parameter_values('REQS_OBJECT_LEVELS')
-        object_sub_types      = get_aft_parameter_values('REQS_OBJECT_SUB_TYPES')
-        object_types          = get_aft_parameter_values('REQS_OBJECT_TYPES')
-        valid_object_levels_by_object_type = get_aft_parameter_values_as_hash('REQS_VALID_OBJECT_LEVELS_BY_OBJECT_TYPE').inject({}) { |h, (k, v)| h[k.to_s] = v.split(','); h }
-        current_fiscal_year   = get_aft_parameter_value('CURRENT_FISCAL_YEAR') # '2015'
+        object_consolidations = get_aft_parameter_values(ParameterConstants::REQS_OBJECT_CONSOLIDATIONS)
+        object_levels         = get_aft_parameter_values(ParameterConstants::REQS_OBJECT_LEVELS)
+        object_sub_types      = get_aft_parameter_values(ParameterConstants::REQS_OBJECT_SUB_TYPES)
+        object_types          = get_aft_parameter_values(ParameterConstants::REQS_OBJECT_TYPES)
+        valid_object_levels_by_object_type = get_aft_parameter_values_as_hash(ParameterConstants::REQS_VALID_OBJECT_LEVELS_BY_OBJECT_TYPE).inject({}) { |h, (k, v)| h[k.to_s] = v.split(','); h }
 
         object_levels += %w(CAPA CAPC) unless cap_asset_allowed
-        chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-        levels = get_kuali_business_objects('KFS-COA', 'ObjectLevel', "universityFiscalYear=#{current_fiscal_year}")
-        object_codes = get_kuali_business_objects('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}&chartOfAccountsCode=#{chart_code}")
+        levels = get_kuali_business_objects('KFS-COA', 'ObjectLevel', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}")
+        object_codes = get_kuali_business_objects('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")
 
         object_codes['org.kuali.kfs.coa.businessobject.ObjectCode'].delete_if do |oc_hash|
           !(object_levels & oc_hash['financialObjectLevelCode']).empty? ||
@@ -211,17 +209,15 @@ module Utilities
   end
   # This is simplified version of 'get_object_type_of_type'. For now, this is for PURAP.  Should re-factor to merge these 2 if possible.
   def get_object_code_of_type(type)
-    current_fiscal_year   = get_aft_parameter_value('CURRENT_FISCAL_YEAR')
-    chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
     case type
       when 'Operating Expense'
-        get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}&financialObjectSubTypeCode=OE&financialObjectTypeCode=EX&financialObjectLevelCode=SMAT&chartOfAccountsCode=#{chart_code}")['financialObjectCode'][0]
+        get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&financialObjectSubTypeCode=OE&financialObjectTypeCode=EX&financialObjectLevelCode=SMAT&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")['financialObjectCode'][0]
       when 'Capital Asset'
         fetch_random_capital_asset_object_code
       when 'Accounts Receivable Asset'
-        get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}&financialObjectTypeCode=AS&financialObjectLevelCode=AROT&chartOfAccountsCode=#{chart_code}")['financialObjectCode'][0]
+        get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&financialObjectTypeCode=AS&financialObjectLevelCode=AROT&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")['financialObjectCode'][0]
       when 'Income-Cash'
-        get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{current_fiscal_year}&financialObjectSubTypeCode=ID&financialObjectTypeCode=IN&financialObjectLevelCode=IDRV&chartOfAccountsCode=#{chart_code}")['financialObjectCode'][0]
+        get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&financialObjectSubTypeCode=ID&financialObjectTypeCode=IN&financialObjectLevelCode=IDRV&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")['financialObjectCode'][0]
       else
         nil
     end

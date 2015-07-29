@@ -7,7 +7,7 @@ attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery
 
   def defaults
     super.merge({
-                    fiscal_year:                            get_aft_parameter_value('CURRENT_FISCAL_YEAR'),
+                    fiscal_year:                            get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
                     rate_id:                                random_alphanums(3),
                     active_indicator:                       :set,
                     indirect_cost_recovery_rate_details:    collection('IndirectCostRecoveryRateDetailLineObject')

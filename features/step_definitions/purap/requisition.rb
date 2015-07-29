@@ -466,6 +466,7 @@ end
 
 And /^I create the Requisition document with following specifications:$/ do |table|
   arguments = table.rows_hash
+  #TODO : Parameter name being dynamically created and KFS-AFTEST parameter may not exist in the KFS system. FIX!
   vendor_number = get_aft_parameter_value('REQS_' + (arguments['Vendor Type'].nil? ? 'NONB2B' : arguments['Vendor Type'].upcase) + '_VENDOR')
   account_number = get_account_of_type(arguments['Account Type'])
   commodity_code = get_commodity_of_type(arguments['Commodity Code'])
