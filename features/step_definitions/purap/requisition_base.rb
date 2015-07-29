@@ -4,6 +4,7 @@ Given  /^I (initiate|submit) a Requisition document with the following:$/ do |ac
 
   step 'I login as a KFS user to create an REQS'
 
+  # TODO : Parameters being dynamically created and KFS-AFTEST parameter may not exist in the KFS system. FIX!
   # TODO : more work here to get all the parameters right
   if arguments['Vendor Type'].nil? || arguments['Vendor Type'] != 'Blank'
     @vendor_number = get_aft_parameter_value('REQS_' + (arguments['Vendor Type'].nil? ? 'NONB2B' : arguments['Vendor Type'].upcase) + '_VENDOR')
@@ -235,8 +236,8 @@ Then /^the (.*) document routes to the correct individuals based on the org revi
   if document == 'Purchase Order'
 
     @base_org_review_level.should == @level
-    po_reviewer_500k = get_aft_parameter_value('PO_BASE_ORG_REVIEW_500K')
-    po_reviewer_5m = get_aft_parameter_value('PO_BASE_ORG_REVIEW_5M')
+    po_reviewer_500k = get_aft_parameter_value(ParameterConstants::PO_BASE_ORG_REVIEW_500K)
+    po_reviewer_5m = get_aft_parameter_value(ParameterConstants::PO_BASE_ORG_REVIEW_5M)
     po_reviewer_100k = get_principal_name_for_group('3000106')
 
     case @level
