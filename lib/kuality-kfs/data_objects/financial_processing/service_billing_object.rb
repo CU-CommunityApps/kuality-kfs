@@ -2,7 +2,7 @@ class ServiceBillingObject < KFSDataObject
 
   include AccountingLinesMixin
 
-  DOC_INFO = { label: 'Service Billing Document', type_code: 'SB', transactional?: true }
+  DOC_INFO = { label: 'Service Billing', type_code: 'SB', transactional?: true, action_wait_time: 30 }
 
   # These aliases are for convenience
   alias :add_expense_line :add_target_line

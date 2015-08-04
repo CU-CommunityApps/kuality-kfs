@@ -1,5 +1,7 @@
 class AccountDelegateGlobalObject < KFSDataObject
 
+  DOC_INFO = { label: 'Account Delegate global', type_code: 'GDLG', transactional?: false, action_wait_time: 30}
+
   attr_accessor :doc_type, :primary_route, :start_date,
                 :principal_name, :chart_code, :account_number
 

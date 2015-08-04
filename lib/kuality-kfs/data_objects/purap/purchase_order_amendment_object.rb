@@ -1,8 +1,8 @@
 class PurchaseOrderAmendmentObject < PurchaseOrderObject
 
-  DOC_INFO = { label: 'Purchase Order Amendment', type_code: 'POA', transactional?: true }
   include ProcessItemsAccountingLinesMixin
 
+  DOC_INFO = { label: 'Purchase Order Amendment', type_code: 'POA', transactional?: true, action_wait_time: 30 }
 
   def defaults
     # We'll merge the default_items so that our class defaults (specifically @initial_item_lines) override it

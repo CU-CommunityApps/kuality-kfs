@@ -1,5 +1,7 @@
 class OrganizationObject < KFSDataObject
 
+  DOC_INFO = { label: 'Organization', type_code: 'ORGN', transactional?: false, action_wait_time: 30}
+
   attr_accessor :chart_code, :organization_code, :name, :manager_principal_name, :resp_center_code,
                 :physcal_campus_code, :type_code, :default_account_number,
                 :address_line_1, :address_line_2, :postal_code, :country_code,
@@ -28,8 +30,7 @@ class OrganizationObject < KFSDataObject
         plant_chart:            get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
         plant_account_number:   get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER),
         campus_plant_chart_code: get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-        campus_plant_account_number: get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER),
-        #press:                       :save
+        campus_plant_account_number: get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER)
     }
     set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ORGANIZATION)).merge(opts))
   end

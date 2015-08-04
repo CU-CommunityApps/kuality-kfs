@@ -1,5 +1,7 @@
 class OrganizationReviewObject < KFSDataObject
 
+  DOC_INFO = { label: 'Organization Review', type_code: 'OR', transactional?: false, action_wait_time: 30}
+
   attr_accessor :chart_code, :organization_code, :doc_type, :review_types,
                 :from_amount, :to_amount, :accounting_line_override_code, :principal_name,
                 :namespace, :role_name, :group_namespace, :group_name, :action_type_code,

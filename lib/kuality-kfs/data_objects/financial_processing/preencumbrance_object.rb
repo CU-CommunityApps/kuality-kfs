@@ -2,7 +2,7 @@ class PreEncumbranceObject < KFSDataObject
 
   include AccountingLinesMixin
 
-  DOC_INFO = { label: 'Pre-Encumbrance Document', type_code: 'PE', transactional?: true }
+  DOC_INFO = { label: 'Pre-Encumbrance', type_code: 'PE', transactional?: true, action_wait_time: 60 }
 
   # These aliases are for convenience
   alias :add_disencumbrance_line :add_target_line

@@ -2,7 +2,7 @@ class ContractGrantReportingCodeObject < KFSDataObject
 
   attr_accessor  :chart_code, :code, :name, :active_indicator
 
-  DOC_INFO = { label: 'Contract Grant Reporting Code', type_code: 'OCGR' }
+  DOC_INFO = { label: 'Contract Grant Reporting Code', type_code: 'OCGR', transactional?: false, action_wait_time: 30 }
 
   def defaults
     super.merge({

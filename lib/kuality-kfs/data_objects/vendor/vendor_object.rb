@@ -6,6 +6,8 @@ class VendorObject < KFSDataObject
   include ContractLinesMixin
   include SearchAliasLinesMixin
 
+  DOC_INFO = { label: 'Vendor', type_code: 'PVEN', transactional?: false, action_wait_time: 30 }
+
   attr_accessor :vendor_number, :vendor_name, :vendor_last_name, :vendor_first_name,
                 :vendor_type, :foreign, :tax_number,
                 :tax_number_type_fein, :tax_number_type_ssn, :tax_number_type_none,

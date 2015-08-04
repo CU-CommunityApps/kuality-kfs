@@ -3,7 +3,7 @@ class AuxiliaryVoucherObject < KFSDataObject
   include VoucherLinesMixin
   alias :add_target_line :add_source_line
 
-  DOC_INFO = { label: 'Auxiliary Voucher Document', type_code: 'AV', transactional?: true }
+  DOC_INFO = { label: 'Auxiliary Voucher', type_code: 'AV', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :organization_document_number, :explanation,
                 :accounting_period,

@@ -2,6 +2,8 @@ class AssetManualPaymentObject < KFSDataObject
 
   include AccountingLinesMixin
 
+  DOC_INFO = { label: 'Asset Manual Payment', type_code: 'MPAY', transactional?: true, action_wait_time: 30}
+
   attr_accessor :posted_date, :asset_number, :account_number, :object_code, :asset_number, :amount, :asset_allocation, :object
 
   def initialize(browser, opts={})

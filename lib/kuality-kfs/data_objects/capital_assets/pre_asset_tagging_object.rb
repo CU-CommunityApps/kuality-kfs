@@ -1,5 +1,7 @@
 class PreAssetTaggingObject < KFSDataObject
 
+  DOC_INFO = { label: 'Pre-Asset Tagging', type_code: 'PTAG', transactional?: false, action_wait_time: 30}
+
   attr_accessor :purchase_order_number, :item_line_number, :quantity_ordered, :manufacturer_name,
                 :vendor_name, :organization_owner_organization_code, :purchase_order_line_item_description,
                 :asset_type_code, :organization_owner_chart_of_accounts_code

@@ -1,5 +1,7 @@
 class AccountDelegateModelObject < KFSDataObject
 
+  DOC_INFO = { label: 'Account Delegate Model', type_code: 'GDLM', transactional?: false, action_wait_time: 30}
+
   attr_accessor :chart_of_accounts_code, :organization_code, :account_delegate_model_name, :active_indicator, :document_type_name,
                 :account_delegate_primary_route, :account_delegate_start_date, :approval_from_this_account,
                 :approval_to_this_account, :account_delegate_principal_name, :active

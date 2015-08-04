@@ -1,5 +1,7 @@
 class AssetGlobalObject < KFSDataObject
 
+  DOC_INFO = { label: 'Asset Global', type_code: 'AA', transactional?: false, action_wait_time: 30}
+
   attr_accessor :asset_description, :asset_type_code, :asset_condition, :asset_status_code, :organization_owner_account_number,
                 :owner, :manufacturer, :model_number, :organization_text
 

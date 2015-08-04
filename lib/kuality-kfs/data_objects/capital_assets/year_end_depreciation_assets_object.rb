@@ -1,5 +1,7 @@
 class YearEndDepreciationAssetsObject < KFSDataObject
 
+  DOC_INFO = { label: ' Year End Depreciation Assets', type_code: 'YDPA', transactional?: false, action_wait_time: 30}
+
   attr_accessor :asset_number
 
   def initialize(browser, opts={})

@@ -1,6 +1,6 @@
 class RequisitionObject < KFSDataObject
 
-  DOC_INFO = { label: 'Requisition', type_code: 'REQS', transactional?: true }
+  DOC_INFO = { label: 'Requisition', type_code: 'REQS', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :payment_request_positive_approval_required, :requisition_id,
                 # == Delivery Tab (Somewhat Incomplete) ==
