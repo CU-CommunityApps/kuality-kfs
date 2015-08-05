@@ -157,9 +157,6 @@ end
 
 When /^I (#{BasePage::available_buttons}) the (.*) document$/ do |button, document|
   step "I #{button} the #{document} document answering yes to any questions"
-
-  #TODO this does not belong here, needs to either be in the requisition object or the calling requisition step
-  @requisition_id = on(RequisitionPage).requisition_id if document == 'Requisition' && button == 'submit'
 end
 
 When /^I (#{BasePage::available_buttons}) the (.*) document, confirming any questions, if it is not already FINAL/ do |button, document|
