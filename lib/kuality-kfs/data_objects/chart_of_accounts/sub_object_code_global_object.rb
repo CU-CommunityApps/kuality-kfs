@@ -1,5 +1,7 @@
 class SubObjectCodeGlobalObject < KFSDataObject
 
+  DOC_INFO = { label: 'Sub-Object Code Global', type_code: 'GSOB', transactional?: false, action_wait_time: 30}
+
   attr_accessor  :new_chart_code,
                  :organization_document_number,
                  :new_fiscal_year, :new_chart_code, :new_sub_object_code, :new_sub_object_code_name, :new_sub_object_code_short_name,

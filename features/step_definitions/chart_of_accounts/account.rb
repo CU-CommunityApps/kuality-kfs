@@ -10,17 +10,18 @@ And /^I copy an Account$/ do
     @account.description = page.description
     @account.document_id = page.document_id
     @document_id = page.document_id
-    page.save
-    page.left_errmsg_text.should include 'Document was successfully saved.'
   end
+  step "I save the Account document"
 end
 
 And /^I save an Account with a lower case Sub Fund Program$/ do
-  @account = create AccountObject, sub_fund_group_code: 'board', press: :save
+  @account = create AccountObject, sub_fund_group_code: 'board'
+  step "I save the Account document"
 end
 
 When /^I submit an account with blank SubFund group Code$/ do
-  @account = create AccountObject, sub_fund_group_code: '', press: :submit
+  @account = create AccountObject, sub_fund_group_code: ''
+  step "I submit the Account document"
 end
 
 Then /^I should get an error on saving that I left the SubFund Group Code field blank$/ do
@@ -28,7 +29,7 @@ Then /^I should get an error on saving that I left the SubFund Group Code field 
 end
 
 Then /^the Account Maintenance Document saves with no errors$/  do
-  on(AccountPage).document_status.should == 'SAVED'
+  step 'The document should save successfully'
 end
 
 Then /^the Account Maintenance Document has no errors$/  do
@@ -145,8 +146,7 @@ end
 And /^I create an Account and leave blank for the fields of Guidelines and Purpose tab$/ do
   @account = create AccountObject, expense_guideline_text: '',
                                    income_guideline_text:  '',
-                                   purpose_text:           '',
-                                   press:                  nil
+                                   purpose_text:           ''
 end
 
 And /^the Account document's Sub Fund Program code is uppercased$/ do

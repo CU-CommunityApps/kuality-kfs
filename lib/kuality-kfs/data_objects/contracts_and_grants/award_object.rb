@@ -5,6 +5,8 @@ class AwardObject < KFSDataObject
   include ProjectDirectorLinesMixin
   include SubcontractorLinesMixin
 
+  DOC_INFO = { label: 'Award', type_code: 'AWRD', transactional?: false, action_wait_time: 30}
+
   attr_accessor :agency_number, :status, :project_title, :start_date, :stop_date, :direct_cost_amount, :indirect_cost_amount,
                 :entry_date, :award_type, :purpose_code,:grant_number, :grant_description, :proposal_number
 

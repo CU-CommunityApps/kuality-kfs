@@ -2,7 +2,7 @@ class IndirectCostAdjustmentObject < KFSDataObject
 
   include AccountingLinesMixin
 
-  DOC_INFO = { label: 'Indirect Cost Adjustment Document', type_code: 'ICA', transactional?: true }
+  DOC_INFO = { label: 'Indirect Cost Adjustment', type_code: 'ICA', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :organization_document_number, :explanation
 

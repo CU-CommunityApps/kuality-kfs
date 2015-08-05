@@ -2,6 +2,8 @@ class SubAccountObject < KFSDataObject
 
   include GlobalConfig
 
+  DOC_INFO = { label: 'Sub-Account', type_code: 'SACC', transactional?: false, action_wait_time: 30}
+
                 #== Edit Sub-Account Code tab ==#
   attr_accessor :chart_code, :account_number, :sub_account_number, :name, :active_indicator, :sub_account_type_code,
                 #== Edit Financial Reporting Code ==#

@@ -1,5 +1,7 @@
 class AccountDelegateObject < KFSDataObject
 
+  DOC_INFO = { label: 'Account Delegate', type_code: 'ADEL', transactional?: false, action_wait_time: 30}
+
   attr_accessor :chart_code, :number, :doc_type_name, :principal_name,
                 :approval_from_amount, :approval_to_amount, :primary_route, :active, :start_date
 

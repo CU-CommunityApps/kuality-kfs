@@ -4,6 +4,8 @@ class ProposalObject < KFSDataObject
   include ProjectDirectorLinesMixin
   include SubcontractorLinesMixin
 
+  DOC_INFO = { label: 'Proposal', type_code: 'PRPL', transactional?: false, action_wait_time: 30}
+
   attr_accessor :proposal_number, :agency_number, :status, :project_title, :start_date, :stop_date, :direct_cost_amount, :indirect_cost_amount,
                 :submission_date, :award_type, :purpose_code,:grant_number, :federal_pass_through, :federal_pass_through_agency_number,
                 :cfda_number, :fellow_name, :due_date, :rejected_date, :proposal_active_date

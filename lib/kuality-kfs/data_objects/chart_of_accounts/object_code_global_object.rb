@@ -1,5 +1,7 @@
 class ObjectCodeGlobalObject < KFSDataObject
 
+  DOC_INFO = { label: 'Object Code Global', type_code: 'GOBJ', transactional?: false, action_wait_time: 30}
+
   attr_accessor :object_code,
                 :object_code_name,
                 :object_code_short_name,
@@ -27,8 +29,7 @@ class ObjectCodeGlobalObject < KFSDataObject
         financial_object_code_description: random_alphanums(30, 'AFT'),
         mandatory_transfer:      'N - NOT APPLICABLE',
         federal_funded_code:     'N - Attribute Not Used at Cornell',
-        new_year_chart_code:      get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
-        press: :save
+        new_year_chart_code:      get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME)
     }
     set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_OBJECT_CODE_GLOBAL)).merge(opts))
   end

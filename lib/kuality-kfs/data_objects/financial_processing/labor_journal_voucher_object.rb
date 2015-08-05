@@ -1,5 +1,7 @@
 class LaborJournalVoucherObject < JournalVoucherObject
 
+  DOC_INFO = { label: 'Labor Journal Voucher', type_code: 'LLJV', transactional?: true, action_wait_time: 30 }
+
   def build
     visit(MainPage).labor_journal_voucher
     on LaborJournalVoucherPage do |page|

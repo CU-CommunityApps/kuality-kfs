@@ -1,5 +1,7 @@
 class ParameterObject < KFSDataObject
 
+  DOC_INFO = { label: 'Parameter Maintenance Document', type_code: 'ParameterMaintenanceDocument', transactional?: false, action_wait_time: 30}
+
   attr_accessor :namespace_code, :component, :application_id,
                 :parameter_name, :parameter_value, :parameter_description,
                 :parameter_type_code, :parameter_constraint_code_allowed, :parameter_constraint_code_denied,

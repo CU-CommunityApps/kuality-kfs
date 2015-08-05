@@ -1,11 +1,10 @@
 When /^I start an empty Budget Adjustment document$/ do
   visit(MainPage).budget_adjustment
-  @budget_adjustment = create BudgetAdjustmentObject, press: nil,
-                              initial_lines: []
+  @budget_adjustment = create BudgetAdjustmentObject, initial_lines: []
 end
 
 And /^I create a Budget Adjustment document for file import$/ do  # ME!
-  @budget_adjustment = create BudgetAdjustmentObject, press: nil,
+  @budget_adjustment = create BudgetAdjustmentObject,
                               description: random_alphanums(20, 'AFT Budget Adj '),
                               initial_lines: [{
                                                   type: :source,

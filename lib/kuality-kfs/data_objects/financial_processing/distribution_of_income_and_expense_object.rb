@@ -3,7 +3,7 @@ class DistributionOfIncomeAndExpenseObject < KFSDataObject
   include AccountingLinesMixin
   include CapitalAssetLinesMixin
 
-  DOC_INFO = { label: 'Distribution Of Income And Expense Document', type_code: 'DI', transactional?: true }
+  DOC_INFO = { label: 'Distribution Of Income And Expense', type_code: 'DI', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :organization_document_number, :explanation
 

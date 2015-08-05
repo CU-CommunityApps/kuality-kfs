@@ -1,5 +1,7 @@
 class ObjectCodeObject < KFSDataObject
 
+  DOC_INFO = { label: 'Object Code', type_code: 'OBJT', transactional?: false, action_wait_time: 30}
+
   attr_accessor :fiscal_year,
                 :new_chart_code,
                 :object_code,

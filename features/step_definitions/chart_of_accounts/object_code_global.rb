@@ -1,4 +1,4 @@
-And /^I enter an invalid CG Reporting Code of (.*)$/ do |invalid_code|
+And /^I enter the invalid CG Reporting Code of (.*)$/ do |invalid_code|
   on(ObjectCodeGlobalPage).cg_reporting_code.fit invalid_code
 end
 

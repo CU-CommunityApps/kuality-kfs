@@ -2,7 +2,7 @@ class InternalBillingObject < KFSDataObject
 
   include AccountingLinesMixin
 
-  DOC_INFO = { label: 'Internal Billing Document', type_code: 'IB', transactional?: true }
+  DOC_INFO = { label: 'Internal Billing', type_code: 'IB', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :organization_document_number, :explanation
 

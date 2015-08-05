@@ -1,6 +1,6 @@
 class BenefitExpenseTransferObject < KFSDataObject
 
-  DOC_INFO = { label: 'Benefit Expense Transfer Document', type_code: 'BT', transactional?: true }
+  DOC_INFO = { label: 'Benefit Expense Transfer', type_code: 'BT', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :chart_code, :account_number, :sub_account_number
 

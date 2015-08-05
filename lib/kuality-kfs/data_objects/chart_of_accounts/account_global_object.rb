@@ -1,5 +1,7 @@
 class AccountGlobalObject < KFSDataObject
 
+  DOC_INFO = { label: 'Account Global', type_code: 'GACC', transactional?: false, action_wait_time: 30}
+
   attr_accessor :fo_principal_name, :supervisor_principal_name,
                 :organization_code, :sub_fund_group_code, :acct_expire_date,
                 :postal_code, :city, :state, :address,

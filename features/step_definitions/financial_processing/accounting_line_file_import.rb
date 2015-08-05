@@ -4,8 +4,7 @@ And /^I start a (.*) document for "(.*)" file import$/ do  |document, file_name|
   doc_object = snake_case document
   object_klass = object_class_for(document)
 
-  set(doc_object, create(object_klass, press:         nil,
-                                       document_id:   @document_id,
+  set(doc_object, create(object_klass, document_id:   @document_id,
                                        description:   random_alphanums(20, 'AFT AV '),
                                        initial_lines: [{
                                                          type:        :source,
@@ -19,8 +18,7 @@ And /^I start a (.*) document for from "(.*)" file import and to "(.*)" file imp
   doc_object = snake_case document
   object_klass = object_class_for(document)
 
-  set(doc_object, create(object_klass, press:         nil,
-                                       document_id:   @document_id,
+  set(doc_object, create(object_klass, document_id:   @document_id,
                                        description:   random_alphanums(20, 'AFT AV '),
                                        initial_lines: [{
                                                          type:      :source,

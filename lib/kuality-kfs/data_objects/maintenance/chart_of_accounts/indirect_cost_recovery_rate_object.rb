@@ -3,7 +3,7 @@ class IndirectCostRecoveryRateObject < KFSDataObject
 attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery_rate_details
 
 
-  DOC_INFO = { label: 'Indirect Cost Recovery Rate', type_code: 'ICRE' }
+  DOC_INFO = { label: 'Indirect Cost Recovery Rate', type_code: 'ICRE', transactional?: false, action_wait_time: 30 }
 
   def defaults
     super.merge({

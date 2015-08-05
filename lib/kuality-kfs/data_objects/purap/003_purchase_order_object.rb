@@ -1,6 +1,6 @@
 class PurchaseOrderObject < RequisitionObject
 
-  DOC_INFO = { label: 'Purchase Order', type_code: 'PO', transactional?: true }
+  DOC_INFO = { label: 'Purchase Order', type_code: 'PO', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :purchase_order_number
 

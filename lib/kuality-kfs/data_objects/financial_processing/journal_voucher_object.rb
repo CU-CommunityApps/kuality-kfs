@@ -4,7 +4,7 @@ class JournalVoucherObject < KFSDataObject
   alias :add_target_line :add_source_line
   alias :import_target_lines :import_source_lines
 
-  DOC_INFO = { label: 'Journal Voucher Document', type_code: 'JV', transactional?: true }
+  DOC_INFO = { label: 'Journal Voucher', type_code: 'JV', transactional?: true, action_wait_time: 30 }
 
   attr_accessor :organization_document_number, :explanation,
                 :accounting_period,

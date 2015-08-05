@@ -17,7 +17,8 @@ class BasePage < PageFactory
     send_notification: 'send notification',
     recall:            'Recall current document',
     error_correction:  'error correction',
-    fyi:               'fyi'
+    fyi:               'fyi',
+    sendAdHocRequest:  'sendAdHocRequest'
   }
 
   def self.available_buttons
@@ -85,9 +86,8 @@ class BasePage < PageFactory
     end
 
     def global_buttons
-      glbl 'blanket approve', 'close', 'cancel', 'reload', 'copy', 'Copy current document',
+      glbl 'blanket approve', 'close', 'cancel', 'reload', 'copy', 'Copy current document', 'save', 'sendAdHocRequest',
            'approve', 'disapprove', 'submit', 'Send Notification', 'Recall current document','fyi', 'Calculate'
-      action(:save) { |b| b.frm.button(name: 'methodToCall.save', title: 'save').click }
       action(:error_correction) { |b| b.frm.button(name: 'methodToCall.correct', title: 'Create error correction document from current document').click }
       action(:edit) { |b| b.edit_button.click }
       element(:edit_button) { |b| b.frm.button(name: 'methodToCall.editOrVersion') }
@@ -95,8 +95,49 @@ class BasePage < PageFactory
       element(:send_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.sendNotification', title: 'send') }
       action(:send_fyi) { |b| b.send_button.click }
       action(:void_order) { |b| b.frm.button(title: 'Void PO').click }
+      element(:reload_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.reload', title: 'reload') }
+      element(:sendAdHocRequest_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.sendAdHocRequests', title: 'Send AdHoc Requests') }
 
-    end
+      #################################################################################################################
+      # This wait method is intended to be called after the document button action that would cause the
+      # reload button to appear on the panel once the requested action had completed its processing.
+      #
+      # Note: This action *may* need to perform its rescue in the same manner the wait_for_sendAdHocRequest_button
+      # action works should a condition be found where the save of a document does occur due to a business rule failure.
+      #
+      # i.e. save, wait_for_reload_button, check doc status.
+      # wait_timeout is in seconds
+      #################################################################################################################
+      action(:wait_for_reload_button) do |wait_timeout=30, b|
+        begin
+          b.reload_button.wait_until_present(timeout=wait_timeout)
+        rescue Watir::Wait::TimeoutError
+          # document action request still processing after wait_timeout expired, long running requested action
+          raise StandardError.new("Watir::Wait::TimeoutError caught in [BasePage.wait_for_reload_button] due previous action request still running after waiting for =#{wait_timeout}= seconds")
+        end
+      end
+
+      #################################################################################################################
+      # This wait method is intended to be called after the document button action that would cause the
+      # 'send ad hoc request' button to appear on the panel has successfully completed its processing.
+      #
+      # We are just going to silently eat the Watir::Wait::TimeoutError because it could have been generated due to the
+      # requested action causing a business rule error on the page. The 'send ad hoc request' button will never appear
+      # when a business rule error happens.  The AFTs are coded to take specific actions when business rule failures
+      # occur OR the test should fail because the business rule failed so ignoring the exception is valid.
+      #
+      # i.e. submit, wait_for_sendAdHocRequest_button, check for errors or check doc status
+      # wait_timeout is in seconds
+      #################################################################################################################
+      action(:wait_for_sendAdHocRequest_button) do |wait_timeout=30, b|
+        begin
+          b.sendAdHocRequest_button.wait_until_present(timeout=wait_timeout)
+        rescue Watir::Wait::TimeoutError
+          # document action request still processing after wait_timeout expired OR business rule error
+        end
+      end
+
+    end #global_buttons
 
     def tab_buttons
       action(:main_menu_tab) { |b| b.link(title: 'Main Menu').click }

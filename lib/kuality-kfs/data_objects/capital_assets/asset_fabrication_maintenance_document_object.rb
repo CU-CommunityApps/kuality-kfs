@@ -1,5 +1,7 @@
 class AssetFabricationMaintenanceDocumentObject < KFSDataObject
 
+  DOC_INFO = { label: 'AssetFabricationMaintenanceDocument', type_code: 'FR', transactional?: false, action_wait_time: 30}
+
   attr_accessor  :organization_owner_chart_of_accounts_code, :asset_description, :asset_type_code,
                  :asset_condition, :on_campus_campus,
                  :estimated_fabrication_completion_date, :fabrication_estimated_total_amount,

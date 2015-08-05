@@ -2,7 +2,7 @@ class AdvanceDepositObject < KFSDataObject
 
   include AccountingLinesMixin
 
-  DOC_INFO = { label: 'Award Budget Document', type_code: 'AD', transactional?: true}
+  DOC_INFO = { label: 'Advance Deposit', type_code: 'AD', transactional?: true, action_wait_time: 30}
 
   attr_accessor :advance_deposits,
                 :accounting_lines_for_capitalization, :capital_assets, :general_ledger_pending_entries

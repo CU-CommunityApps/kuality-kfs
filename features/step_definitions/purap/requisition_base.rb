@@ -149,9 +149,8 @@ When /^I submit a Payment Request document to ENROUTE$/ do
   step 'I enter a Pay Date'
   step 'I attach an Invoice Image to the Payment Request document'
   step 'I calculate the Payment Request document'
-  step 'I submit the Payment Request document'
   #If current amount does not match starting amount there is a question page
-  step 'I select yes to the question if present'
+  step 'I submit the Payment Request document answering yes to any questions'
   step 'the Payment Request document goes to ENROUTE'
 
   warn 'Just submitting Payment Request not taking to final'
