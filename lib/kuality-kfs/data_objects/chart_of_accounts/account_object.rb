@@ -1,6 +1,6 @@
 class AccountObject < KFSDataObject
 
-  DOC_INFO = { label: 'Account', type_code: 'ACCT', transactional?: false, action_wait_time: 45}
+  DOC_INFO = { label: 'Account', type_code: 'ACCT', transactional?: false, action_wait_time: 30}
 
                 # == Account Maintenance tab ==
   attr_accessor :chart_code, :number, :name, :organization_code, :campus_code,
