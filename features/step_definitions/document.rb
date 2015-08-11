@@ -95,10 +95,12 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
 
   # perform requested action
   doc_object = snake_case document
-  button.gsub!(' ', '_')
+  button.gsub!(' ', '_')  #change any spaces to underscores
   get(doc_object).send(button)
 
-  # based on action, idle for required amount of seconds
+  # based on action, idle for required amount of seconds, for consistency button
+  # has had its spaces changed to underscores before we reach this case statement
+  # so we can be assured of the format of the string we are looking for
   case button
     when 'save'
       # on(KFSBasePage).wait_for_reload_button(idle_time)
@@ -108,7 +110,7 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
       # on(KFSBasePage).wait_for_sendAdHocRequest_button(idle_time)
       $current_page.wait_for_sendAdHocRequest_button(idle_time)
 
-    when  'approve', 'blanket approve'
+    when  'approve', 'blanket_approve'
       sleep idle_time   #Cannot wait_for_...these actions do not stay on current page, instead redirect back to Main Menu page
     #else #implied no additional waiting for the requested action is needed
   end #case-button
@@ -152,7 +154,6 @@ And /^I copy a random (.*) document with (.*) status/ do |document, doc_status|
 
   set(doc_object, make(object_klass, document_id: @document_id))
   step "I save the #{document} answering yes to any questions"
-  # get(doc_object).save
 end
 
 When /^I (#{BasePage::available_buttons}) the (.*) document$/ do |button, document|
