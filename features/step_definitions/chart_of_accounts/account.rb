@@ -133,6 +133,7 @@ And /^I edit an Account with a random Sub-Fund Group Code$/ do
     page.chart_code.fit get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
     page.account_number.fit get_account_of_type('Random Sub-Fund Group Code')
     page.search
+    page.wait_for_search_results
     page.edit_random
   end
   on AccountPage do |page|
