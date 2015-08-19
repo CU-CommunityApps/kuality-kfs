@@ -38,6 +38,8 @@ class AssetManualPaymentObject < KFSDataObject
     if type == :source
       asset_number = page.capital_asset_number_value row
       amount = (page.allocate_amount_value row).gsub(/,/, '')  #remove any commas that may be present i.e. 1,234.56
+    else
+      fail ArgumentError, "AssetManualPaymentObject.pull_specific_asset_line is not coded to handle row type =#{type}="
     end
     new_line = {
         :asset_number => asset_number,
