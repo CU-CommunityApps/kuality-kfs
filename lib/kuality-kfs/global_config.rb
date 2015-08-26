@@ -100,7 +100,7 @@ module GlobalConfig
   end
   def get_random_principal_id_for_role(name_space, role_name)
     principalIds = role_service.getRoleMemberPrincipalIds(name_space, role_name, StringMapEntryListType.new).getPrincipalId()
-    principalIds.get(java.lang.Math.random() * principalIds.size())
+    principalIds.get((rand(1..principalIds.size()) - 1))
   end
   def get_random_principal_id_with_phone_number_for_role(name_space, role_name)
     phone_number = nil
@@ -119,30 +119,15 @@ module GlobalConfig
   end
   def get_first_principal_name_for_role(name_space, role_name)
     @@prinicpal_names ||= Hash.new{|hash, key| hash[key] = Hash.new}
-
-    if !@@prinicpal_names[name_space][role_name].nil?
-      @@prinicpal_names[name_space][role_name]
-    else
-      @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_first_principal_id_for_role(name_space, role_name))
-    end
+    @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_first_principal_id_for_role(name_space, role_name))
   end
   def get_random_principal_name_for_role(name_space, role_name)
     @@prinicpal_names ||= Hash.new{|hash, key| hash[key] = Hash.new}
-
-    if !@@prinicpal_names[name_space][role_name].nil?
-       @@prinicpal_names[name_space][role_name]
-    else
-       @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_random_principal_id_for_role(name_space, role_name))
-    end
+    @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_random_principal_id_for_role(name_space, role_name))
   end
   def get_random_principal_with_phone_name_for_role(name_space, role_name)
     @@prinicpal_names ||= Hash.new{|hash, key| hash[key] = Hash.new}
-
-    if !@@prinicpal_names[name_space][role_name].nil?
-      @@prinicpal_names[name_space][role_name]
-    else
-      @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_random_principal_id_with_phone_number_for_role(name_space, role_name))
-    end
+    @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_random_principal_id_with_phone_number_for_role(name_space, role_name))
   end
   def get_principal_name_for_role(name_space, role_name)
     principal_names = Array.new
