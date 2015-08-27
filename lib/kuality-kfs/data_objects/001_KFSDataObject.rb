@@ -191,7 +191,13 @@ class KFSDataObject < DataFactory
       search.document_id.fit   @document_id
       search.search
       search.wait_for_search_results
-      search.open_doc @document_id
+      if search.no_values_match_this_search?
+        # fail, we were expecting search by document_id to return the document,
+        # when document not found AFT shows weird Watir error so give better descriptive message for failure reason
+        fail ArgumentError "Document Search failed to find the requested document ID =#{@document_id}=. Cannot continue with test."
+      else  #go to the document we were looking up
+        search.open_doc @document_id
+      end
     end
   end
 

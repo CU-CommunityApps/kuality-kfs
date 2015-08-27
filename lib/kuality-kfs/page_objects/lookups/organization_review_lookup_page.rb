@@ -11,4 +11,7 @@ class OrganizationReviewLookupPage < Lookups
   element(:delegate) { |b| b.frm.radio(name: 'delegate') }
   element(:active_indicator) { |b| b.frm.radio(name: 'active') }
 
+  action(:create_delegation_random) { |b| b.create_delegation_value_links[rand(b.create_delegation_value_links.length)].click }
+  element(:create_delegation_value_links) { |b| b.results_table.links(text: "create delegation") } #double quoted needed due to space
+
 end
