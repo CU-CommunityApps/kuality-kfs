@@ -100,7 +100,7 @@ module GlobalConfig
   end
   def get_random_principal_id_for_role(name_space, role_name)
     principalIds = role_service.getRoleMemberPrincipalIds(name_space, role_name, StringMapEntryListType.new).getPrincipalId()
-    principalIds.get((rand(1..principalIds.size()) - 1))
+    principalIds.get(rand(0..(principalIds.size() - 1)))
   end
   def get_random_principal_id_with_phone_number_for_role(name_space, role_name)
     phone_number = nil
