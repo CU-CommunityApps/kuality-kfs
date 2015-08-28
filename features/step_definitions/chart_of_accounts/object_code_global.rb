@@ -1,7 +1,29 @@
-And /^I enter the invalid CG Reporting Code of (.*)$/ do |invalid_code|
-  on(ObjectCodeGlobalPage).cg_reporting_code.fit invalid_code
+And /^I create an Object Code Global document with a blank CG Reporting Code$/ do
+  #Use the default setup when the object is created
+  @object_code_global = create ObjectCodeGlobalObject
+  #ensure attribute CG Reporting Code is blank/empty
+  @object_code_global.cg_reporting_code = ''
+  on(ObjectCodeGlobalPage).cg_reporting_code.fit ''
 end
 
-Then /^Object Code Global should show an error that says (.*?)$/ do |error|
-  on(ObjectCodeGlobalPage).errors.should include error
+
+And /^I enter the invalid CG Reporting Code of (.*)$/ do |invalid_code|
+  on(ObjectCodeGlobalPage).cg_reporting_code.fit invalid_code
+  @object_code_global.cg_reporting_code = invalid_code
+end
+
+
+And /^I enter a valid CG Reporting Code$/ do
+  on ObjectCodeGlobalPage do |page|
+    #Now get a valid CG Reporting Code value from the lookup on that page
+    page.cg_reporting_code_search
+    on ContractGrantsReportingCodeLookupPage do |cg_rptg_page|
+      cg_rptg_page.chart_code.fit            get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
+      cg_rptg_page.search
+      cg_rptg_page.wait_for_search_results
+      cg_rptg_page.return_random
+    end
+    #make sure data object also has page value just selected
+    @object_code_global.cg_reporting_code = page.cg_reporting_code_new
+  end
 end
