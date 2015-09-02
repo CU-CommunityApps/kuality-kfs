@@ -55,10 +55,4 @@ class ObjectCodeGlobalPage < KFSBasePage
   value(:federal_funded_code_new) { |b| b.federal_funded_code.exists? ? b.federal_funded_code.value : b.federal_funded_code_readonly }
   value(:next_year_object_code_new) { |b| b.next_year_object_code.exists? ? b.next_year_object_code.value : b.next_year_object_code_readonly }
 
-  #Edit Multiple Year Chart Tab
-  element(:new_year_fiscal_year) { |b| b.frm.text_field(name: 'document.newMaintainableObject.add.objectCodeGlobalDetails.universityFiscalYear') }
-  element(:new_year_chart_code) { |b| b.frm.select(name: 'document.newMaintainableObject.add.objectCodeGlobalDetails.chartOfAccountsCode') }
-  action(:add_multiple_chart_lines) { |b| b.frm.button(title: 'Multiple Value Search on Chart') }
-  action(:add_chart_code) { |b| b.frm.button(name: 'methodToCall.addLine.objectCodeGlobalDetails.(!!org.kuali.kfs.coa.businessobject.ObjectCodeGlobalDetail!!).(:::;18;:::).anchor18').click }
-
 end

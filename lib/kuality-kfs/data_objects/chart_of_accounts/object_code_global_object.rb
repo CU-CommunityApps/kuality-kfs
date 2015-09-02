@@ -21,12 +21,12 @@ class ObjectCodeGlobalObject < KFSDataObject
     # Ensure object code being used has not been used before
     begin
       default_object_code = random_alphanums(4)
-    end while not is_unique?(default_object_code)
+    end until is_unique?(default_object_code)
 
     super.merge({
         object_code:              default_object_code, #Value must be one that does not currently exist; otherwise, user gets error 'This document cannot be Saved or Routed because a record with the same primary key already exists.'
         object_code_name:         "AFT created unique object code #{default_object_code}",
-        object_code_short_name:   'AFTunique',
+        object_code_short_name:   'AFTunique'
         #reports_to_object_code   attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #object_type_code         attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #level_code               attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
@@ -35,8 +35,8 @@ class ObjectCodeGlobalObject < KFSDataObject
         #budget_aggregation_code  attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #mandatory_transfer:      attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #federal_funded_code:     attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
-        new_year_chart_code:      get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME)
-    }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_OBJECT_CODE_GLOBAL))
+    }).merge(default_year_and_charts)
+      .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_OBJECT_CODE_GLOBAL))
   end
 
 
@@ -57,10 +57,13 @@ class ObjectCodeGlobalObject < KFSDataObject
     on ObjectCodeGlobalPage do |page|
       page.description.focus
       page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
-      fill_out page, :description, :object_code, :object_code_name, :object_code_short_name, :reports_to_object_code,
-                     :object_type_code, :level_code, :object_sub_type_code, :budget_aggregation_code,
-                     :mandatory_transfer, :federal_funded_code, :new_year_chart_code
-      page.add_chart_code
+
+      fill_out page, *((self.class.superclass.attributes -
+                        self.class.superclass.read_only_attributes -
+                        self.class.notes_and_attachments_tab_mixin_attributes) +
+                        self.class.attributes -
+                        self.class.read_only_attributes -
+                        self.class.year_and_charts_mixin_attributes) # We don't have any special attribute sections, so we should be able to throw them all in.
     end
   end
 
@@ -75,5 +78,7 @@ class ObjectCodeGlobalObject < KFSDataObject
                                          :mandatory_transfer, :federal_funded_code ]
     end
   end #class<<self
+
+  include YearAndChartsLinesMixin
 
 end #class
