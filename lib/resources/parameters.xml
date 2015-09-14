@@ -271,7 +271,7 @@
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="reports_to_object_code=A000;object_type_code=CH;level_code=AEXP;object_sub_type_code=BK;budget_aggregation_code=L;mandatory_transfer=M - Mandatory Transfer;federal_funded_code=N - Attribute Not Used at Cornell"/>
+      <column name="VAL" value="reports_to_object_code=A000;object_type_code=CH;level_code=AEXP;cg_reporting_code=02BN;object_sub_type_code=BK;budget_aggregation_code=L;mandatory_transfer=M - Mandatory Transfer;federal_funded_code=N - Attribute Not Used at Cornell"/>
       <column name="PARM_DESC_TXT" value="Defaults for the Object Code Global object."/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>

@@ -30,7 +30,7 @@ class ObjectCodeGlobalObject < KFSDataObject
         #reports_to_object_code   attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #object_type_code         attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #level_code               attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
-        #cg_reporting_code        attribute needs to have a value but will be set be each AFT
+        #cg_reporting_code        attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #object_sub_type_code     attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #budget_aggregation_code  attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL
         #mandatory_transfer:      attribute set by AFT parameter DEFAULTS_FOR_OBJECT_CODE_GLOBAL

@@ -49,36 +49,6 @@ Then /^The object code should show an error that says "(.*?)"$/ do |error|
   on(ObjectCodePage).errors.should include error
 end
 
-And /^I enter a valid Reports to Object Code$/ do
-  on ObjectCodePage do |page|
-    page.search_reports_to_object_code
-  end
-
-  on ObjectCodeLookupPage do |page|
-    page.object_code.set ''
-    page.search
-    page.return_random
-  end
-
-  on ObjectCodePage do |page|
-    page.description.set @object_code.description
-  end
-
-end
-
-When /^I Lookup the Object Code (.*)$/ do |the_object_code|
-  visit(MainPage).object_code
-
-  on ObjectCodeLookupPage do |page|
-    page.object_code.set the_object_code
-    page.search
-    page.edit_item(@object_code.object_code)
-  end
-end
-
-Then /^The Object Code Lookup should display the Reports to Object Code$/ do
-  on(ObjectCodePage).reports_to_object_code.value.should == @object_code.reports_to_object_code
-end
 
 And /^I update the Financial Object Code Description/ do
   on(ObjectCodePage).financial_object_code_description.set random_alphanums(60, 'AFT')
@@ -123,4 +93,8 @@ end
 
 And /^I add the object code to the stack$/ do
   @object_codes = @object_codes.nil? ? [@object_code] : @object_codes + [@object_code]
+end
+
+Then /^the Reports to Object Code just entered should be displayed$/ do
+  on(ObjectCodePage).reports_to_object_code.value.should == @object_code.reports_to_object_code
 end

@@ -17,6 +17,9 @@ class ObjectCodeGlobalPage < KFSBasePage
   element(:mandatory_transfer) { |b| b.frm.select(name: 'document.newMaintainableObject.finObjMandatoryTrnfrOrElimCd') }
   element(:federal_funded_code) { |b| b.frm.select(name: 'document.newMaintainableObject.financialFederalFundedCode') }
   element(:next_year_object_code) { |b| b.frm.text_field(name: 'document.newMaintainableObject.nextYearFinancialObjectCode') }
+
+  action(:object_code_search) { |b| b.frm.button(title: 'Search Object Code').click }
+  action(:reports_to_object_code_search) { |b| b.frm.button(title: 'Search Reports To Object Code').click }
   action(:cg_reporting_code_search) { |b| b.frm.button(title: 'Search CG Reporting Code').click }
 
   #Read Only
