@@ -29,7 +29,7 @@ And /^I create an Object Code Global document with a valid Reports to Object Cod
 end
 
 
-And /^using the Object Code Global document, I edit an existing Object Code$/ do
+And /^I start an Object Code Global document using an existing Object Code$/ do
   step 'I create an Object Code Global document with default parameter data'
   #Now ensure we are editing an existing object code
   on ObjectCodeGlobalPage do |page|
