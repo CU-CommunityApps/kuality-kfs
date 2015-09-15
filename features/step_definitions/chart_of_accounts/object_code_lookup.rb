@@ -7,22 +7,21 @@ And /^I lookup an Object Code with that Object Sub Type$/ do
   @lookup_object_code = object_code_having_object_sub_type
 end
 
-
-When /^I Lookup the Object Code just entered$/ do
+When /^I lookup the Object Code (.*) for chart (.*) just entered$/ do |object_code, chart_code|
   visit(MainPage).object_code
   on ObjectCodeLookupPage do |page|
-    page.chart_code.set  @object_code.new_chart_code
-    page.object_code.fit @object_code.object_code
+    page.chart_code.fit  chart_code
+    page.object_code.fit object_code
     page.search
     page.wait_for_search_results
-    page.edit_item(@object_code.object_code)
+    page.edit_item(object_code)
   end
 end
 
 # This method presumes that the Object Code Lookup page is the one being shown in the browser when it is called.
-And /^I lookup and return a random Object Code$/ do
+And /^I lookup and return a random Object Code for chart (.*)$/ do |chart_to_use|
   on ObjectCodeLookupPage do |obj_cd_page|
-    obj_cd_page.chart_code.fit           get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
+    obj_cd_page.chart_code.fit           chart_to_use
     obj_cd_page.object_code.fit          ''
     obj_cd_page.search
     obj_cd_page.wait_for_search_results
