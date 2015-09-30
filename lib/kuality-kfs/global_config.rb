@@ -169,17 +169,17 @@ module GlobalConfig
     # Create new mechanize agent and hit the main page
     # then login once directed to CUWA
     agent = Mechanize.new
-    page = agent.get($base_url)
+    page = agent.post($base_url)
 
     #First we need to hit up the weblogin form and get our selves a cookie
     perform_university_login(page)
 
     #now lets backdoor
-    agent.get($base_url + 'portal.do?selectedTab=main&backdoorId=' + get_first_principal_name_for_role('KFS-SYS', 'Technical Administrator'))
+    agent.post($base_url + 'portal.do?selectedTab=main&backdoorId=' + get_first_principal_name_for_role('KFS-SYS', 'Technical Administrator'))
 
     #finally make the request to the data object page
     query = $base_url + 'dataobjects/' + namespace_code + '/' + object_type + '.xml?' + identifiers
-    page = agent.get(query)
+    page = agent.post(query)
 
     #pares the XML into a hash
     XmlSimple.xml_in(page.body)
