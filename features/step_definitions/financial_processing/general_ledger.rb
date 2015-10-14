@@ -163,11 +163,13 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
       # added print line type output to capture the actual timings of how long we are waiting for the search to complete.
       clock = Time.new
       puts "Prior to wait_for_search_results called in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL] : Current Time : #{clock.inspect}"
-      page.wait_for_search_results(500)
+      page.wait_for_search_results(600)
       clock = Time.new
       puts "After wait_for_search_results returned in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL] : Current Time : #{clock.inspect}"
     rescue Timeout::Error
-      raise StandardError.new("Timeout::Error caught for page.wait_for_search_results(180) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
+      clock = Time.new
+      puts "RESCUE Timeout::Error trapped for wait_for_search_results(600) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL] : Current Time : #{clock.inspect}"
+      raise StandardError.new("Timeout::Error caught for page.wait_for_search_results(600) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
     end
   end
 end
