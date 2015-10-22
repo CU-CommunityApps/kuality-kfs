@@ -164,11 +164,18 @@ module GlobalConfig
     principal_name
   end
 
+  # NOTE: 10/22/15
+  # Output to server log being made to identify which statements are failing.
+  # This is not the preferred way to obtain this information but we want to identify the specific line
+  # of code the error is occuring on while also allowing the error to generate its normal failure processing.
+  # These two statement are the ones generating the issues.
+  #
   #Calls the webservice to obtain a hash of multiple business objects having the requested attributes.
   def get_kuali_business_objects(namespace_code, object_type, identifiers)
     # Create new mechanize agent and hit the main page
     # then login once directed to CUWA
     agent = Mechanize.new
+puts "Prior to agent.get($base_url) where base_url=#{$base_url}"
     page = agent.get($base_url)
 
     #First we need to hit up the weblogin form and get our selves a cookie
@@ -179,7 +186,8 @@ module GlobalConfig
 
     #finally make the request to the data object page
     query = $base_url + 'dataobjects/' + namespace_code + '/' + object_type + '.xml?' + identifiers
-    page = agent.get(query)
+puts "Prior to page = agent.get(query) for query=#{query}"
+      page = agent.get(query)
 
     #pares the XML into a hash
     XmlSimple.xml_in(page.body)
