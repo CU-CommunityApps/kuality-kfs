@@ -164,30 +164,45 @@ module GlobalConfig
     principal_name
   end
 
-  # NOTE: 10/22/15
-  # Output to server log being made to identify which statements are failing.
-  # This is not the preferred way to obtain this information but we want to identify the specific line
-  # of code the error is occuring on while also allowing the error to generate its normal failure processing.
-  # These two statement are the ones generating the issues.
-  #
   #Calls the webservice to obtain a hash of multiple business objects having the requested attributes.
   def get_kuali_business_objects(namespace_code, object_type, identifiers)
     # Create new mechanize agent and hit the main page
     # then login once directed to CUWA
-    agent = Mechanize.new
-puts "Prior to agent.get($base_url) where base_url=#{$base_url}"
-    page = agent.get($base_url)
+    page = ''
+    Mechanize.start do |agent|
+      begin
+        page = agent.get($base_url)
+      rescue OpenSSL::SSL::SSLError => sslError
+        clock = Time.new
+        puts "Rescued OpenSSL::SSL::SSLError #{sslError} at Current Time : #{clock.inspect} while attempting: agent.get($base_url) where base_url=#{$base_url}"
+        raise
+      rescue Mechanize::ResponseCodeError => responseError
+        clock = Time.new
+        puts "Rescued Mechanize::ResponseCodeError #{responseError} at Current Time : #{clock.inspect} while attempting: agent.get($base_url) where base_url=#{$base_url}"
+        raise
+      end
 
-    #First we need to hit up the weblogin form and get our selves a cookie
-    perform_university_login(page)
+      #First we need to hit up the weblogin form and get our selves a cookie
+      perform_university_login(page)
 
-    #now lets backdoor
-    agent.get($base_url + 'portal.do?selectedTab=main&backdoorId=' + get_first_principal_name_for_role('KFS-SYS', 'Technical Administrator'))
+      #now lets backdoor
+      agent.get($base_url + 'portal.do?selectedTab=main&backdoorId=' + get_first_principal_name_for_role('KFS-SYS', 'Technical Administrator'))
 
-    #finally make the request to the data object page
-    query = $base_url + 'dataobjects/' + namespace_code + '/' + object_type + '.xml?' + identifiers
-puts "Prior to page = agent.get(query) for query=#{query}"
-      page = agent.get(query)
+      #finally make the request to the data object page
+      query = $base_url + 'dataobjects/' + namespace_code + '/' + object_type + '.xml?' + identifiers
+
+      begin
+        page = agent.get(query)
+      rescue OpenSSL::SSL::SSLError => sslError
+        clock = Time.new
+        puts "Rescued OpenSSL::SSL::SSLError #{sslError} at Current Time : #{clock.inspect} while attempting: page = agent.get(query) where base_url=#{$base_url}"
+        raise
+      rescue Mechanize::ResponseCodeError => responseError
+        clock = Time.new
+        puts "Rescued Mechanize::ResponseCodeError #{responseError} at Current Time : #{clock.inspect} while attempting: page = agent.get(query) where base_url=#{$base_url}"
+        raise
+      end
+    end
 
     #pares the XML into a hash
     XmlSimple.xml_in(page.body)
