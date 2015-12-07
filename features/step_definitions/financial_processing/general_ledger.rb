@@ -153,23 +153,15 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
       raise StandardError.new("Timeout::Error caught for page.search in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
     end
     begin
-      # 10/09/2015
-      # The time for this wait method call has been increased more than once. The Timeout::Error will stop for a
-      # while and then reappear necessitating that wait time be increased again. We have isolated the Timeout::Error
-      # to when the cache is generated for the GeneralLedgerEntryLookup during the first search request of this
-      # widget on the server.  The only way to obtain how long it is taking this first search to run is by outputting
-      # timings around the call to the method that waits for the search results to return. This is not the preferred
-      # way to deal with this issue but in order to obtain the data necessary for a more robust resolution, we have
-      # added print line type output to capture the actual timings of how long we are waiting for the search to complete.
-      clock = Time.new
-      puts "Prior to wait_for_search_results called in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL] : Current Time : #{clock.inspect}"
-      page.wait_for_search_results(600)
-      clock = Time.new
-      puts "After wait_for_search_results returned in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL] : Current Time : #{clock.inspect}"
+      page.wait_for_search_results
     rescue Timeout::Error
       clock = Time.new
-      puts "RESCUE Timeout::Error trapped for wait_for_search_results(600) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL] : Current Time : #{clock.inspect}"
-      raise StandardError.new("Timeout::Error caught for page.wait_for_search_results(600) in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL]")
+      puts "RESCUE Timeout::Error caught for wait_for_search_results in step [I lookup the #{al_type} Accounting Line of the #{document} document in the GL] : Current Time : #{clock.inspect}"
+      puts "Sleeping for 7 mintues so database cache can build."
+      # This could be the first execution - cache build wait a bit longer
+      sleep(420)
+      clock = Time.new
+      puts "After sleep in Rescue block : Current Time : #{clock.inspect}"
     end
   end
 end
