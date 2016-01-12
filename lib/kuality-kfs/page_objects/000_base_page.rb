@@ -287,7 +287,24 @@ class BasePage < PageFactory
       element(:refresh_route_log_button) { |b| b.route_log_iframe.div(class: 'lookupcreatenew', title: 'Refresh').image(alt: 'refresh') }
       action(:refresh_route_log) { |b| b.refresh_route_log_button.click }
 
+      element(:show_actions_taken_button) { |b| b.route_log_iframe.input(id: 'tab-ActionsTaken-imageToggle') }
+      alias_method :hide_actions_taken_button, :show_actions_taken_button
+      value(:actions_taken_shown?) { |b| b.show_actions_taken_button.title.match(/close Actions Taken/m) }
+      value(:actions_taken_hidden?) { |b| b.show_actions_taken_button.title.match(/open Actions Taken/m) }
+      action(:show_actions_taken) { |b| b.show_actions_taken_button.click }
+      alias_method :hide_actions_taken, :show_actions_taken
+
       element(:actions_taken_table) { |b| b.route_log_iframe.div(id: 'tab-ActionsTaken-div').table }
+      value(:actions_taken_table_action) { |r=1, b| b.actions_taken_table[r][b.actions_taken_table.keyed_column_index(:action)] }
+      value(:actions_taken_table_all_actions) { |b| (b.actions_taken_table.rows.collect{ |row| row[1].text }.compact.uniq) }
+
+      element(:show_actions_taken_approved_button) { |b| b.actions_taken_table.image(title: 'show') }
+      element(:hide_actions_taken_approved_button) { |b| b.actions_taken_table.image(title: 'hide') }
+      value(:actions_taken_approved_shown?) { |b| b.hide_actions_taken_approved_button.exists? }
+      value(:actions_taken_approved_hidden?) { |b| b.show_actions_taken_approved_button.exists? }
+      action(:show_actions_taken_approved) { |b| b.show_actions_taken_approved_button.click }
+      action(:hide_actions_taken_approved) { |b| b.hide_actions_taken_approved_button.click }
+
       value(:actions_taken) { |b| (b.actions_taken_table.rows.collect{ |row| row[1].text }.compact.uniq).reject{ |action| action==''} }
       element(:pnd_act_req_table) { |b| b.route_log_iframe.div(id: 'tab-PendingActionRequests-div').table }
 
