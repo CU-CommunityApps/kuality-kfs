@@ -52,3 +52,8 @@ Then /^an error in the (.*) tab should say "(.*)"$/ do |tab, error|
   hash = {'Account Maintenance' => :account_maintenance_errors}
   $current_page.send(hash[tab]).should include error
 end
+
+Then /^the (.*) should show an error stating the Indirect Cost Recovery Account is closed$/ do |document|
+  error_msg = "Indirect Cost Recovery Account #{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}-#{@closed_account_number_used_for_icr_account_number} is closed."
+  $current_page.errors.should include error_msg
+end

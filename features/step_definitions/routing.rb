@@ -37,6 +37,7 @@ end
 
 
 Then  /^the (.*) document routes to the (.*) node$/ do |document, node|
+  sleep(120)  #need to wait 2 minutes for cynergy to do its thing before verifying document routed correctly
   pending_action_request_node = ''
   step "the #{document} document goes to ENROUTE"
   on page_class_for(document) do |page|
@@ -189,5 +190,18 @@ And /^the (.*) document's route log is:$/ do |document, desired_route_log|
       route_log[:action][i].should match /#{row[:Action]}/
     end
 
+  end
+end
+
+Then /^(.*) should be in the (.*) document Actions Taken$/ do |action, document|
+  on page_class_for(document) do |page|
+    page.show_route_log_button.wait_until_present
+    page.show_route_log unless page.route_log_shown?
+
+    page.show_actions_taken unless page.actions_taken_shown?
+    page.actions_taken_table_action.visible?.should
+
+    page.show_actions_taken_approved unless page.actions_taken_approved_shown?
+    (page.actions_taken_table_all_actions.include? action).should == true
   end
 end
