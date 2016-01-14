@@ -1,4 +1,4 @@
-kuality-kfs
+Kuality-KFS
 ===========
 
-kuality-kfs
+Kuality-KFS is the base gem for an automated functional testing suite for the Kuali Financial System (KFS).
