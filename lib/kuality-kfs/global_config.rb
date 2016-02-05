@@ -342,6 +342,50 @@ module GlobalConfig
     pid.nil? ? get_random_principal_id_for_role(name_space, role_name) : pid
   end
 
+  def find_cg_accounts_in_cg_responsibility_range(lower_limit, upper_limit)
+    responsibility_criteria = (lower_limit..upper_limit).to_a.join('|') #get all numeric values in range separated by pipe  (1..3)=1|2|3
+    accounts_hash = get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&subFundGroup.fundGroupCode=CG&closed=N&active=Y&accountExpirationDate=NULL&contractsAndGrantsAccountResponsibilityId=#{responsibility_criteria}")
+
+    # The webservice returns the data in two different formats depending upon whether there is one Account found
+    # or there are multiple Accounts found. We need to deal with both cases and we need to deal with condition of
+    # no data at all returned.
+    account_numbers = []
+    if accounts_hash.empty?  #no data found
+      raise RuntimeError, "No CG Accounts with CG Account Responsibility ID in range #{lower_limit} to #{upper_limit} found."
+    elsif accounts_hash.has_key?('org.kuali.kfs.coa.businessobject.Account')  # multiple accounts found
+      accounts_array = accounts_hash['org.kuali.kfs.coa.businessobject.Account']
+      accounts_array.each{ |value|
+        account_numbers.concat(value['accountNumber'])
+      }
+    else #single Account found
+      account_numbers.concat(accounts_hash['accountNumber'])
+    end
+    account_numbers
+  end
+
+  def find_random_cg_account_number_having(open_closed_ind, expired_non_expired_ind)
+    random_account_number = ''
+    case open_closed_ind
+      when 'open'
+        case expired_non_expired_ind
+          when 'expired'
+            random_account_number = get_account_of_type('Open Expired Contracts & Grants Account')
+          when 'non-expired'
+            random_account_number = get_account_of_type('Open Non-Expired Contracts & Grants Account')
+          else
+            fail ArgumentError, 'Expired or Non-Expired Contracts and Grants Account not specified, do not know which type of data to retrieve.'
+        end
+      when 'closed'
+        random_account_number = get_account_of_type('Closed Contracts & Grants Account')
+
+        #we need to remember the account number used in order to dynamically construct the error message that will be generated.
+        @closed_account_number_used_for_icr_account_number = random_account_number
+      else
+        fail ArgumentError, 'Open or Closed Contracts and Grants Account not specified, do not know which type of data to retrieve.'
+    end
+    random_account_number
+  end
+
   def get_current_user
     unless @logged_in_users_list.nil? || @logged_in_users_list.empty?
       return @logged_in_users_list.last
