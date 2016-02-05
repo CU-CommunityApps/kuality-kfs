@@ -79,7 +79,7 @@ class AccountObject < KFSDataObject
   def absorb!(target={})
     super
     update_options(on(AccountPage).send("account_data_#{target.to_s}"))
-    update_line_objects_from_page!(target == :original ? :old : target)
+    update_line_objects_from_page!(target)
   end
 
 

@@ -33,12 +33,12 @@ class IndirectCostRecoveryAccountsTab < KFSBasePage
   value(:chart_of_accounts_code_new) { |i=0, b| b.chart_of_accounts_code_update(i).present? ? b.chart_of_accounts_code_update(i).selected_options.first.text : b.chart_of_accounts_code_readonly(i) }
   value(:account_number_new) { |i=0, b| b.account_number_update(i).present? ? b.account_number_update(i).value : b.account_number_readonly(i) }
   value(:account_line_percent_new) { |i=0, b| b.account_line_percent_update(i).present? ? b.account_line_percent_update(i).value : b.account_line_percent_readonly(i) }
-  value(:active_indicator_new) { |i=0, b| b.active_indicator_update(i).present? ? yesno2setclear(b.active_indicator_update(i).value) : b.active_indicator_readonly(i) }
+  value(:active_indicator_new) { |i=0, b| b.active_indicator_update(i).present? ? yesno2setclear(b.active_indicator_update(i).set?) : b.active_indicator_readonly(i) }
 
   # Read-Only
-  value(:chart_of_accounts_code_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].indirectCostRecoveryFinCoaCode.div").text.strip }
-  value(:account_number_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].indirectCostRecoveryAccountNumber.div").text.strip }
-  value(:account_line_percent_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].accountLinePercent.div").text.strip }
-  value(:active_indicator_readonly) { |i=0, b| b.frm.span(id: "document.newMaintainableObject.a21SubAccount.a21IndirectCostRecoveryAccounts[#{i}].active.div").text.strip }
+  value(:chart_of_accounts_code_readonly) { |i=0, b| b.frm.span(id: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryFinCoaCode.div/).text.strip }
+  value(:account_number_readonly) { |i=0, b| b.frm.span(id: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].indirectCostRecoveryAccountNumber.div/).text.strip }
+  value(:account_line_percent_readonly) { |i=0, b| b.frm.span(id: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].accountLinePercent.div/).text.strip }
+  value(:active_indicator_readonly) { |i=0, b| b.frm.span(id: /document.newMaintainableObject.(a21SubAccount.a21IndirectCostRecoveryAccounts|indirectCostRecoveryAccounts)\[#{i}\].active.div/).text.strip }
 
 end

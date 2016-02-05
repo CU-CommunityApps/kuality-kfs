@@ -98,11 +98,7 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
   button.gsub!(' ', '_')  #change any spaces to underscores
   get(doc_object).send(button)
 
-  # Based on action, idle for required amount of seconds for edocs that do not generate yes/no pages.
-  # We do not want to idle in both places for yes/no page generating edocs because this will just introduce undo
-  # overhead as yes/no page is business rule dependent and immediately pops up waiting for user confirmation
-  # while all real processing occurs after user's yes/no response.
-  # The necessary wait for those edocs occurs below.
+  # Based on action, idle for required amount of seconds.
   # For consistency, button has had its spaces changed to underscores before we reach this case statement
   # so we can be assured of the format of the string we are looking for.
   unless (object_klass::DOC_INFO[:label]).eql?('Asset Manual Payment')
@@ -121,9 +117,20 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
 
   # Now deal with any yes/no confirmation pages generated ensuring final reference when we are done
   # remains on current page we are working with prior to dealing with confirmations.
+  # Additional idle time needed when business rules generate confiramtion pages because actual page
+  # processing does not occur until after the confirmation.
   original_page = $current_page
-  on(YesOrNoPage).yes_if_possible if question_response == 'yes'
-  on(YesOrNoPage).no_if_possible if question_response == 'no'
+  on(YesOrNoPage) do |confirm_page|
+    if question_response == 'yes'
+      confirm_page.yes_if_possible
+      sleep idle_time
+    end
+    if question_response == 'no'
+      confirm_page.no_if_possible
+      sleep idle_time
+    end
+  end
+
   #Specific edoc generate the yes/no pages and their processing actually occurs after the yes or no button is pressed;
   #not when the action button is pressed. Need have additional wait time JUST for those edocs and we will do a sleep
   case object_klass::DOC_INFO[:label]
