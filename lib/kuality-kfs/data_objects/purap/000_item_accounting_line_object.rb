@@ -127,16 +127,26 @@ class ItemAccountingLineObjectCollection < LineObjectCollection
       case t
         when :new
           pulled_item = {
-            chart_code:                (b.update_chart_code(@parent.line_number, al).present? ? b.update_chart_code(@parent.line_number, al).selected_options.first.text.strip : b.result_chart_code(@parent.line_number, al)),
-            account_number:            (b.update_account_number(@parent.line_number, al).present? ? b.update_account_number(@parent.line_number, al).value.strip : b.result_account_number(@parent.line_number, al)),
-            sub_account_code:          (b.update_sub_account_code(@parent.line_number, al).present? ? b.update_sub_account_code(@parent.line_number, al).value.strip : b.result_sub_account_code(@parent.line_number, al)),
-            object_code:               (b.update_object_code(@parent.line_number, al).present? ? b.update_object_code(@parent.line_number, al).value.strip : b.result_object_code(@parent.line_number, al)),
-            sub_object_code:           (b.update_sub_object_code(@parent.line_number, al).present? ? b.update_sub_object_code(@parent.line_number, al).value.strip : b.result_sub_object_code(@parent.line_number, al)),
-            project_code:              (b.update_project_code(@parent.line_number, al).present? ? b.update_project_code(@parent.line_number, al).value.strip : b.result_project_code(@parent.line_number, al)),
-            organization_reference_id: (b.update_organization_reference_id(@parent.line_number, al).present? ? b.update_organization_reference_id(@parent.line_number, al).value.strip : b.result_organization_reference_id(@parent.line_number, al)),
-            line_description:          (b.update_line_description(@parent.line_number, al).present? ? b.update_line_description(@parent.line_number, al).value.strip : b.result_line_description(@parent.line_number, al)),
-            percent:                   (b.update_percent(@parent.line_number, al).present? ? b.update_percent(@parent.line_number, al).value.strip : b.result_percent(@parent.line_number, al)),
-            amount:                    (b.update_amount(@parent.line_number, al).present? ? b.update_amount(@parent.line_number, al).value.strip : b.result_amount(@parent.line_number, al))
+            chart_code:                (b.update_chart_code(@parent.line_number, al).selected_options.first.text.strip  if b.update_chart_code(@parent.line_number, al).present?),
+            account_number:            (b.update_account_number(@parent.line_number, al).value.strip                    if b.update_account_number(@parent.line_number, al).present?),
+            sub_account_code:          (b.update_sub_account_code(@parent.line_number, al).value.strip                  if b.update_sub_account_code(@parent.line_number, al).present?),
+            object_code:               (b.update_object_code(@parent.line_number, al).value.strip                       if b.update_object_code(@parent.line_number, al).present?),
+            sub_object_code:           (b.update_sub_object_code(@parent.line_number, al).value.strip                   if b.update_sub_object_code(@parent.line_number, al).present?),
+            project_code:              (b.update_project_code(@parent.line_number, al).value.strip                      if b.update_project_code(@parent.line_number, al).present?),
+            organization_reference_id: (b.update_organization_reference_id(@parent.line_number, al).value.strip         if b.update_organization_reference_id(@parent.line_number, al).present?),
+            line_description:          (b.update_line_description(@parent.line_number, al).value.strip                  if b.update_line_description(@parent.line_number, al).present?),
+            percent:                   (b.update_percent(@parent.line_number, al).value.strip                           if b.update_percent(@parent.line_number, al).present?),
+            amount:                    (b.update_amount(@parent.line_number, al).value.strip                            if b.update_amount(@parent.line_number, al).present?)
+            # chart_code:                (b.update_chart_code(@parent.line_number, al).present? ? b.update_chart_code(@parent.line_number, al).selected_options.first.text.strip : b.result_chart_code(@parent.line_number, al)),
+            # account_number:            (b.update_account_number(@parent.line_number, al).present? ? b.update_account_number(@parent.line_number, al).value.strip : b.result_account_number(@parent.line_number, al)),
+            # sub_account_code:          (b.update_sub_account_code(@parent.line_number, al).present? ? b.update_sub_account_code(@parent.line_number, al).value.strip : b.result_sub_account_code(@parent.line_number, al)),
+            # object_code:               (b.update_object_code(@parent.line_number, al).present? ? b.update_object_code(@parent.line_number, al).value.strip : b.result_object_code(@parent.line_number, al)),
+            # sub_object_code:           (b.update_sub_object_code(@parent.line_number, al).present? ? b.update_sub_object_code(@parent.line_number, al).value.strip : b.result_sub_object_code(@parent.line_number, al)),
+            # project_code:              (b.update_project_code(@parent.line_number, al).present? ? b.update_project_code(@parent.line_number, al).value.strip : b.result_project_code(@parent.line_number, al)),
+            # organization_reference_id: (b.update_organization_reference_id(@parent.line_number, al).present? ? b.update_organization_reference_id(@parent.line_number, al).value.strip : b.result_organization_reference_id(@parent.line_number, al)),
+            # line_description:          (b.update_line_description(@parent.line_number, al).present? ? b.update_line_description(@parent.line_number, al).value.strip : b.result_line_description(@parent.line_number, al)),
+            # percent:                   (b.update_percent(@parent.line_number, al).present? ? b.update_percent(@parent.line_number, al).value.strip : b.result_percent(@parent.line_number, al)),
+            # amount:                    (b.update_amount(@parent.line_number, al).present? ? b.update_amount(@parent.line_number, al).value.strip : b.result_amount(@parent.line_number, al))
           }
         when :old
           pulled_item = {

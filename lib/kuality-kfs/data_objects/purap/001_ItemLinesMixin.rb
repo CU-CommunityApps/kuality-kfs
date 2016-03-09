@@ -9,6 +9,12 @@ module ItemLinesMixin
 
       attr_accessor :items, :initial_item_lines, :immediate_import
 
+      class << self
+        def item_lines_mixin_attributes
+          [:items, :initial_item_lines, :immediate_import]
+        end
+      end
+
       def default_items(opts={})
         # This just makes it so we don't have to be so repetitive. It can certainly be
         # overridden in a subclass if you don't want to chuck things in via opts.
@@ -61,6 +67,7 @@ module ItemLinesMixin
         process_initial_item_lines
       end
 
+      # Method updates both Item and ItemAccount data
       def update_line_objects_from_page!(target=:new)
         @initial_item_lines.clear # We'll dump the initial lines because this is typically used for #absorb!.
         @items.update_from_page!(target)
