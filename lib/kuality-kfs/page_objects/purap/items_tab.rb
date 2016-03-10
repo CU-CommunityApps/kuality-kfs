@@ -17,18 +17,18 @@ class ItemsTab < PageFactory
   action(:add_item_import) { |b| b.items_tab.button(title: 'add imported items').click }
   action(:cancel_item_import) { |b| b.items_tab.button(title: 'cancel items').click }
 
-  action(:add_item) { |b| b.items_tab.button(title: 'Add an Item').click }
-  action(:delete_item) { |l=0, b| b.items_tab.button(name: "methodToCall.deleteItem.line#{l}").click }
-  action(:calculate_item) { | i=0, b| b.frm.button(name: /methodToCall.recalculateItemAccountsAmounts.line#{i}./).click }
-
-  element(:show_item_accounting_lines_button) { |l=0, b| b.items_tab.div(text: 'Accounting Lines').button(id: "tab-AccountingLines5-imageToggle").exists?  ? b.items_tab.div(text: 'Accounting Lines').button(id: "tab-AccountingLines#{5+(l*2)}-imageToggle") : b.items_tab.div(text: 'Accounting Lines').button(id: "tab-AccountingLines#{6+(l*2)}-imageToggle") }
+  element(:show_item_accounting_lines_button) { |l=0, b| b.items_tab.table(summary: 'Items Section').button(id: "tab-AccountingLines#{5+(l*2)}-imageToggle") }
   element(:item_accounting_lines_section) { |l=0, b| b.show_item_accounting_lines_button(l).parent }
   value(:item_accounting_lines_shown?) { |l=0, b| b.show_item_accounting_lines_button(l).alt.match('hide') }
   value(:item_accounting_lines_hidden?) { |l=0, b| !b.item_accounting_lines_shown?(l) }
   action(:show_item_accounting_lines) { |l=0, b| b.show_item_accounting_lines_button(l).click }
   alias_method :hide_item_accounting_lines, :show_item_accounting_lines
 
+  # Search buttons
+  element(:commodity_code_search_button) { |b| b.frm.button(name: /purchasingCommodityCode/) }
+  action(:commodity_code_search) { |b| b.commodity_code_search_button.click }
 
+  # Item line elements associated with the "add" button
   element(:type) { |b| b.items_tab.select(name: 'newPurchasingItemLine.itemTypeCode') }
   element(:quantity) { |b| b.items_tab.text_field(name: 'newPurchasingItemLine.itemQuantity') }
   element(:uom) { |b| b.items_tab.text_field(name: 'newPurchasingItemLine.itemUnitOfMeasureCode') }
@@ -37,9 +37,13 @@ class ItemsTab < PageFactory
   element(:commodity_code) { |b| b.items_tab.text_field(name: 'newPurchasingItemLine.purchasingCommodityCode') }
   element(:description) { |b| b.items_tab.textarea(name: 'newPurchasingItemLine.itemDescription') }
   element(:unit_cost) { |b| b.items_tab.text_field(name: 'newPurchasingItemLine.itemUnitPrice') }
-  element(:extended_cost) { |b| b.items_tab.button(title: 'Add an Item').parent.tds[8].text } # This value is read-only. It'd be nice to be able to get at it without giving the index.
+  value(:extended_cost_readonly) { |b| b.items_tab.button(title: 'Add an Item').parent.tds[8].text } # This value is read-only. It'd be nice to be able to get at it without giving the index.
   element(:restricted) { |b| b.items_tab.checkbox(name: 'newPurchasingItemLine.itemRestrictedIndicator') }
   element(:assigned_to_trade_in) { |b| b.items_tab.checkbox(name: 'newPurchasingItemLine.itemAssignedToTradeInIndicator') }
+
+  action(:add_item) { |b| b.items_tab.button(title: 'Add an Item').click }
+  action(:delete_item) { |l=0, b| b.items_tab.button(name: "methodToCall.deleteItem.line#{l}").click }
+  action(:calculate_item) { | i=0, b| b.frm.button(name: /methodToCall.recalculateItemAccountsAmounts.line#{i}./).click }
 
   element(:update_type) { |l=0, b| b.items_tab.select(id: "document.item[#{l}].itemTypeCode") }
   element(:update_quantity) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemQuantity") }
@@ -48,7 +52,7 @@ class ItemsTab < PageFactory
   element(:update_commodity_code) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].purchasingCommodityCode") }
   element(:update_description) { |l=0, b| b.items_tab.textarea(id: "document.item[#{l}].itemDescription") }
   element(:update_unit_cost) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitPrice") }
-  element(:update_extended_cost) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].extendedPrice").exists? ? b.items_tab.text_field(id: "document.item[#{l}].extendedPrice") : b.items_table[result_line_index_for(l, b)][item_col_for(b, :uom)].parent.parent.tds[8] } # This value is read-only. It'd be nice to be able to get at it without giving the index.
+  # element(:update_extended_cost) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].extendedPrice").exists? ? b.items_tab.text_field(id: "document.item[#{l}].extendedPrice") : b.items_table[result_line_index_for(l, b)][item_col_for(b, :uom)].parent.parent.tds[8] } # This value is read-only. It'd be nice to be able to get at it without giving the index.
   element(:update_extended_price) { |l=0, b| b.items_tab.text_field(id: "document.item[#{l}].itemUnitPrice") }
   element(:update_restricted) { |l=0, b| b.items_tab.checkbox(id: "document.item[#{l}].itemRestrictedIndicator") }
   element(:update_assigned_to_trade_in) { |l=0, b| b.items_tab.checkbox(id: "document.item[#{l}].itemAssignedToTradeInIndicator") }
@@ -163,6 +167,11 @@ class ItemsTab < PageFactory
   element(:line_description) { |i=0, b| b.frm.text_field(name: "document.item[#{i}].newSourceLine.financialDocumentLineDescription") }
   element(:percent) { |i=0, b| b.frm.text_field(name: "document.item[#{i}].newSourceLine.accountLinePercent") }
   element(:amount) { |i=0, b| b.frm.text_field(name: "document.item[#{i}].newSourceLine.amount") }
+  element (:account_number_new_search_button) { |i=0, b| b.frm.text_field(name: "document.item[#{i}].newSourceLine.accountNumber").parent.input(title: 'Search Account Number') }
+  action (:account_number_new_search) { |i=0, b| b.account_number_new_search_button(i).click }
+  element (:object_code_new_search_button) { |i=0, b| b.frm.text_field(name: "document.item[#{i}].newSourceLine.financialObjectCode").parent.input(title: 'Search Object') }
+  action (:object_code_new_search) { |i=0, b| b.object_code_new_search_button(i).click }
+
 
   element(:update_chart_code) { |i=0, l=0, b| b.frm.select(name: "document.item[#{i}].sourceAccountingLine[#{l}].chartOfAccountsCode") }
   element(:update_account_number) { |i=0, l=0, b| b.frm.text_field(name: "document.item[#{i}].sourceAccountingLine[#{l}].accountNumber") }
@@ -174,6 +183,10 @@ class ItemsTab < PageFactory
   element(:update_line_description) { |i=0, l=0, b| b.frm.text_field(name: "document.item[#{i}].sourceAccountingLine[#{l}].financialDocumentLineDescription") }
   element(:update_percent) { |i=0, l=0, b| b.frm.text_field(name: "document.item[#{i}].sourceAccountingLine[#{l}].accountLinePercent") }
   element(:update_amount) { |i=0, l=0, b| b.frm.text_field(name: "document.item[#{i}].sourceAccountingLine[#{l}].amount") }
+  element (:account_number_update_search_button) { |i=0, b| b.frm.text_field(name: "document.item[#{i}].sourceAccountingLine[#{l}].accountNumber").parent.input(title: 'Search Account Number') }
+  action (:account_number_update_search) { |i=0, b| b.account_number_update_search_button(i).click }
+  element (:object_code_update_search_button) { |i=0, b| b.frm.text_field(name: "document.item[#{i}].SourceLine.financialObjectCode").parent.input(title: 'Search Object') }
+  action (:object_code_update_search) { |i=0, b| b.object_code_update_search_button(i).click }
 
   element(:result_chart_code) { |i=0, l=0, b| b.frm.span(id: "document.item[#{i}].sourceAccountingLine[#{l}].chartOfAccountsCode.div").present? ? b.frm.span(id: "document.item[#{i}].sourceAccountingLine[#{l}].chartOfAccountsCode.div").text.strip : nil }
   element(:result_account_number) { |i=0, l=0, b| b.frm.span(id: "document.item[#{i}].sourceAccountingLine[#{l}].accountNumber.div").present? ? b.frm.span(id: "document.item[#{i}].sourceAccountingLine[#{l}].accountNumber.div").text.strip : nil }
@@ -189,4 +202,3 @@ class ItemsTab < PageFactory
   element(:balance_inquiry_button) { |b| b.frm.button(title: 'Perform Balance Inquiry for Source Accounting Line 1') }
 
 end
-

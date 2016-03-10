@@ -299,8 +299,6 @@
       <column name="PARM_DESC_TXT" value="Default Vendor number to use when editing a Vendor during automated functional testing."/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
-
-
     <insert tableName="KRCR_PARM_T">
       <column name="NMSPC_CD" value="KFS-AFTEST"/>
       <column name="CMPNT_CD" value="All"/>
@@ -887,6 +885,18 @@
          <column name="PARM_TYP_CD" value="VALID"/>
          <column name="VAL" value="CONTINU"/>
          <column name="PARM_DESC_TXT" value="Default continuation account number for automated functional testing"/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULTS_FOR_ITEMS"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="quantity=1;uom=EA;description=TESTING DATA - DO NOT ORDER;unit_cost=1.00;odd_commodity_lookup=ANIM;even_commodity_lookup=RADI;account_subfund_lookup=GNDEPT;object_level_lookup=SMAT"/>
+         <column name="PARM_DESC_TXT" value="Defaults used for the Item Line object during automated functional testing."/>
          <column name="EVAL_OPRTR_CD" value="A"/>
        </insert>
 
