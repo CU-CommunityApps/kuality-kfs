@@ -76,6 +76,7 @@ class RequisitionPage < KFSBasePage
   alias_method :suggested_vendor, :vendor_name
   action(:vendor_name_search) { |b| b.frm.table(class: 'datatable', summary: 'Vendor Section').button(name: /org\.kuali\.kfs\.vnd\.businessobject\.VendorDetail/).when_present.click }
   alias_method :suggested_vendor_search, :vendor_name_search
+  action(:clear_vendor) {|b| b.frm.table(class: 'datatable', summary: 'Vendor Section').button(name: /clearVendor/).when_present.click }
 
   element(:vendor_city) { |b| b.frm.text_field(name: 'document.vendorCityName') }
   element(:vendor_state) { |b| b.frm.text_field(name: 'document.vendorStateCode') }

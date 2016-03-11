@@ -83,15 +83,15 @@ class RequisitionObject < KFSDataObject
     on(RequisitionPage).calculate
   end
 
-  def add_vendor_to_req(vendor_num)
-    on(RequisitionPage).suggested_vendor_search
-    on VendorLookupPage do |page|
-      page.vendor_number.wait_until_present
-      page.vendor_number.fit vendor_num
-      page.search
-      page.return_value vendor_num
-    end
-  end
+  # def add_vendor_to_req(vendor_num)
+  #   on(RequisitionPage).suggested_vendor_search
+  #   on VendorLookupPage do |page|
+  #     page.vendor_number.wait_until_present
+  #     page.vendor_number.fit vendor_num
+  #     page.search
+  #     page.return_value vendor_num
+  #   end
+  # end
 
   # def add_random_building_address
   #   building_code = ''
