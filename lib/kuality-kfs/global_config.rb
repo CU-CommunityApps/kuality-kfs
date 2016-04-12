@@ -422,7 +422,7 @@ module GlobalConfig
   end
 
   def get_restricted_vendor_number
-    get_kuali_business_object('KFS-VND','VendorDetail',"activerIndicator=true&vendorRestrictedIndicator=true")['vendorNumber'].sample
+    get_kuali_business_object('KFS-VND','VendorDetail',"activeIndicator=Y&vendorRestrictedIndicator=Y&vendorParentIndicator=Y&vendorDunsNumber=NULL")['vendorNumber'].sample
   end
 
 end

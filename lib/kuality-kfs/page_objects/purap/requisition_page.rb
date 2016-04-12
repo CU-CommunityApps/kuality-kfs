@@ -6,6 +6,7 @@ class RequisitionPage < KFSBasePage
   element(:requisition_detail_section) { |b| b.document_overview.table(class: 'datatable', summary: /^Detail Section$/m) }
 
   action(:chart_org_search) { |b| b.requisition_detail_section.button(title: 'Search ' ).click } #there is space after search
+  value(:chart_org_readonly) { |b| b.requisition_detail_section.rows[0].tds[0].text.strip }
   element(:payment_request_positive_approval_required) { |b| b.requisition_detail_section.checkbox(name: 'document.paymentRequestPositiveApprovalIndicator') }
   value(:result_payment_request_positive_approval_required) { |b| b.requisition_detail_section.rows[1].tds[1].text.strip }
   #value(:account_distribution_method) { |b| b.frm.table(class: 'datatable', summary: 'Detail Section').td(text: 'Proportional')}
