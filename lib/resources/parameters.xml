@@ -895,7 +895,7 @@
          <column name="OBJ_ID" valueNumeric="sys_guid()"/>
          <column name="VER_NBR" value="1"/>
          <column name="PARM_TYP_CD" value="VALID"/>
-         <column name="VAL" value="quantity=1;uom=EA;description=TESTING DATA - DO NOT ORDER;unit_cost=1.00;odd_commodity_lookup=ANIM;even_commodity_lookup=RADI;account_subfund_lookup=GNDEPT;object_level_lookup=SMAT"/>
+         <column name="VAL" value="quantity=1;uom=EA;description=TESTING DATA - DO NOT ORDER;unit_cost=1.00;odd_commodity_lookup=ANIM;even_commodity_lookup=RADI;account_subfund_lookup=GNDEPT;object_level_lookup=SMAT;object_sub_type_lookup=OE"/>
          <column name="PARM_DESC_TXT" value="Defaults used for the Item Line object during automated functional testing."/>
          <column name="EVAL_OPRTR_CD" value="A"/>
        </insert>
