@@ -58,6 +58,11 @@ module Utilities
     "#{rand(99..999)}-#{rand(99..999)}-#{rand(999..9999)}"
   end
 
+  # @return [String] A randomly generated email address that should pass KFS's requirements for email address validation. No other assurances.
+  def random_email_address
+    "#{[*('a'..'z')].sample(6).join}" + '@abc.xyz'
+  end
+
   def fiscal_period_conversion(month)
     case month
       when 'JAN', 'Jan', 'January'
