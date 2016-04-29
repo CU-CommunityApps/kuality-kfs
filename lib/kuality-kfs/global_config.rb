@@ -345,7 +345,6 @@ module GlobalConfig
   def find_cg_accounts_in_cg_responsibility_range(lower_limit, upper_limit)
     responsibility_criteria = (lower_limit..upper_limit).to_a.join('|') #get all numeric values in range separated by pipe  (1..3)=1|2|3
     accounts_hash = get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&subFundGroup.fundGroupCode=CG&closed=N&active=Y&accountExpirationDate=NULL&contractsAndGrantsAccountResponsibilityId=#{responsibility_criteria}")
-
     # The webservice returns the data in two different formats depending upon whether there is one Account found
     # or there are multiple Accounts found. We need to deal with both cases and we need to deal with condition of
     # no data at all returned.
@@ -354,7 +353,11 @@ module GlobalConfig
       raise RuntimeError, "No CG Accounts with CG Account Responsibility ID in range #{lower_limit} to #{upper_limit} found."
     elsif accounts_hash.has_key?('org.kuali.kfs.coa.businessobject.Account')  # multiple accounts found
       accounts_array = accounts_hash['org.kuali.kfs.coa.businessobject.Account']
-      accounts_array.each{ |value|
+      # web service can return an overwhelming amount of data, only take up to a max number
+      # value is used more than once so make one call and reuse locally
+      max_rows = (get_aft_parameter_value(ParameterConstants::DEFAULT_MAX_NUM_DATA_ROWS_TO_USE)).to_i
+      number_of_elements = accounts_array.length > max_rows ? max_rows : accounts_array.length
+      accounts_array.first(number_of_elements).each{ |value|
         account_numbers.concat(value['accountNumber'])
       }
     else #single Account found
