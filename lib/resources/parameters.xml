@@ -899,6 +899,18 @@
          <column name="PARM_DESC_TXT" value="Defaults used for the Item Line object during automated functional testing."/>
          <column name="EVAL_OPRTR_CD" value="A"/>
        </insert>
+       <insert tableName="KRCR_PARM_T">
+         <column name="NMSPC_CD" value="KFS-AFTEST"/>
+         <column name="CMPNT_CD" value="All"/>
+         <column name="PARM_NM" value="DEFAULT_MAX_NUM_DATA_ROWS_TO_USE"/>
+         <column name="APPL_ID" value="KFS"/>
+         <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+         <column name="VER_NBR" value="1"/>
+         <column name="PARM_TYP_CD" value="VALID"/>
+         <column name="VAL" value="50"/>
+         <column name="PARM_DESC_TXT" value="Maximum number of data rows returned by a web service inquiry to convert to array or hash elements during automated functional testing."/>
+         <column name="EVAL_OPRTR_CD" value="A"/>
+       </insert>
 
 	<modifySql dbms="mysql">
 		<replace replace="sys_guid()" with="uuid()" />

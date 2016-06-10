@@ -153,7 +153,11 @@ module Utilities
       when 'Open Non-Expired Contracts & Grants Account'
         ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&subFundGroupCode=CGFEDL&closed=N&active=Y&accountExpirationDate=NULL&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
       when 'Open Expired Contracts & Grants Account'
-        ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&subFundGroupCode=CGFEDL&closed=N&active=N&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
+        all_open_expired_accounts = get_kuali_business_objects('KFS-COA',
+                                                               'Account',
+                                                               "chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&subFundGroupCode=CGFEDL&closed=N&active=N&")['org.kuali.kfs.coa.businessobject.Account']
+        single_open_expired_account = all_open_expired_accounts.sample
+        single_open_expired_account['accountNumber'][0]
       when 'Closed Contracts & Grants Account'
         ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&subFundGroupCode=CGFEDL&closed=Y&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
       when 'Random Sub-Fund Group Code'
