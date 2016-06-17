@@ -89,6 +89,8 @@ end
 # of "yes" is being presumed in the calling Gherkin and "yes" is being passed into this routine.
 ##################################################################################################
 And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any questions$/ do |button, document, question_response|
+  original_page = $current_page
+
   # obtain how long we should idle waiting for the action to complete, should be defined on each data object
   object_klass = object_class_for(document)
   idle_time = object_klass::DOC_INFO[:action_wait_time]
@@ -97,6 +99,21 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
   doc_object = snake_case document
   button.gsub!(' ', '_')  #change any spaces to underscores
   get(doc_object).send(button)
+
+  on(YesOrNoPage) do |page_shown|
+    if page_shown.is_yes_no_page
+      if question_response == 'yes'
+        page_shown.yes_if_possible
+        sleep idle_time
+      end
+      if question_response == 'no'
+        page_shown.no_if_possible
+        sleep idle_time
+      end
+    end
+  end
+
+  $current_page = original_page
 
   # Based on action, idle for required amount of seconds.
   # For consistency, button has had its spaces changed to underscores before we reach this case statement
@@ -113,33 +130,9 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
         sleep idle_time   #Cannot wait_for_...these actions do not stay on current page, instead redirect back to Main Menu page
       #else #implied no additional waiting for the requested action is needed
     end #case-button
-  end #
-
-  # Now deal with any yes/no confirmation pages generated ensuring final reference when we are done
-  # remains on current page we are working with prior to dealing with confirmations.
-  # Additional idle time needed when business rules generate confiramtion pages because actual page
-  # processing does not occur until after the confirmation.
-  original_page = $current_page
-  on(YesOrNoPage) do |confirm_page|
-    if question_response == 'yes'
-      confirm_page.yes_if_possible
-      sleep idle_time
-    end
-    if question_response == 'no'
-      confirm_page.no_if_possible
-      sleep idle_time
-    end
   end
-
-  #Specific edoc generate the yes/no pages and their processing actually occurs after the yes or no button is pressed;
-  #not when the action button is pressed. Need have additional wait time JUST for those edocs and we will do a sleep
-  case object_klass::DOC_INFO[:label]
-    when 'Asset Manual Payment'
-      sleep idle_time  #on an edoc that requires additional wait time for processing after the yes/no page response
-    #else, implied not on edoc requiring additional processing
-  end
-  $current_page = original_page
 end
+
 
 And /^I (#{BasePage::available_buttons}) a[n]? (.*) document$/ do |button, document|
   doc_object = snake_case document
