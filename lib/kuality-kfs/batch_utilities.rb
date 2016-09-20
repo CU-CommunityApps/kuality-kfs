@@ -36,7 +36,7 @@ module BatchUtilities
   end
 
   def run_poster_balancing(wait_for_completion = false)
-    run_unscheduled_job('posterBalancingJob', wait_for_completion, 1200)
+    run_unscheduled_job('posterBalancingJob', wait_for_completion, 2400)
   end
 
   def run_clear_pending_entries(wait_for_completion = false)
