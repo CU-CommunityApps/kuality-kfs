@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
     s.authors = ['Cornell University']
     s.email = %w{"tony@rsmart.com"}
     s.homepage = 'https://github.com/CU-CommunityApps'
+    s.add_dependency 'selenium-webdriver', '2.53.4'
     s.add_dependency 'test-factory', '0.5.3'
     s.required_ruby_version = '>= 1.9.2'
 end
