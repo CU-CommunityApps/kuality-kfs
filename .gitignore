@@ -1,3 +1,5 @@
+kuality-kfs.rb
+lib/kuality-kfs
 config.yml
 .DS_Store
 directory.yml
@@ -10,6 +12,9 @@ test.feature
 *.gem
 *.log
 *test_spec.rb
+*screenshot*.png
 *.png
 Gemfile.lock
 **/client-sign.properties
+.project
+.buildpath

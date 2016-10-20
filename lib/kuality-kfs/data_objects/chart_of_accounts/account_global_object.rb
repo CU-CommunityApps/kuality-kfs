@@ -8,7 +8,9 @@ class AccountGlobalObject < KFSDataObject
                 :continuation_coa_code, :continuation_acct_number, :income_stream_financial_cost_code, :income_stream_account_number,
                 :cfda_number,  :higher_ed_funct_code, :sufficient_funds_code,
                 :trans_processing_sufficient_funds_code, :labor_benefit_rate_category_code,
-                :new_chart_code, :new_number
+                :new_chart_code, :new_number,
+                # Extended Attributes
+                :major_reporting_category_code
 
   def defaults
     super.merge({
@@ -61,6 +63,10 @@ class AccountGlobalObject < KFSDataObject
         page.return_selected_results
       end
     end
+  end
+
+  def fill_out_extended_attributes
+    on(AccountGlobalPage) { |p| fill_out p, :major_reporting_category_code }
   end
 
 end

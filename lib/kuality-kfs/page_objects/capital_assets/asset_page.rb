@@ -36,4 +36,7 @@ class AssetPage < KFSBasePage
 
   element(:off_campus_country) { |b| b.frm.select(name: 'document.newMaintainableObject.offCampusLocation.assetLocationCountryCode') }
 
+  # Extended Attribute
+  element(:service_rate_indicator) { |b| b.frm.checkbox(name: 'document.newMaintainableObject.extension.serviceRateIndicator') }
+
 end
