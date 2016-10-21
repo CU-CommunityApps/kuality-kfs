@@ -38,4 +38,6 @@ class AssetFabricationMaintenanceDocumentPage < KFSBasePage
   element(:years_expected_to_retain_asset_once_fabrication_is_complete) { |b| b.frm.text_field(name: 'document.newMaintainableObject.fabricationEstimatedRetentionYears') }
   alias_method :fabrication_is_complete, :years_expected_to_retain_asset_once_fabrication_is_complete
 
+  # Extended Attribute
+  element(:service_rate_indicator) { |b| b.frm.text_field(name: 'document.newMaintainableObject.extension.serviceRateIndicator') }
 end

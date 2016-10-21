@@ -15,7 +15,9 @@ class ObjectCodeGlobalObject < KFSDataObject
                 :budget_aggregation_code,
                 :mandatory_transfer,
                 :federal_funded_code,
-                :next_year_object_code
+                :next_year_object_code,
+                # == Extended Attributes ==
+                :suny_object_code
 
   def defaults
     # Ensure object code being used has not been used before
@@ -39,6 +41,11 @@ class ObjectCodeGlobalObject < KFSDataObject
       .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_OBJECT_CODE_GLOBAL))
   end
 
+  def fill_out_extended_attributes
+    on(ObjectCodeGlobalPage) do |page|
+      fill_out page, :suny_object_code
+    end
+  end
 
   def is_unique?(object_code_to_verify)
     # WebService will generate a RuntimeError when the object code value being looked up is not found.

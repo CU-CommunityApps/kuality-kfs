@@ -17,7 +17,10 @@ class AccountObject < KFSDataObject
                 # == Contracts and Grants tab ==
                 :contract_control_chart_of_accounts_code, :contract_control_account_number,
                 :account_icr_type_code, :indirect_cost_rate, :cfda_number, :cg_account_responsibility_id,
-                :invoice_frequency_code, :invoice_type_code, :everify_indicator, :cost_share_for_project_number
+                :invoice_frequency_code, :invoice_type_code, :everify_indicator, :cost_share_for_project_number,
+                # == Extended Attributes ==
+                :subfund_program_code, :labor_benefit_rate_category_code,
+                :major_reporting_category_code, :appropriation_account_number
 
   def defaults
     super.merge({
@@ -37,6 +40,12 @@ class AccountObject < KFSDataObject
                   .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT))
   end
 
+  def extended_defaults
+    {
+        labor_benefit_rate_category_code: 'CC'
+    }.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT))
+  end
+
   def build
     visit(MainPage).account
     on(AccountLookupPage).create
@@ -54,6 +63,16 @@ class AccountObject < KFSDataObject
     end
   end
 
+  def fill_out_extended_attributes(attribute_group=nil)
+    #case attribute_group # Don't actually use this yet.
+    #  else
+    # These should map to non-required, or otherwise un-grouped attributes
+    on AccountPage do |p|
+      fill_out p, :subfund_program_code, :labor_benefit_rate_category_code,
+                  :major_reporting_category_code, :appropriation_account_number
+    end
+    #end
+  end
 
   def edit(opts={})
     # Verify what we are being asked to edit is one of our attributes
@@ -100,9 +119,8 @@ class AccountObject < KFSDataObject
     # Attributes that don't copy over to a new document's fields during a copy.
     # @return [Array] List of Symbols for attributes that aren't copied to the new side of a copy
     def uncopied_attributes
-      superclass.uncopied_attributes | [:chart_code, :number, :effective_date]
+      superclass.uncopied_attributes | [:chart_code, :number, :effective_date, :labor_benefit_rate_category_code, :major_reporting_category_code]
     end
-
 
     # Used in method absorb_webservice_item! or can be called standalone
     # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.

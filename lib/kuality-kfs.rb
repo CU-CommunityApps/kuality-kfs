@@ -15,6 +15,7 @@ java_import 'org.kuali.rice.location.v2_0.PostalCodeService'
 
 cwd = File.symlink?(__FILE__) ? File.dirname(File.readlink(__FILE__)) : File.dirname(__FILE__)
 Dir["#{cwd}/kuality-kfs/*.rb"].alphabetize.each {|f| require f }
+Dir["#{cwd}/kuality-kfs/features/step_definitions/**/*.rb"].alphabetize.each {|f| require f }
 Dir["#{cwd}/kuality-kfs/page_objects/*.rb"].alphabetize.each {|f| require f }
 Dir["#{cwd}/kuality-kfs/page_objects/*/*.rb"].alphabetize.each {|f| require f }
 Dir["#{cwd}/kuality-kfs/page_objects/*/*/*.rb"].alphabetize.each {|f| require f }

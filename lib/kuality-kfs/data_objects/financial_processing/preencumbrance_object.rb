@@ -1,6 +1,7 @@
 class PreEncumbranceObject < KFSDataObject
 
   include AccountingLinesMixin
+  include PreEncumbranceLinesMixin
 
   DOC_INFO = { label: 'Pre-Encumbrance', type_code: 'PE', transactional?: true, action_wait_time: 60 }
 

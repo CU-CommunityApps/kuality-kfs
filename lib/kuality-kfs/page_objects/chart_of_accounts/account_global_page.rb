@@ -24,7 +24,8 @@ class AccountGlobalPage < KFSBasePage
   element(:trans_processing_sufficient_funds_code) { |b| b.frm.select(name: 'document.newMaintainableObject.pendingAcctSufficientFundsIndicator') }
   element(:labor_benefit_rate_category_code) { |b| b.frm.text_field(name: 'document.newMaintainableObject.laborBenefitRateCategoryCode') }
 
-
-
+  # Extended Attributes
+  element(:major_reporting_category_code) { |b| b.frm.text_field(name: 'document.newMaintainableObject.majorReportingCategoryCode') }
+  action(:major_reporting_code_lookup) { |b| b.frm.button(title: 'Search Major Reporting Category Code').click }
 
 end
