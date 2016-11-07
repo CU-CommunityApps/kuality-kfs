@@ -10,9 +10,6 @@ Feature: Account Creation
               to enter data into Sub Fund Program field regardless of case
               because custom fields should behave similarly to base fields.
 
-  [KFSQA-556] In order to Create an Account as a KFS Chart User, I want to be notified when I leave fields blank.
-              The Account Guidelines and Purpose tabs contains some required data that must be verified before submission.
-
   [KFSQA-1163] Create an Account should generate an error when attempting to incorporate a closed ICR account, part 1a.
 
                Edit an Account should generate an error when attempting to incorporate a closed ICR account, part 1b.
@@ -22,7 +19,6 @@ Feature: Account Creation
 
                Create/Edit an Account using an open and non-expired ICR account should submit/approve but should error
                during approval when ICR account modification is attempted to a closed account, part 3.
-
 
   @smoke @sloth @solid
   Scenario: Create an Account
@@ -45,17 +41,6 @@ Feature: Account Creation
     When  I save an Account with a lower case Sub Fund Program
     Then  the Account document goes to SAVED
     And   the Account document's Sub Fund Program code is uppercased
-
-  @KFSQA-556 @Account @Create @KFSMI-7599 @hare @solid
-  Scenario: KFS User does not input any fields into Account Guidelines and Purpose Tabs
-    Given I am logged in as a KFS Fiscal Officer
-    When  I create an Account and leave blank for the fields of Guidelines and Purpose tab
-    When  I save the Account document
-    Then  I should get these error messages:
-      | Expense Guideline is a required field. |
-      | Income Guideline is a required field.  |
-      | Account Purpose is a required field.   |
-    And   the Account document goes to SAVED
 
   @KFSQA-1163 @KFSQA-905 @Account @CG @smoke @coral @solid
   Scenario: Create an Account should generate an error when attempting to incorporate a closed ICR account, part 1a

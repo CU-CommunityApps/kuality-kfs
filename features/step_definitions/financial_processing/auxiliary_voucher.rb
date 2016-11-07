@@ -2,19 +2,6 @@ When /^I start an empty Auxiliary Voucher document$/ do
   @auxiliary_voucher = create AuxiliaryVoucherObject, initial_lines: []
 end
 
-When /^I create an AV document with that Object Code$/ do
-  @auxiliary_voucher = create AuxiliaryVoucherObject, initial_lines: []
-  on AuxiliaryVoucherPage do |page|
-    @auxiliary_voucher.add_source_line({
-                                           account_number:   get_random_account_number,
-                                           object:           @lookup_object_code,
-                                           credit:           '100',
-                                           line_description: 'AV sample line'
-                                       })
-  end
-
-end
-
 And /^I add credit and debit accounting lines with two different sub funds$/ do
   source_account = get_random_account
   target_account = get_random_account

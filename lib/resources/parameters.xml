@@ -667,7 +667,7 @@
          <column name="OBJ_ID" valueNumeric="sys_guid()"/>
          <column name="VER_NBR" value="1"/>
          <column name="PARM_TYP_CD" value="VALID"/>
-         <column name="VAL" value="employee=1013939;to_account_different_types=7543814;labor_object_code=5370"/>
+         <column name="VAL" value="employee=1013939;to_account_different_types=7543816;labor_object_code=5370"/>
          <column name="PARM_DESC_TXT" value="The specific data values required for Scenario: Submit a salary transfer edoc between account types, edit the object code, verify pending entries, and submit successfully"/>
          <column name="EVAL_OPRTR_CD" value="A"/>
        </insert>

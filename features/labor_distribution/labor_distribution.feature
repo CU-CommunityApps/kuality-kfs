@@ -1,11 +1,5 @@
 Feature: Labor Distribution
 
-  [KFSQA-983] Base Function : I create a Salary Expense Transfer
-
-  [KFSQA-984] Base Function : I create a Benefit Expense Transfer
-
-  [KFSQA-985] Base Function : I run the nightly Labor batch process
-
   [KFSQA-970] Background: Tests submission of a salary expense transfer and functionality of transfers
               between account types, calculations between rates, and labor access security between orgs.
               Required Setup Data specifications are located in the JIRA.
@@ -19,34 +13,6 @@ Feature: Labor Distribution
                Data used in this test is specified in KFS Parameter: TEST_ST_PRIVILEGED_CROSS_DIVISIONAL_OBJECT_EDIT
                Data values need to be identified by the following symbols in the Parameter Values:
                employee, to_account_different_types, labor_object_code
-
-
-  @KFSQA-983 @BaseFunction @ST @slug @nightly-jobs @solid
-  Scenario: Base Function : I create a Salary Expense Transfer
-    Given I create a Salary Expense Transfer as a Salary Transfer Initiator
-      | Parameter Name | TEST_ST_CREATE |
-    And   I transfer the Salary to another Account in my Organization
-    And   I submit the Salary Expense Transfer document
-    And   the Salary Expense Transfer document goes to FINAL
-    #Remaining validation will be performed after the nightly batch jobs are executed for this feature file
-    Then  references to test KFSQA-983 instance data are saved for validation after batch job execution
-
-  @KFSQA-984 @BaseFunction @BT @tortoise
-  Scenario: Base Function : I create a Benefit Expense Transfer
-    Given  I create a Benefit Expense Transfer with following:
-      |From Account  | A464100   |
-      |To Account    | A453101   |
-
-  # Removed this scenario as a @solid AFT because the same functionality is verified in scenario KDO-557
-  # "Run the labor and general ledger critical path batch jobs".
-  @KFSQA-985 @BaseFunction @tortoise @nightly-jobs
-  Scenario: Base Function for labor nightly batch process.
-    Given I run the nightly Labor batch process
-    And   I am logged in as a Salary Transfer Initiator
-    # this is just an example to validate the labor batch process is OK.
-    # this step requires/presumes remembered_employee_id is set to the employee id being used for the test;
-    # otherwise, the default parameter employee id is used for verification
-    Then  the labor ledger pending entry for employee is empty
 
   @KFSQA-970 @ST @smoke @coral @nightly-jobs @solid
   Scenario: Salary Expense Transfer test between account types, between rates, and for labor access security.
@@ -87,13 +53,6 @@ Feature: Labor Distribution
   Scenario: Run Nightly batch jobs required for Labor Distribution Tests Verification
     Given   I run the nightly Labor batch process
     Then    There are no incomplete Batch Job executions
-
-  @KFSQA-983 @validation-after-batch @solid
-  Scenario: Validation For Base Function : I create a Salary Expense Transfer
-    Given All Nightly Batch Jobs have completed successfully
-    And   I can retrieve references to test KFSQA-983 instance data saved for validation after batch job execution
-    And   I am logged in as a Labor Distribution Manager
-    Then  the labor ledger pending entry for employee is empty
 
   @KFSQA-970 @validation-after-batch @solid
   Scenario: Validation for Salary Expense Transfer test between account types, between rates, and for labor access security

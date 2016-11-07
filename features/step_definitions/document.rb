@@ -33,28 +33,12 @@ And /^I remember the (.*) document number$/ do |document|
   @remembered_document_id = on(page_class_for(document)).document_id
 end
 
-And /^I retain the (.*) document number from this transaction$/ do |document|
-  @retained_document_id = on(page_class_for(document)).document_id
-end
-
 Then /^The value for (.*) field is "(.*)"$/ do |field_name, field_value|
   $current_page.send(StringFactory.damballa(field_name)).should==field_value
 end
 
-And /^I collapse all tabs$/ do
-  on(KFSBasePage).collapse_all
-end
-
 And /^I expand all tabs$/ do
   on(KFSBasePage).expand_all
-end
-
-And /^I recall the financial document$/ do
-  on(KFSBasePage).recall_current_document
-  on RecallPage do |page|
-    page.reason.fit 'Recall test'
-    page.recall
-  end
 end
 
 And /^I recall and cancel the financial document$/ do
@@ -155,26 +139,6 @@ And /^I (#{BasePage::available_buttons}) a[n]? (.*) document$/ do |button, docum
   step "I #{button} the #{document} document answering yes to any questions"
 end
 
-And /^I copy a random (.*) document with (.*) status/ do |document, doc_status|
-  doc_object = snake_case document
-  object_klass = object_class_for(document)
-
-  on DocumentSearch do |search|
-    search.document_type.set object_klass::DOC_INFO[:type_code]
-    search.search
-    @document_id = search.docs_with_status(doc_status, search).sample
-    search.open_doc @document_id
-  end
-
-  on page_class_for(document) do |page|
-    page.copy_current_document
-    @document_id = page.document_id
-  end
-
-  set(doc_object, make(object_klass, document_id: @document_id))
-  step "I save the #{document} answering yes to any questions"
-end
-
 When /^I (#{BasePage::available_buttons}) the (.*) document$/ do |button, document|
   step "I #{button} the #{document} document answering yes to any questions"
 end
@@ -189,7 +153,4 @@ When /^I (#{BasePage::available_buttons}) the (.*) document and confirm any ques
   step "I #{button} the #{document} document answering yes to any questions"
 end
 
-When /^I (#{BasePage::available_buttons}) the (.*) document and deny any questions$/ do |button, document|
-  step "I #{button} the #{document} document answering no to any question"
-end
 ############End-of section contains steps with the form of "I ACTION the|a|an DOCUMENT_NAME document..."##############
