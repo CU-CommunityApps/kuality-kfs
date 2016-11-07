@@ -3,10 +3,6 @@ Feature: Sub Account
   [KFSQA-590] As a KFS Chart Manager I want to enter a Sub-Account
               without a null ICR ID field because this is incorrect
 
-  [KFSQA-589] Cornell Feature: Sub-Account blanket approval does not work for jis45; only works for Superusers.
-              As a Contracts & Grants Processor I want to Blanket Approve CS Type Sub-Account Documents that
-              have been ad-hoc routed to me because this follows Cornell standard operating policies.
-
   [KFSQA-591] As a KFS CG Processor Role I want to Approve Sub-Account Documents with
               Sub-Account Type “CS” because this follows Cornell standard operating policies.
 
@@ -17,7 +13,6 @@ Feature: Sub Account
 
               Create/Edit a Sub-Account using an open and non-expired ICR account should submit/approve but should error
               during approval when ICR account modification is attempted to a closed account, part 3.
-
 
   @KFSQA-590 @SubAcct @Bug @KFSMI-7964 @hare @solid
   Scenario: Verify "null" does not display in the ICR ID field when I create a Sub-Account
@@ -42,20 +37,6 @@ Feature: Sub Account
     And     I view the Sub-Account document
     When    I approve the Sub-Account document
     Then    the Sub-Account document goes to FINAL
-
-  @KFSQA-589 @cornell @SubAcct @Bug @KFSPTS-1753 @sloth @solid
-  Scenario: Create a Sub-Account with Sub-Account Type CS and ad-hoc approval route it to a member of the Contracts & Grants Processor Role (jis45)
-    Given I am logged in as a KFS User
-    And   I submit a Cost Share Sub-Account with an adhoc approver
-    And   the Sub-Account document goes to ENROUTE
-    When  I am logged in as the adhoc user
-    Then  The Sub-Account document should be in my action list
-    When  I view the Sub-Account document
-    And   I blanket approve the Sub-Account document
-    And   I view the Sub-Account document
-    Then  the Sub-Account document goes to one of the following statuses:
-      | PROCESSED |
-      | FINAL     |
 
   @KFSQA-905 @KFSQA-1165 @COA, @SubAcct @CG @smoke @coral @solid
   Scenario: Create/Edit a Sub-Account should generate an error when attempting to incorporate a closed ICR account, part 1

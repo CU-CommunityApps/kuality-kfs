@@ -46,14 +46,6 @@ And /^I change (.*) target account number to '(.*)'$/ do |document, account_numb
 end
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.
-And /^I transfer the Salary to another Account in my Organization$/ do
-  # do not continue, required parameter not sent
-  fail ArgumentError, "Required parameter #{@test_data_parameter_name} does not specify required test input data value for to_account_in_organization." if @test_input_data[:to_account_in_organization].nil? || @test_input_data[:to_account_in_organization].empty?
-
-  step "I change Salary Expense Transfer target account number to '#{@test_input_data[:to_account_in_organization]}'"
-end
-
-# This step requires that the global hash @test_input_data exist and hold the input data required.
 And /^I transfer the Salary between accounts with different Account Types$/ do
   # do not continue, required parameter not sent
   fail ArgumentError, "Required parameter #{@test_data_parameter_name} does not specify required test input data value for to_account_different_types." if @test_input_data[:to_account_different_types].nil? || @test_input_data[:to_account_different_types].empty?
@@ -142,33 +134,9 @@ Given /^I populate Salary Expense Transfer document for employee$/ do
   step "I copy Salary Expense Transfer source account to target account"
 end
 
-Given  /^I create a Benefit Expense Transfer with following:$/ do |table|
-  arguments = table.rows_hash
-  steps %Q{ Given I Login as a Benefit Transfer Initiator
-            And   I start an empty Benefit Expense Transfer document
-  }
-  if !arguments['From Account'].nil?
-    step "I set transfer from account number to '#{arguments['From Account']}' on Benefit Expense Transfer document"
-  end
-  steps %Q{ And   I search and retrieve Ledger Balance entry
-            And   I copy Benefit Expense Transfer source account to target account
-  }
-
-  if !arguments['To Account'].nil?
-    step "I change Benefit Expense Transfer target account number to '#{arguments['To Account']}'"
-  end
-  steps %Q{ And   I submit the Benefit Expense Transfer document
-            And   the Benefit Expense Transfer document goes to ENROUTE
-            And   I route the Benefit Expense Transfer document to final
-            Then  the Benefit Expense Transfer document goes to FINAL
-      }
-
-end
-
 And /^I set transfer from account number to '(.*)' on Benefit Expense Transfer document$/ do |account_number|
   on(BenefitExpenseTransferPage).account_number.fit account_number
 end
-
 
 Then /^the labor ledger pending entry for employee is empty$/ do
   employee_id = ""

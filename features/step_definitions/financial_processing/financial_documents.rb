@@ -1,12 +1,3 @@
-Then /^The Chart of Accounts on the accounting line defaults appropriately for the (.*) document$/ do |document|
-  on page_class_for(document) do |page|
-    if ['Budget Adjustment', 'Internal Billing', 'General Error Correction'].include?(document)
-      page.target_chart_code.value.should == get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-    end
-    page.source_chart_code.value.should == get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-  end
-end
-
 And /^I add a (From|To|Source|Target) Accounting Line to the (.*) document with Amount (\w+)$/ do |type, document, amount|
   account_number =  get_account_of_type('Endowed NonGrant')
   if document.eql?('Service Billing') && type.eql?('Source')
@@ -28,4 +19,3 @@ And /^I add a (From|To|Source|Target) Accounting Line to the (.*) document with 
        })
 
 end
-

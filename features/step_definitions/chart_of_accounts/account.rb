@@ -19,15 +19,6 @@ And /^I save an Account with a lower case Sub Fund Program$/ do
   step "I save the Account document"
 end
 
-When /^I submit an account with blank SubFund group Code$/ do
-  @account = create AccountObject, sub_fund_group_code: ''
-  step "I submit the Account document"
-end
-
-Then /^I should get an error on saving that I left the SubFund Group Code field blank$/ do
-  on(AccountPage).errors.should include 'Sub-Fund Group Code (SubFundGrpCd) is a required field.'
-end
-
 Then /^the Account Maintenance Document saves with no errors$/  do
   step 'The document should save successfully'
 end
@@ -106,18 +97,6 @@ And /^I enter a Continuation Chart Of Accounts Code that equals the Chart of Acc
   on(AccountPage) { |page| page.continuation_chart_code.fit page.chart_code.text }
 end
 
-And /^I enter a Continuation Account Number that equals the Account Number$/ do
-  @account.edit continuation_account_number: on(AccountPage).account_number_old
-end
-
-And /^I clone a random Account with the following changes:$/ do |table|
-  step 'I clone Account nil with the following changes:', table
-end
-
-And /^I extend the Expiration Date of the Account document (\d+) days$/ do |days|
-  @account.edit account_expiration_date: (@account.account_expiration_date + days.to_i).strftime('%m/%d/%Y')
-end
-
 And /^I clone a random Account with name, chart code, and description changes$/ do
   step 'I clone Account nil with the following changes:',
        table(%Q{
@@ -142,12 +121,6 @@ And /^I edit an Account with a random Sub-Fund Group Code$/ do
     @account.absorb! :old
     @account.absorb! :new
   end
-end
-
-And /^I create an Account and leave blank for the fields of Guidelines and Purpose tab$/ do
-  @account = create AccountObject, expense_guideline_text: '',
-                                   income_guideline_text:  '',
-                                   purpose_text:           ''
 end
 
 And /^the Account document's Sub Fund Program code is uppercased$/ do
@@ -191,7 +164,6 @@ When /^I enter (.*) as an invalid Appropriation Account Number$/  do |appropriat
   step 'I save the Account document'
   step 'I add the account to the stack'
 end
-
 
 When /^I save an Account document with only the ([^"]*) field populated$/ do |field|
   # TODO: Swap this out for Account#defaults
@@ -241,8 +213,6 @@ When /^I enter an invalid (.*)$/  do |field_name|
       step "I enter #{random_alphanums(6, 'XX').upcase} as an invalid Major Reporting Category Code"
     when 'Appropriation Account Number'
       step "I enter #{random_alphanums(6, 'XX').upcase} as an invalid Appropriation Account Number"
-    when 'Labor Benefit Rate Code'
-      step "I enter #{random_alphanums(1, 'X').upcase} as an invalid Labor Benefit Rate Category Code"
   end
 end
 
@@ -256,9 +226,6 @@ Then /^I should get (invalid|an invalid) (.*) errors?$/ do |invalid_ind, error_f
         page.errors.should include "Major Reporting Category Code (#{page.major_reporting_category_code.value}) does not exist."
       when 'Appropriation Account Number'
         page.errors.should include "Appropriation Account Number #{page.appropriation_account_number.value} is not associated with Sub-Fund Group Code #{page.sub_fund_group_code.value}."
-      when 'Labor Benefit Rate Code'
-        page.errors.should include 'Invalid Labor Benefit Rate Code'
-        page.errors.should include "The specified Labor Benefit Rate Category Code #{page.labor_benefit_rate_category_code.value} does not exist."
     end
   end
 end
@@ -364,172 +331,8 @@ And /^I clone Account (.*) with the following changes:$/ do |account_number, tab
   end
 end
 
-And /^I find an expired Account$/ do
-  visit(MainPage).account
-  on AccountLookupPage do |page|
-    # FIXME: These values should be set by a service.
-    page.chart_code.fit     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-    page.account_number.fit '147*'
-    page.search
-    page.wait_for_search_results
-    page.sort_results_by('Account Expiration Date')
-    page.sort_results_by('Account Expiration Date') # Need to do this twice to get the expired ones in front
-
-    col_index = page.column_index(:account_expiration_date)
-    account_row_index = page.results_table
-                            .rows.collect { |row| row[col_index].text if row[col_index].text.split('/').length == 3}[1..page.results_table.rows.length]
-                            .collect { |cell| DateTime.strptime(cell, '%m/%d/%Y') < DateTime.now }.index(true) + 1 # Finds the first qualified one.
-    account_row_index = rand(account_row_index..page.results_table.rows.length)
-
-    # We're only really interested in these parts
-    @account = make AccountObject
-    @account.number = page.results_table[account_row_index][page.column_index(:account_number)].text
-    @account.chart_code = page.results_table[account_row_index][page.column_index(:chart_code)].text
-    @account.account_expiration_date = DateTime.strptime(page.results_table[account_row_index][page.column_index(:account_expiration_date)].text, '%m/%d/%Y')
-    step 'I add the account to the stack'
-  end
-end
-
-And /^I use these Accounts:$/ do |table|
-  existing_accounts = table.raw.flatten
-
-  visit(MainPage).account
-  on AccountLookupPage do |page|
-    existing_accounts.each do |account_number|
-      # FIXME: These values should be set by a service.
-      page.chart_code.fit     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-      page.account_number.fit account_number
-      page.search
-      page.wait_for_search_results
-
-      # We're only really interested in these parts
-      @account = make AccountObject
-      @account.number = page.results_table[1][page.column_index(:account_number)].text
-      @account.chart_code = page.results_table[1][page.column_index(:chart_code)].text
-      step 'I add the account to the stack'
-    end
-  end
-
-end
-
-When /^I start to copy a Contracts and Grants Account$/ do
-  cg_account_number = get_account_of_type 'Contracts & Grants with ICR'
-  visit(MainPage).account
-  on AccountLookupPage do |alp|
-    alp.chart_code.fit     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-    alp.account_number.fit cg_account_number
-    alp.search
-    alp.wait_for_search_results
-
-    alp.item_row(cg_account_number).exist?.should
-    alp.copy_random
-  end
-
-  @account = make AccountObject
-  @account.absorb! :old
-  @account.edit description: @account.description # This will be auto-generated, but not auto-populated
-  #               number:      @account.number
-  step 'I add the account to the stack'
-end
-
-And /^the fields from the old Account populate those in the new Account document$/ do
-  # I make a temporary data object by absorbing the 'New' Account information
-  # I compare that 'New' d.o. to the 'Old' d.o. (@account)
-  @account = make AccountObject
-  @account.absorb! :new
-  step 'I add the account to the stack'
-
-  (@accounts[0] == @accounts[1]).should
-end
-
 And /^I add the account to the stack$/ do
   @accounts = @accounts.nil? ? [@account] : @accounts + [@account]
-end
-
-And /^I update the Account with the following changes:$/ do |updates|
-  updates = updates.rows_hash.snake_case_key
-
-  # Now go through and make sure anything with "Same as Original" pulls from the previous one.
-  # We assume that we have at least two accounts in the stack and that the last one is the account to update.
-  updates.each do |k, v|
-    new_val = case v
-                when 'Same as Original'
-                  @accounts[-2].instance_variable_get("@#{k}")
-                when 'Checked'
-                  :set
-                when 'Unchecked'
-                  :clear
-                when 'Random'
-                  case k
-                    when :description
-                      random_alphanums(37, 'AFT')
-                    when :number
-                      random_alphanums(7).upcase
-                    else
-                      v # No change
-                  end
-                else
-                  v # No change
-              end
-    updates.store k, new_val
-  end
-
-  # If you need to support additional fields, you'll need to implement them above.
-
-  @account.edit updates
-
-  # Now, let's make sure the changes persisted.
-  on AccountPage do |page|
-    values_on_page = page.account_data_new
-    values_on_page.keys.each do |cfda_field|
-      unless updates[cfda_field].nil?
-        @account.instance_variable_get("@#{cfda_field}").should == updates[cfda_field]
-        values_on_page[cfda_field].should == @account.instance_variable_get("@#{cfda_field}")
-      end
-    end
-  end
-
-  @accounts[-1] = @account # Update that stack!
-end
-
-And /^I update the Account's Contracts and Grants tab with the following changes:$/ do |updates|
-  updates = updates.rows_hash.snake_case_key
-
-  # Now go through and make sure anything with "Same as Original" pulls from the previous one.
-  # We assume that we have at least two accounts in the stack and that the last one is the account to update.
-  updates.each do |k, v|
-    new_val = case v
-                when 'Same as Original'
-                  @accounts[-2].instance_variable_get("@#{k}")
-                when 'Checked'
-                  :set
-                when 'Unchecked'
-                  :clear
-                else
-                  v
-              end
-    updates.store k, new_val
-  end
-  # If you need to support additional fields, you'll need to implement them above.
-
-  @account.edit updates
-
-  # Now, let's make sure the changes persisted.
-  on AccountPage do |page|
-    values_on_page = page.account_data_new
-    [
-        :contract_control_chart_of_accounts_code, :contract_control_account_number,
-        :account_icr_type_code, :indirect_cost_rate, :cfda_number, :cg_account_responsibility_id,
-        :invoice_frequency_code, :invoice_type_code, :everify_indicator, :cost_share_for_project_number
-    ].each do |cfda_field|
-      unless updates[cfda_field].nil?
-        @account.instance_variable_get("@#{cfda_field}").should == updates[cfda_field]
-        values_on_page[cfda_field].should == @account.instance_variable_get("@#{cfda_field}")
-      end
-    end
-  end
-
-  @accounts[-1] = @account # Update that stack!
 end
 
 And /^I copy the old Account's Indirect Cost Recovery tab to the new Account$/ do
@@ -537,114 +340,6 @@ And /^I copy the old Account's Indirect Cost Recovery tab to the new Account$/ d
   @account.edit update
   @accounts[-1] = @account # Update that stack!
 end
-
-And /^I add an additional Indirect Cost Recovery Account if the Account's Indirect Cost Recovery tab is empty$/ do
-  if @account.icr_accounts.length < 1 || @account.icr_accounts.account_line_percent_sum < 100
-    @account.icr_accounts.add chart_of_accounts_code: get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-                              account_number:         '',
-                              account_line_percent:   (@account.icr_accounts.length < 1 ? '100' : (100 - @account.icr_accounts.account_line_percent_sum).to_s),
-                              active_indicator:       :set
-    @accounts[-1] = @account # Update that stack!
-  end
-end
-
-Then /^the values submitted for the Account document persist$/ do
-  # Now, let's make sure the changes persisted.
-  on AccountPage do |page|
-    values_on_page = page.account_data_new
-
-    values_on_page.keys.each do |cfda_field|
-      unless values_on_page[cfda_field].nil?
-        value_in_memory = @account.instance_variable_get("@#{cfda_field}")
-
-        if values_on_page[cfda_field].is_a? String
-          # We'll compare case-insensitively because KFS will correct most values accordingly post-submission.
-          values_on_page[cfda_field].upcase.eql_ignoring_whitespace?(value_in_memory.upcase).should be true
-        else
-          values_on_page[cfda_field].should == value_in_memory
-        end
-      end
-    end
-  end
-  icra_collection_on_page = @account.icr_accounts.updates_pulled_from_page :old
-  icra_collection_on_page.each_with_index { |icra, i| icra.should == @account.icr_accounts[i].to_hash }
-end
-
-
-# Active CG account needs to be non-expired account AND needs to have non-expired continuation account
-# Fastest way to obtain this type of account is to have the method look for an account with a NULL account expiration
-# date and a NULL continuation account.
-And /^I find an unexpired CG Account that has an unexpired continuation account$/ do
-  default_chart = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-  accounts_hash = get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{default_chart}&subFundGroup.fundGroupCode=CG&closed=N")
-  accounts = accounts_hash['org.kuali.kfs.coa.businessobject.Account']
-
-  unless accounts.nil? || accounts.empty?
-    valid_account_not_found = true
-    index = 0
-
-    while valid_account_not_found & (index < accounts.size)
-      expiration_date = accounts[index]['accountExpirationDate'][0]
-      continuation_account = accounts[index]['continuationAccountNumber'][0]
-      if expiration_date.eql?('null') && continuation_account.eql?('null')
-        @account = make AccountObject
-        @account.absorb_webservice_item! accounts[index]
-        valid_account_not_found = false
-      end
-      index += 1
-    end #while-loop
-  end #if-statement
-
-
-end
-
-
-
-# Active CG account needs to be non-expired account AND needs to have non-expired continuation account
-# Fastest way to get this data is to have the method look for an account with a NULL account expiration date and
-# a NULL continuation account.
-And /^I find an unexpired CG Account not matching the remembered From Account that has an unexpired continuation account$/ do
-  default_chart = @remembered_from_account.chart_code
-  account_not_to_match = @remembered_from_account.number
-  accounts_hash = get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{default_chart}&subFundGroup.fundGroupCode=CG&closed=N")
-  accounts = accounts_hash['org.kuali.kfs.coa.businessobject.Account']
-
-  unless accounts.nil? || accounts.empty?
-    valid_account_not_found = true
-    index = 0
-
-    while valid_account_not_found & (index < accounts.size)
-      expiration_date = accounts[index]['accountExpirationDate'][0]
-      continuation_account = accounts[index]['continuationAccountNumber'][0]
-      account_number = accounts[index]['accountNumber'][0]
-      if expiration_date.eql?('null') && continuation_account.eql?('null') && !(account_number.eql?(account_not_to_match))
-        @account = make AccountObject
-        @account.absorb_webservice_item! accounts[index]
-        valid_account_not_found = false
-      end
-      index += 1
-    end #while-loop
-  end #if-statement
-end
-
-
-And /^I edit the Indirect Cost Rate on the Account to the remembered (From|To) Indirect Cost Rate$/ do |target|
-  case target
-    when 'From'
-      indirect_cost_rate = @remembered_from_indirect_cost_recovery_rate.rate_id
-    when 'To'
-      indirect_cost_rate = @remembered_to_indirect_cost_recovery_rate.rate_id
-  end
-
-  on AccountPage do |page|
-    #update the account object with changes and then use that object to edit the page
-    @account.account_icr_type_code = '01'
-    @account.indirect_cost_rate = indirect_cost_rate
-    page.account_icr_type_code.fit @account.account_icr_type_code
-    page.indirect_cost_rate.fit @account.indirect_cost_rate
-  end
-end
-
 
 And /^I remember the Account as the (From|To) Account$/ do |target|
   case target

@@ -1,7 +1,6 @@
 include Utilities
 
 And /^the next pending action for the (.*) document is an? (.*) from a (.*)$/ do |document, action, user_type|
-
   on page_class_for(document) do |page|
     page.show_route_log_button.wait_until_present
     page.show_route_log unless page.route_log_shown?
@@ -32,9 +31,7 @@ When /^I route the (.*) document to final$/ do |document|
     step "I approve the #{document} document, confirming any questions, if it is not already FINAL"
     step "I view the #{document} document"
   end
-
 end
-
 
 Then  /^the (.*) document routes to the (.*) node$/ do |document, node|
   sleep(120)  #need to wait 2 minutes for cynergy to do its thing before verifying document routed correctly
@@ -125,14 +122,6 @@ Then /^I switch to the user with the next Pending Action in the Route Log for th
   step "I am logged in as \"#{new_user}\""
 end
 
-And /^the initiator is not an approver in the Future Actions table$/ do
-  on KFSBasePage do |page|
-    page.expand_all
-    page.show_future_action_requests if page.show_future_action_requests_button.exists?
-    page.future_actions_table.rows(text: /APPROVE/m).any? { |r| r.text.include? 'Initiator' }.should_not
-  end
-end
-
 And /^I verify that the following (Pending|Future) Action approvals are requested:$/ do |action_type, roles|
   roles = roles.raw.flatten
   on KFSBasePage do |page|
@@ -152,44 +141,9 @@ And /^I verify that the following (Pending|Future) Action approvals are requeste
 
 end
 
-And /^the POA Routes to the FO$/ do
-  @fo_users.length.should >= 1
-end
-
-
-And /^the (.*) document does not route to the Financial Officer$/ do  |document|
-  on(page_class_for(document)).app_doc_status.should_not include 'Fiscal Officer'
-end
-
 And /^I capture the (.*) document id number$/ do |document|
   on page_class_for(document) do |page|
     @requisition_id = page.requisition_id if @requisition_id.nil? && page.header_title.include?('Requisition #:')
-  end
-end
-
-And /^the (.*) document's route log is:$/ do |document, desired_route_log|
-  # desired_route_log.hashes.keys => [:Role, :Action]
-
-  on page_class_for(document) do |page|
-    page.show_route_log_button.wait_until_present
-    page.show_route_log unless page.route_log_shown?
-
-    page.show_pending_action_requests unless page.pending_action_requests_shown?
-    page.pnd_act_req_table_action.visible?.should
-
-    page.show_future_action_requests unless page.future_action_requests_shown?
-    page.future_actions_table.visible?.should
-
-
-    # Note: This expects you to list out the full log from start to some end point.
-    #       You cannot skip any interim entries, though you could probably skip
-    #       entries at the end of the list.
-    route_log = page.route_log_hash
-    desired_route_log.hashes.each_with_index do |row, i|
-      route_log[:annotation][i].should match /#{row[:Role]}/
-      route_log[:action][i].should match /#{row[:Action]}/
-    end
-
   end
 end
 

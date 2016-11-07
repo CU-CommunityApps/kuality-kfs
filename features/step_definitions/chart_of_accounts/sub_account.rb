@@ -73,43 +73,6 @@ And /^I edit the Sub-Account changing its type code to Cost Share$/ do
   @sub_account.edit options
 end
 
-
-And /^I (#{SubAccountPage::available_buttons}) a Cost Share Sub-Account with an adhoc approver$/ do |button|
-  #The requirement for @KFSQA-589 is C&G processor as adhoc user
-  @adhoc_user = get_random_principal_name_for_role('KFS-SYS', 'Contracts & Grants Processor')
-  @user_id = @adhoc_user # for actionlist check
-  sub_account_type_code = get_aft_parameter_value(ParameterConstants::DEFAULT_COST_SHARE_SUB_ACCOUNT_TYPE_CODE)  #get the parameter value once and use it multiple times in this method
-  account_number = ""
-  i = 0
-  while account_number.empty? && i < 10
-    # must be an account that can have subaccounttype of 'CS'
-    sub_account_info = get_kuali_business_object('KFS-COA','SubAccount',"active=true&a21SubAccount.subAccountTypeCode=#{sub_account_type_code}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")
-    account_number = sub_account_info['accountNumber'][0]
-    account_info = get_kuali_business_object('KFS-COA','Account',"accountNumber=#{account_number}")
-    # check if account is closed or expired
-    if account_info['closed'][0] == 'true'
-      account_number = ""
-    else
-      if (account_info['accountExpirationDate'][0]) != 'null' && DateTime.strptime(account_info['accountExpirationDate'][0], '%Y-%m-%d') < DateTime.now
-        account_number = ""
-      end
-    end
-    i += 1
-  end
-
-  options = {
-      account_number:                      account_number,
-      cost_sharing_chart_of_accounts_code: get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
-      sub_account_type_code:               sub_account_type_code,
-      cost_sharing_account_number:         account_number,
-      adhoc_approver_userid:               @adhoc_user
-  }
-
-  @sub_account = create SubAccountObject, options
-  step "I #{button} the Sub Account document"
-end
-
-
 And /^I create a Sub-Account with a Cost Share Sub-Account Type Code$/ do
   #parameter look-ups are costly, get default chart code once and use it multiple times in this method
   chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)

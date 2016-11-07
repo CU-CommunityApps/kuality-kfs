@@ -166,36 +166,6 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
   end
 end
 
-And /^the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line appears in the (.*) document's (GLPE|GL) entry$/ do |al_type, document, entry_lookup|
-  doc_object = document_object_for(document)
-  alt = AccountingLineObject::get_type_conversion(al_type)
-  step "I lookup the #{al_type} Accounting Line of the #{document} document in the #{entry_lookup}"
-  case entry_lookup
-    when 'GLPE'
-      on(GeneralLedgerPendingEntryLookupPage).open_item_via_text(doc_object.accounting_lines[alt].first.line_description, doc_object.document_id)
-    when 'GL'
-      on(GeneralLedgerEntryLookupPage).open_item_via_text(doc_object.accounting_lines[alt].first.line_description, doc_object.document_id)
-    else
-      %w('GLPE', 'GL').any? { |opt| opt.include? entry_lookup }
-  end
-  begin
-    step "the #{al_type} Accounting Line entry matches the #{document} document's entry"
-  rescue Timeout::Error
-    raise StandardError.new("Timeout::Error caught for call to validation step [the #{al_type} Accounting Line entry matches the #{document} document's entry]")
-  end
-end
-
-When /^I lookup all entries for the current month in the General Ledger Balance lookup entry$/ do
-  # This assumes you're already on the GLBL entry page somehow
-  on(GeneralLedgerBalanceLookupPage).single_entry_monthly_item(fiscal_period_conversion(right_now[:MON]))
-end
-
-Then /^the General Ledger Balance lookup displays the document ID for the (.*) document$/ do |document|
-  on(GeneralLedgerBalanceLookupPage) do |page|
-    page.item_row(document_object_for(document).document_id).should
-  end
-end
-
 And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line of the (.*) document in the General Ledger Balance$/ do |al_type, document|
   doc_object = document_object_for(document)
   alt = AccountingLineObject::get_type_conversion(al_type)

@@ -14,21 +14,6 @@ And /^I create an Object Code Global document with a blank CG Reporting Code$/ d
   on(ObjectCodeGlobalPage).cg_reporting_code.fit ''
 end
 
-
-And /^I create an Object Code Global document with a valid Reports to Object Code$/ do
-  step 'I create an Object Code Global document with default parameter data'
-  #ensure attribute Reports to Object Code is a valid value by getting one from the lookup
-  on ObjectCodeGlobalPage do |page|
-    page.reports_to_object_code_search
-    # Chart CU must be used when looking up the reports to object code to prevent the error
-    # "The Reports to Object Code (OBJECT_CODE_JUST_LOOKED_UP) does not exist for Chart (CU) and Fiscal Year (CURRENT_FISCAL_YEAR)."
-    step "I lookup and return a random Object Code for chart #{get_aft_parameter_value(ParameterConstants::DEFAULT_CONSOLIDATED_FINANCIAL_REPORT_CHART_CODE)}"
-    #make sure data object also has page value just selected
-    @object_code_global.reports_to_object_code = page.reports_to_object_code_new
-  end
-end
-
-
 And /^I start an Object Code Global document using an existing Object Code$/ do
   step 'I create an Object Code Global document with default parameter data'
   #Now ensure we are editing an existing object code
@@ -74,12 +59,4 @@ And /^on the Object Code Global document, I update the Reports to Object Code$/ 
     #make sure data object also has page value just selected
     @object_code_global.reports_to_object_code = page.reports_to_object_code_new
   end
-end
-
-When /^I lookup the Object Code just entered with Object Code Global document$/ do
-  step "I lookup the Object Code #{@object_code_global.object_code} for chart #{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)} just entered"
-end
-
-Then /^the Reports to Object Code just entered on the Object Code Global document should be displayed$/ do
-  on(ObjectCodePage).reports_to_object_code.value.should == @object_code_global.reports_to_object_code
 end
