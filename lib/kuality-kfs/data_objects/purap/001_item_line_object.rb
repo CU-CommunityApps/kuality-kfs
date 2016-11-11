@@ -7,8 +7,8 @@ class ItemLineObject < DataFactory
                   :type, :quantity, :uom,
                   :catalog_number, :commodity_code, :description,
                   :unit_cost, :po_unit_ext_price, :extended_cost, :restricted,
-                  :assigned_to_trade_in,
-                  :e_shop_flags # TODO: e-SHOP Flags still needs to be implemented
+                  :assigned_to_trade_in
+
   alias_method :restricted?, :restricted
   alias_method :assigned_to_trade_in?, :assigned_to_trade_in
 
@@ -54,7 +54,6 @@ class ItemLineObject < DataFactory
       tab.unit_cost.fit            @unit_cost
       tab.restricted.fit           @restricted
       tab.assigned_to_trade_in.fit @assigned_to_trade_in
-      #page.extended_cost.fit        @extended_cost # This is read-only for REQ and calculated for PREQ
       if ItemsTab::on_process_items?(tab)
         tab.update_extended_cost(@line_number).fit @extended_cost
       else
@@ -174,24 +173,9 @@ class ItemLineObjectCollection < LineObjectCollection
               commodity_code:       (b.update_commodity_code(i).value.strip                       if b.update_commodity_code(i).exists?),
               description:          (b.update_description(i).value.strip                          if b.update_description(i).exists?),
               unit_cost:            (b.update_unit_cost(i).value.strip                            if b.update_unit_cost(i).exists?),
-              # po_unit_ext_price:    b.result_po_unit_ext_price(i), # This is read-only, as far as we know...
-              # extended_cost:        (b.update_extended_cost(i).value.strip                        if b.update_extended_cost(i).exists?),
               restricted:           (yesno2setclear(b.update_restricted(i).value.strip)           if b.update_restricted(i).exists?),
               assigned_to_trade_in: (yesno2setclear(b.update_assigned_to_trade_in(i).value.strip) if b.update_assigned_to_trade_in(i).exists?)
           }
-          # pulled_item = {
-          #   type:                 (b.update_type(i).exists? ? b.update_type(i).selected_options.first.text.strip : b.result_type(i)),
-          #   quantity:             (b.update_quantity(i).present? ? b.update_quantity(i).value.strip : b.result_quantity(i)),
-          #   uom:                  (b.update_uom(i).exists? ? b.update_uom(i).value.strip : b.result_uom(i)),
-          #   catalog_number:       (b.update_catalog_number(i).exists? ? b.update_catalog_number(i).value.strip : b.result_catalog_number(i)),
-          #   commodity_code:       (b.update_commodity_code(i).exists? ? b.update_commodity_code(i).value.strip : b.result_commodity_code(i)),
-          #   description:          (b.update_description(i).exists? ? b.update_description(i).value.strip : b.result_description(i)),
-          #   unit_cost:            (b.update_unit_cost(i).exists? ? b.update_unit_cost(i).value.strip : b.result_unit_cost(i)),
-          #   po_unit_ext_price:    b.result_po_unit_ext_price(i), # This is read-only, as far as we know...
-          #   extended_cost:        (b.update_extended_cost(i).exists? ? b.update_extended_cost(i).value.strip : b.result_extended_cost(i)),
-          #   restricted:           yesno2setclear(b.update_restricted(i).exists? ? b.update_restricted(i).value.strip : b.result_restricted(i)),
-          #   assigned_to_trade_in: yesno2setclear(b.update_assigned_to_trade_in(i).exists? ? b.update_assigned_to_trade_in(i).value.strip : b.result_assigned_to_trade_in(i))
-          # }
         when :readonly, :old
           pulled_item = {
             type:                 b.result_type(i),

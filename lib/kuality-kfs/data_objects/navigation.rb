@@ -14,15 +14,6 @@ module Navigation
     end
   end
 
-  # def doc_search
-  #   visit DocumentSearch do |search|
-  #     search.close_parents
-  #     search.document_id_field.set @document_id
-  #     search.search
-  #     search.open_doc @document_id
-  #   end
-  # end
-
   def on_page? element
     begin
       element.exist?

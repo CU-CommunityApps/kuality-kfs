@@ -3,7 +3,8 @@ module GlobalConfig
   require 'xmlsimple'
 
   def ksb_client
-    @@ksb_client ||= KSBServiceClient.new()
+    rice_url = ENV['RICE_URL'] ? ENV['RICE_URL'] : global_config[:rice_url]
+    @@ksb_client ||= KSBServiceClient.new("#{File.dirname(__FILE__)}/../../features/support/client-sign.properties", "cynergy-dev", rice_url.sub(/(\/)+$/,''))
   end
   def role_service
     @@role_service ||= ksb_client.getRoleService()
@@ -29,8 +30,7 @@ module GlobalConfig
   def workflow_document_service
     @@workflow_document_service ||= ksb_client.getWorkflowDocumentService()
   end
-  # Can be used to get any of the system parameters
-  # get_parameter_values('KFS-PURAP', 'B2B_TOTAL_AMOUNT_FOR_AUTO_PO', 'Requisition'
+
   def get_parameter_values(namespace_code, parameter_name, component_code='All')
     raise ArgumentError, 'namespace_code missing' if namespace_code.to_s == ''
     raise ArgumentError, 'parameter_name missing' if parameter_name.to_s == ''
@@ -59,12 +59,12 @@ module GlobalConfig
       $AFT_PARAMETER_CONSTANTS[parameter_name.to_sym]
     end
   end
-  # The next three methods are used to obtain any of the AFT-specific parameters.
-  # They should be used with a defined parameter constant, not passing in a string.
-  # i.e. get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ASSET_GLOBAL)
-  def get_aft_parameter_values(parameter_name)
-    perform_aft_parameter_retrieval(parameter_name)
-  end
+  # # The next three methods are used to obtain any of the AFT-specific parameters.
+  # # They should be used with a defined parameter constant, not passing in a string.
+  # # i.e. get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT)
+  # def get_aft_parameter_values(parameter_name)
+  #   perform_aft_parameter_retrieval(parameter_name)
+  # end
   # same as above but returns a hash which is easier to work with
   def get_aft_parameter_values_as_hash(parameter_name)
     h = {}
@@ -87,13 +87,6 @@ module GlobalConfig
     perm_detail.value = value.to_s
     perm_details_list.entry.add(perm_detail)
     permission_service.getPermissionAssigneesByTemplate(namespace_code, template_name, perm_details_list, StringMapEntryListType.new).assignee
-  end
-  def get_group_member_principal_ids(group_id)
-    group_service.getMemberPrincipalIds(group_id).getPrincipalId()
-  end
-  # returns a list of group member objects for a group
-  def get_group_members(group_id)
-    group_service.getMembersOfGroup(group_id).getMember()
   end
   def get_first_principal_id_for_role(name_space, role_name)
     role_service.getRoleMemberPrincipalIds(name_space, role_name, StringMapEntryListType.new).getPrincipalId().get(0)
@@ -125,18 +118,9 @@ module GlobalConfig
     @@prinicpal_names ||= Hash.new{|hash, key| hash[key] = Hash.new}
     @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_random_principal_id_for_role(name_space, role_name))
   end
-  def get_random_principal_with_phone_name_for_role(name_space, role_name)
-    @@prinicpal_names ||= Hash.new{|hash, key| hash[key] = Hash.new}
-    @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_random_principal_id_with_phone_number_for_role(name_space, role_name))
-  end
   def get_principal_name_for_role(name_space, role_name)
     principal_names = Array.new
     role_service.getRoleMemberPrincipalIds(name_space, role_name, StringMapEntryListType.new).getPrincipalId().each {|id| principal_names.push(get_principal_name_for_principal_id(id))}
-    principal_names
-  end
-  def get_principal_name_for_group(group_id)
-    principal_names = Array.new
-    get_group_member_principal_ids(group_id).each {|id| principal_names.push(get_principal_name_for_principal_id(id))}
     principal_names
   end
   def get_document_initiator(document_type)
@@ -149,19 +133,6 @@ module GlobalConfig
     else
       get_principal_name_for_role('KFS-SYS', 'Manager').sample
     end
-  end
-  def get_document_blanket_approver(document_type)
-    permission_details = {'documentTypeName' => document_type}
-    assignees = get_permission_assignees_by_template('KR-WKFLW', 'Blanket Approve Document', permission_details).to_a
-    assignee = assignees.delete_if{ |assignee| assignee.principalId == '2'}.sample
-    if assignee.nil?
-      principal_name = get_principal_name_for_role('KFS-SYS', 'Manager').sample
-    else
-      principal_id = assignee.principalId
-      person = identity_service.getEntity(principal_id)
-      principal_name = person.principals.principal.to_a.sample.principalName
-    end
-    principal_name
   end
 
   #Calls the webservice to obtain a hash of multiple business objects having the requested attributes.
@@ -221,18 +192,8 @@ module GlobalConfig
     end
   end
 
-  def perform_university_login(page)
-    #do nothing - override this in the university project
-  end
-
   def get_generic_address_1()
     "#{rand(1..9999)} Evergreen Terrace"
-  end
-  def get_generic_address_2()
-    "Room #{rand(1..999)}"
-  end
-  def get_generic_address_3()
-    'Attn: John Doe Faculty'
   end
   def get_generic_city()
     random_letters(10)
@@ -254,18 +215,6 @@ module GlobalConfig
       postal_codes.get_postal_code.to_a.find_all{ |postal_code| postal_code.state_code == state_to_search}.sample.code
     end
   end
-  def get_workflow_actions_taken(document_number)
-    workflow_document_service.getActionsTaken(document_number)
-  end
-  def get_workflow_action_requests(document_number)
-    workflow_document_service.getAllActionRequests(document_number)
-  end
-  def get_previous_route_node_names(document_number)
-    workflow_document_service.getPreviousRouteNodeNames(document_number)
-  end
-  def get_root_action_requests(document_number)
-    workflow_document_service.getRootActionRequests(document_number)
-  end
   def fetch_random_capital_asset_object_code
     get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&financialObjectSubTypeCode=CM&financialObjectTypeCode=EE&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}")['financialObjectCode'][0]
   end
@@ -276,9 +225,6 @@ module GlobalConfig
 
   def get_random_account_for_pre_encumbrance
     get_kuali_business_object('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountName=*EXPENSE*&fundGroup=GN&closed=N&accountExpirationDate=NULL")
-  end
-  def get_random_account_number_for_pre_encumbrance
-    get_random_account_for_pre_encumbrance['accountNumber'][0]
   end
 
   def get_random_account
@@ -304,42 +250,6 @@ module GlobalConfig
   # Only the four character object code value is returned from the call to get all of a random pre-encumbrance object code object's attributes
   def get_random_object_code_for_pre_encumbrance
     get_random_object_code_object_for_pre_encumbrance['financialObjectCode'][0]
-  end
-
-  def get_principal_names_for_role(name_space, role_name)
-    role_service.getRoleMemberPrincipalIds(name_space, role_name, StringMapEntryListType.new).getPrincipalNames().to_a
-  end
-  def fetch_random_origination_code
-    get_kuali_business_object('KFS-SYS','OriginationCode','active=true')['financialSystemOriginationCode'].sample
-  end
-  def fetch_random_department_organization_code
-    get_kuali_business_object('KFS-SYS','Organization','organizationTypeCode=D&organizationCode=01**&active=true')['organizationCode'].sample
-  end
-
-  def get_random_principal_without_favorite_account_for_role(name_space, role_name)
-    @@prinicpal_names ||= Hash.new{|hash, key| hash[key] = Hash.new}
-
-    if !@@prinicpal_names[name_space][role_name].nil?
-      @@prinicpal_names[name_space][role_name]
-    else
-      @@prinicpal_names[name_space][role_name] = get_principal_name_for_principal_id(get_random_principal_id_without_favorite_Account_for_role(name_space, role_name))
-    end
-  end
-  def get_random_principal_id_without_favorite_Account_for_role(name_space, role_name)
-    pid = nil
-    user_profile_exists = true
-    i = 0
-    while user_profile_exists && i < 20
-      pid = get_random_principal_id_for_role(name_space, role_name)
-        begin
-          user_profile = get_kuali_business_object('KFS-SYS','UserProcurementProfile',"principalId=#{pid}")
-        rescue
-          # no user profile
-          user_profile_exists = false
-        end
-      i += 1
-    end
-    pid.nil? ? get_random_principal_id_for_role(name_space, role_name) : pid
   end
 
   def find_cg_accounts_in_cg_responsibility_range(lower_limit, upper_limit)
@@ -427,5 +337,21 @@ module GlobalConfig
   def get_restricted_vendor_number
     get_kuali_business_object('KFS-VND','VendorDetail',"activeIndicator=Y&vendorRestrictedIndicator=Y&vendorParentIndicator=Y&vendorDunsNumber=NULL")['vendorNumber'].sample
   end
+
+
+
+    def global_config
+      @@global_config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../features/support/config.yml")[:basic]
+    end
+
+    def perform_university_login(page)
+      @@global_config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../features/support/config.yml")[:basic]
+      cuwaform = page.form('login')
+      page = page.form_with(:name => 'login') do |form|
+        form.netid = @@global_config[:cuweblogin_user]
+        form.password = @@global_config[:cuweblogin_password]
+      end.submit
+      page.form('bigpost').submit
+    end
 
 end

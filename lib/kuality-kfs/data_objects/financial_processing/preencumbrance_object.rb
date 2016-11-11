@@ -5,7 +5,6 @@ class PreEncumbranceObject < KFSDataObject
 
   DOC_INFO = { label: 'Pre-Encumbrance', type_code: 'PE', transactional?: true, action_wait_time: 60 }
 
-  # These aliases are for convenience
   alias :add_disencumbrance_line :add_target_line
   alias :add_encumbrance_line :add_source_line
   alias :import_disencumbrance_lines :import_target_lines
@@ -22,7 +21,7 @@ class PreEncumbranceObject < KFSDataObject
     on PreEncumbrancePage do |page|
       page.expand_all
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, :description, :organization_document_number, :explanation
 
       #FYI: Pre Encumbrance document needs to be saved before it can be submitted.

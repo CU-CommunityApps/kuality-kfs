@@ -34,23 +34,10 @@ class RequisitionObject < KFSDataObject
       page.description.focus
       page.alert.ok if page.alert.exists?
       fill_out page, *((self.class.superclass.attributes -
-                        self.class.superclass.read_only_attributes -
-                        self.class.notes_and_attachments_tab_mixin_attributes) +
+                        self.class.superclass.read_only_attributes) +
                        self.class.attributes -
                        self.class.read_only_attributes -
                        self.class.item_lines_mixin_attributes)
-
-      # add_random_building_address if @delivery_building == '::random::'
-      # # TODO: Define a way to pick a non-random Delivery Building for RequisitionObject
-      #
-      # process_initial_item_lines # Necessary here because we want to calculate after adding Items/Item Accounting Lines
-      #
-      # page.calculate
-      #
-      # @delivery_phone_number = @requestor_phone if @delivery_phone_number.nil?
-      # fill_out page, :description, :payment_request_positive_approval_required,
-      #                :delivery_instructions, :delivery_phone_number,
-      #                :vendor_notes, :requestor_phone
     end
   end
 
@@ -82,47 +69,6 @@ class RequisitionObject < KFSDataObject
   def calculate
     on(RequisitionPage).calculate
   end
-
-  # def add_vendor_to_req(vendor_num)
-  #   on(RequisitionPage).suggested_vendor_search
-  #   on VendorLookupPage do |page|
-  #     page.vendor_number.wait_until_present
-  #     page.vendor_number.fit vendor_num
-  #     page.search
-  #     page.return_value vendor_num
-  #   end
-  # end
-
-  # def add_random_building_address
-  #   building_code = ''
-  #   i = 0
-  #   # make sure building has zip code and room
-  #   while building_code.empty? && i < 10
-  #     building_info = get_kuali_business_object('KFS-SYS','Building','active=true&campusCode='+ get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE))
-  #     building_code = building_info['buildingCode'][0]
-  #     if building_info['buildingAddressZipCode'][0] != 'null'
-  #       begin
-  #         room_info = get_kuali_business_object('KFS-SYS','Room',"buildingCode=#{building_code}")
-  #       rescue
-  #         # no room found
-  #         building_code = ''
-  #       end
-  #     else
-  #       building_code = ''
-  #     end
-  #     i += 1
-  #   end
-  #
-  #   on(RequisitionPage).building_search
-  #   on BuildingLookupPage do |page|
-  #     page.building_code.fit building_code
-  #     page.search
-  #     page.return_random
-  #   end
-  #   on(RequisitionPage).room_search
-  #   on(RoomLookupPage).search_and_return_random
-  #   update_options pull_delivery_tab(:new)
-  # end
 
   def absorb!(t=:new)
     super

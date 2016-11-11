@@ -12,7 +12,6 @@ class SalaryExpenseTransferObject < KFSDataObject
                 :actuals_balance_type, :labor_balance_type, :debit_code, :credit_code, :period_unassigned
 
   def defaults
-    # We'll merge the default_items so that our class defaults override it
     super.merge({   employee_id:          get_aft_parameter_value(ParameterConstants::DEFAULT_ST_EMPL_ID),
                     actuals_balance_type: get_aft_parameter_value(ParameterConstants::DEFAULT_ST_ACTUALS_BALANCE_TYPE),
                     labor_balance_type:   get_aft_parameter_value(ParameterConstants::DEFAULT_ST_LABOR_BALANCE_TYPE),
@@ -59,7 +58,8 @@ class SalaryExpenseTransferObject < KFSDataObject
       sub_account_code = page.st_sub_account_code type, row
 
       # Object code may or may not be editable on the page.
-      # Different page objects are used depending on the page data which affects editability so try both if the first one fails.
+      # Different page objects are used depending on the page data
+      # which affects editability so try both if the first one fails.
       begin
         object_code = page.st_object_code type, row    #editable
       rescue

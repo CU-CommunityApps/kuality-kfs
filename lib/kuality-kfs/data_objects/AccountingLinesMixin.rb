@@ -3,8 +3,6 @@ module AccountingLinesMixin
   attr_accessor :accounting_lines, :initial_lines, :immediate_import
 
   def default_accounting_lines(opts={})
-    # This just makes it so we don't have to be so repetitive. It can certainly be
-    # overridden in a subclass if you don't want to chuck things in via opts.
     {
         accounting_lines: {
             source: collection('AccountingLineObject'),
@@ -25,8 +23,8 @@ module AccountingLinesMixin
     @initial_lines.each{ |il| add_line((il[:type].nil? ? :source : il[:type]), il) unless il.has_key?(:file_name); }
     @initial_lines.delete_if{ |il| !il.has_key?(:file_name) } # Remove all non-import initial lines
 
-    # At the end of the method, we should either have either no remaining initial
-    # lines, or (if @immediate_import is false) only file names of files to be imported at a later time
+    # At the end of the method, we should either have no remaining initial lines OR
+    # (if @immediate_import is false) only file names of files to be imported at a later time
   end
 
   def add_line(type, al)
@@ -68,54 +66,4 @@ module AccountingLinesMixin
     import_lines(:target, file_name)
   end
 
-end
-
-module BudgetAdjustmentLinesMixin
-  include AccountingLinesMixin
-  extend AccountingLinesMixin
-
-  def default_accounting_lines(opts={})
-    {
-        accounting_lines: {
-            source: collection('BudgetAdjustmentLineObject'),
-            target: collection('BudgetAdjustmentLineObject')
-        },
-        initial_lines:    [],
-        immediate_import: true
-    }.merge(opts)
-  end
-
-end
-
-module VoucherLinesMixin
-  include AccountingLinesMixin
-  extend AccountingLinesMixin
-
-  def default_accounting_lines(opts={})
-    {
-        accounting_lines: {
-            source: collection('VoucherLineObject'),
-            target: collection('VoucherLineObject')
-        },
-        initial_lines:    [],
-        immediate_import: true
-    }.merge(opts)
-  end
-
-end
-
-module AssetManualPaymentAccountingLinesMixin
-  include AccountingLinesMixin
-  extend AccountingLinesMixin
-
-  def default_accounting_lines(opts={})
-    {
-        accounting_lines: {
-            source: collection('AssetManualPaymentAccountingLineObject')
-            #there are no target lines on this edoc
-        },
-        initial_lines:    [],
-        immediate_import: true
-    }.merge(opts)
-  end
 end

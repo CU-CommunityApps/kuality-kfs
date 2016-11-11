@@ -72,24 +72,3 @@ When /^I (#{PreEncumbrancePage::available_buttons}) a Pre-Encumbrance document t
   step 'I add the encumbrance to the stack'
 end
 
-And /^I add a (source|target) Accounting Line for chart code (.*) and account number (.*) and object code (.*) and amount (.*) to the (.*) document$/ do |line_type, chart_code, account_number, object_code, amount, document|
-  line_data_as_table = nil
-  if line_type.eql?('source')
-    line_data_as_table = table(%Q{
-              | Chart Code  | #{chart_code}      |
-              | Number      | #{account_number}  |
-              | Object Code | #{object_code}     |
-              | Amount      | #{amount}          |
-           })
-  elsif line_type.eql?('target')
-    line_data_as_table = table(%Q{
-              | Chart Code       | #{chart_code}              |
-              | Number           | #{account_number}          |
-              | Object Code      | #{object_code}             |
-              | Amount           | #{amount}                  |
-              | Reference Number | #{@remembered_document_id} |
-           })
-  end
-  step "I add a #{line_type.capitalize} Accounting Line to the #{document} document with the following:", line_data_as_table
-end
-

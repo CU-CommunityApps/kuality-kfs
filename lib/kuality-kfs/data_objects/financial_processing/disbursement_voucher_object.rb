@@ -18,8 +18,6 @@ class DisbursementVoucherObject < KFSDataObject
 
     defaults = {
         description:                       random_alphanums(40, 'AFT'),
-        #foreign_draft_in_foreign_currency: :set,
-        #currency_type:                     'Canadian $'
     }.merge!(default_accounting_lines)
      .merge!(default_payment_information_lines)
 
@@ -31,7 +29,7 @@ class DisbursementVoucherObject < KFSDataObject
     on DisbursementVoucherPage do |page|
       page.expand_all
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
 
       @phone_number = page.phone_number.value.strip if @phone_number.nil? # Grab the phone number on the page if no update is supplied
       @phone_number = random_phone_number if @phone_number.nil? || @phone_number.empty? || @phone_number == 'null' # Make up a phone number if there still isn't one.

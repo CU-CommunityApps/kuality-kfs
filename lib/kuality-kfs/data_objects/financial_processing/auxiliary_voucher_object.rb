@@ -33,7 +33,7 @@ class AuxiliaryVoucherObject < KFSDataObject
     on AuxiliaryVoucherPage do |page|
       page.expand_all
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, :description, :organization_document_number, :explanation
     end
   end

@@ -51,33 +51,28 @@ class AccountObject < KFSDataObject
     on(AccountLookupPage).create
     on AccountPage do |page|
       page.expand_all
-      page.type_code.fit @type_code # Gotta do this first or we get a modal
+      page.type_code.fit @type_code   # Must set this value first or we get a modal dialog that fails the test
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, *((self.class.superclass.attributes -
-                        self.class.superclass.read_only_attributes -
-                        self.class.notes_and_attachments_tab_mixin_attributes) +
+                        self.class.superclass.read_only_attributes) +
                        self.class.attributes -
                        self.class.read_only_attributes -
-                       self.class.icra_mixin_attributes) # We don't have any special attribute sections, so we should be able to throw them all in.
+                       self.class.icra_mixin_attributes)
     end
   end
 
   def fill_out_extended_attributes(attribute_group=nil)
-    #case attribute_group # Don't actually use this yet.
-    #  else
-    # These should map to non-required, or otherwise un-grouped attributes
     on AccountPage do |p|
       fill_out p, :subfund_program_code, :labor_benefit_rate_category_code,
                   :major_reporting_category_code, :appropriation_account_number
     end
-    #end
   end
 
   def edit(opts={})
     # Verify what we are being asked to edit is one of our attributes
     opt_keys_to_update = opts.keys
-    super_class_attribute_keys = self.class.superclass.attributes - self.class.superclass.read_only_attributes - self.class.notes_and_attachments_tab_mixin_attributes
+    super_class_attribute_keys = self.class.superclass.attributes - self.class.superclass.read_only_attributes
     class_attribute_keys = self.class.attributes - self.class.read_only_attributes - self.class.icra_mixin_attributes
     missing_attribute_keys = opt_keys_to_update - super_class_attribute_keys - class_attribute_keys
     raise ArgumentError, "AccountObject was requested to edit attribute(s) #{missing_attribute_keys} which are undefined." if missing_attribute_keys.length != 0
@@ -167,8 +162,7 @@ class AccountObject < KFSDataObject
     def extended_webservice_item_to_hash(data_item)
       Hash.new
     end
-
-  end #class<<self
+  end
 
   include IndirectCostRecoveryLinesMixin
 

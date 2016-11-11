@@ -36,41 +36,6 @@ And /^I add an Accounting Line to the Disbursement Voucher with the following fi
                                         })
 end
 
-And /^I copy a Disbursement Voucher document with Tax Address to persist$/ do
-  # save original address for comparison.  The address fields are readonly
-  old_address = []
-  on (PaymentInformationTab) { |tab|
-    old_address = [tab.address_1_value, tab.address_2_value.strip, tab.city_value, tab.state_value, tab.country_value, tab.postal_code_value]
-  }
-
-  get('disbursement_voucher').send('copy_current_document')
-
-  # validate the Tax Address is copied over
-  copied_address = []
-  on (PaymentInformationTab) { |tab|
-    copied_address = [tab.address_1.value, tab.address_2.value.strip, tab.city.value, tab.state.value, tab.country.selected_options.first.text, tab.postal_code.value]
-  }
-
-  old_address.should == copied_address
-end
-
-And /^I add a random employee payee to the Disbursement Voucher$/ do
-  on (PaymentInformationTab) do |tab|
-    tab.payee_search
-    on PayeeLookup do |plookup|
-      plookup.payment_reason_code.fit 'B - Reimbursement for Out-of-Pocket Expenses'
-      plookup.netid.fit               'aa*'
-      plookup.search
-      plookup.return_random
-    end
-    @disbursement_voucher.fill_in_payment_info(tab)
-  end
-end
-
-And /^I am logged in as Payee of the Disbursement Voucher$/ do
-  step "I am logged in as \"#{@dv_payee}\""
-end
-
 And /^I search for the payee with Terminated Employee and Reason Code (\w+) for Disbursement Voucher document with no result found$/ do |reason_code|
   net_id = "msw13" # TODO : should get this from web services. Inactive employee with no other affiliation
   case reason_code

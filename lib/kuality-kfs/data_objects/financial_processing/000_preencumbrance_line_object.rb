@@ -19,10 +19,10 @@ class PreEncumbranceLineObject < AccountingLineObject
   end
 end
 
+
 class PreEncumbranceLineObjectCollection < AccountingLineObjectCollection
 
   contains PreEncumbranceLineObject
-
 
   def pull_extended_existing_line_values(type, i)
     {

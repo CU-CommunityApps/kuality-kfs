@@ -9,12 +9,6 @@ Then /^The Indirect Cost Rate ID field should not be null$/ do
   on(SubAccountPage).icr_identifier.value.should == ''
 end
 
-And /^I am logged in as the FO of the Account$/ do
-  sleep(1)
-  step "I am logged in as \"#{@account.accountFiscalOfficerUser.principalName}\""
-  @user_id = @account.accountFiscalOfficerUser.principalNam
-end
-
 And /^I am logged in as the FO of the Sub-Account$/ do
   sleep(1)
   account_info = get_kuali_business_object('KFS-COA','Account',"accountNumber=#{@sub_account.account_number}")
@@ -33,7 +27,6 @@ And /^The Sub-Account document should be in my action list$/ do
 end
 
 And /^I lookup the Sub-Account I want to edit$/ do
-  #get the sub-account we want to edit
   visit(MainPage).sub_account
   on SubAccountLookupPage do |page|
     page.chart_code.fit           @sub_account.chart_code
@@ -45,7 +38,6 @@ And /^I lookup the Sub-Account I want to edit$/ do
     page.edit_item(@sub_account.sub_account_number.upcase)
   end
 end
-
 
 And /^I create a Sub-Account using a CG account with a CG Account Responsibility ID in range (.*) to (.*)$/ do |lower_limit, upper_limit|
   #method call should return an array
@@ -60,9 +52,7 @@ And /^I create a Sub-Account using a CG account with a CG Account Responsibility
   @sub_account = create SubAccountObject, options
 end
 
-
 And /^I edit the Sub-Account changing its type code to Cost Share$/ do
-  #add values for the specified keys being edited
   options = {
       description:                          'Edit Sub-Acct from expense to cost share',
       sub_account_type_code:                get_aft_parameter_value(ParameterConstants::DEFAULT_COST_SHARE_SUB_ACCOUNT_TYPE_CODE),
@@ -85,7 +75,6 @@ And /^I create a Sub-Account with a Cost Share Sub-Account Type Code$/ do
   }
   @sub_account = create SubAccountObject, options
 end
-
 
 And /^I edit the first active Indirect Cost Recovery Account on the Sub-Account to (a|an) (closed|open)(?: (.*))? Contracts & Grants Account$/ do |a_an_ind, open_closed_ind, expired_non_expired_ind|
   # do not continue, fail the test if there there is no icr_account to edit

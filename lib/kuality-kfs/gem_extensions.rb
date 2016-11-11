@@ -24,19 +24,13 @@ module Watir
     end
   end
 
-  # Because of the unique way we
-  # set up radio buttons in Coeus,
-  # we can use this method in our
-  # radio button definitions.
   class Radio
     def fit answer
       set unless answer==nil
     end
   end
 
-  # It would be nice if fit tried both the value and
-  # the text before giving up.
-  class Select
+   class Select
     def fit(str_or_rx)
       if include?(str_or_rx)
         select_by :text, str_or_rx unless str_or_rx==nil
@@ -220,4 +214,3 @@ class Cucumber::Ast::Table
     Hash[rows_hash.map{ |k, v| [StringFactory.damballa(k), (v == 'nil' ? nil : v)] }]
   end
 end
-

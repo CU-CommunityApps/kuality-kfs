@@ -1,13 +1,3 @@
-Then /^an error should say (.*)$/ do |error|
-  errors = {'at least one principal investigator is required' => 'There is no Principal Investigator selected. Please enter a Principal Investigator.',
-            'to select a valid unit' => 'Please select a valid Unit.',
-            'a key person role is required' => 'Key Person Role is a required field.',
-            'the credit split is not a valid percentage' => 'Credit Split is not a valid percentage.',
-            'only one PI is allowed' => 'Only one proposal role of Principal Investigator is allowed.'
-  }
-  $current_page.errors.should include errors[error]
-end
-
 Then /^the document should have no errors$/ do
   $current_page.errors.should == []
 end
@@ -19,10 +9,6 @@ end
 
 Then /^I should get an error saying "([^"]*)"$/ do |error_msg|
   $current_page.errors.should include error_msg
-end
-
-Then /^I should get these error messages:$/ do |error_msgs|
-  $current_page.errors.should include *(error_msgs.raw.flatten)
 end
 
 Then /^I should get an error that starts with "([^"]*)"$/ do |error_msg|
@@ -42,11 +28,6 @@ end
 
 And /^I should not get an Authorization Exception Report error$/ do
   $current_page.frm.div(id: 'headerarea').h1.text.rstrip.should_not == 'Authorization Exception Report'
-end
-
-Then /^an error in the (.*) tab should say "(.*)"$/ do |tab, error|
-  hash = {'Account Maintenance' => :account_maintenance_errors}
-  $current_page.send(hash[tab]).should include error
 end
 
 Then /^the (.*) should show an error stating the Indirect Cost Recovery Account is closed$/ do |document|

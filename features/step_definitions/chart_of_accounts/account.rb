@@ -23,19 +23,6 @@ Then /^the Account Maintenance Document saves with no errors$/  do
   step 'The document should save successfully'
 end
 
-Then /^the Account Maintenance Document has no errors$/  do
-  on(AccountPage).document_status.should == 'ENROUTE'
-end
-
-And /^I edit an Account with a Sub-Fund Group Code of (.*)/ do |sub_fund_group_code|
-  visit(MainPage).account
-  on AccountLookupPage do |page|
-    page.sub_fund_group_code.fit sub_fund_group_code
-    page.search
-    page.edit_random
-  end
-end
-
 And /^I edit an Account$/ do
   visit(MainPage).account
   on AccountLookupPage do |page|
@@ -49,52 +36,6 @@ And /^I edit an Account$/ do
     @account.absorb! :old
     @account.absorb! :new
   end
-end
-
-And /^I enter Sub Fund Group Code of (.*)/ do |sub_fund_group_code|
-  on(AccountPage).sub_fund_group_code.set sub_fund_group_code
-end
-
-And /^I close the Account$/ do
-   # First, let's get a random continuation account
-  random_continuation_account_number = @account.number
-  begin
-    random_continuation_account_number = get_random_account_number
-  end while random_continuation_account_number == @account.number
-
-  # Now, let's try to close that account
-  visit(MainPage).account
-  on AccountLookupPage do |page|
-    page.chart_code.fit     @account.chart_code
-    page.account_number.fit @account.number
-    page.closed_no.set
-    page.search
-    page.edit_random  # should have only found the single account we requested
-  end
-  @account.edit description:                 "Closing Account #{@account.number}",
-                continuation_account_number: random_continuation_account_number,
-                continuation_chart_code:     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
-                account_expiration_date:     on(AccountPage).effective_date.value,
-                closed:                      :set
-end
-
-And /^I edit the Account$/ do
-  visit(MainPage).account
-  on AccountLookupPage do |page|
-    page.chart_code.fit @account.chart_code
-    page.account_number.fit @account.number
-    page.search
-    page.edit_random
-  end
-  on AccountPage do |page|
-    page.description.fit 'AFT testing edit'
-    @account.description = 'AFT testing edit'
-    @account.document_id = page.document_id
-  end
-end
-
-And /^I enter a Continuation Chart Of Accounts Code that equals the Chart of Account Code$/ do
-  on(AccountPage) { |page| page.continuation_chart_code.fit page.chart_code.text }
 end
 
 And /^I clone a random Account with name, chart code, and description changes$/ do
@@ -135,7 +76,6 @@ And /^I find a random Pre-Encumbrance Account$/ do
   step "I add the account to the stack"
 end
 
-
 When /^I enter a Sub-Fund Program Code of (.*)$/ do |sub_fund_program_code|
   on AccountPage do |page|
     page.subfund_program_code.set sub_fund_program_code
@@ -145,7 +85,6 @@ When /^I enter a Sub-Fund Program Code of (.*)$/ do |sub_fund_program_code|
   step 'I add the account to the stack'
 end
 
-
 When /^I enter (.*) as an invalid Major Reporting Category Code$/  do |major_reporting_category_code|
   on AccountPage do |page|
     page.major_reporting_category_code.fit major_reporting_category_code
@@ -154,7 +93,6 @@ When /^I enter (.*) as an invalid Major Reporting Category Code$/  do |major_rep
   end
   step 'I add the account to the stack'
 end
-
 
 When /^I enter (.*) as an invalid Appropriation Account Number$/  do |appropriation_account_number|
   on AccountPage do |page|
@@ -216,7 +154,6 @@ When /^I enter an invalid (.*)$/  do |field_name|
   end
 end
 
-
 Then /^I should get (invalid|an invalid) (.*) errors?$/ do |invalid_ind, error_field|
   on AccountPage do |page|
     case error_field
@@ -229,7 +166,6 @@ Then /^I should get (invalid|an invalid) (.*) errors?$/ do |invalid_ind, error_f
     end
   end
 end
-
 
 And /^I enter (Sub Fund Program Code|Sub Fund Program Code and Appropriation Account Number) that (is|are) associated with a random Sub Fund Group Code$/ do |codes, is_are|
   account = get_kuali_business_object('KFS-COA','Account','subFundGroupCode=*&extension.programCode=*&closed=N&extension.appropriationAccountNumber=*&active=Y&accountExpirationDate=NULL')
@@ -245,23 +181,11 @@ And /^I enter (Sub Fund Program Code|Sub Fund Program Code and Appropriation Acc
   end
 end
 
-
 When /^I input a lowercase Major Reporting Category Code value$/  do
   major_reporting_category_code = get_kuali_business_object('KFS-COA','MajorReportingCategory','active=Y')['majorReportingCategoryCode'].sample
   on(AccountPage).major_reporting_category_code.fit major_reporting_category_code.downcase
   @account.major_reporting_category_code = major_reporting_category_code.downcase
 end
-
-And /^I create an Account with an Appropriation Account Number of (.*) and Sub-Fund Program Code of (.*)/ do |appropriation_accountNumber, subfund_program_code|
-  @account = create AccountObject
-  on AccountPage do |page|
-    page.appropriation_account_number.set appropriation_accountNumber
-    page.subfund_program_code.set subfund_program_code
-    @account.document_id = page.document_id
-  end
-  step 'I add the account to the stack'
-end
-
 
 And /^I enter an Appropriation Account Number that is not associated with the Sub Fund Group Code$/  do
   # the account# is not used as its own appropriation account#
@@ -269,15 +193,6 @@ And /^I enter an Appropriation Account Number that is not associated with the Su
     page.appropriation_account_number.fit page.account_number_old
     @account.appropriation_account_number = page.appropriation_account_number_new
   end
-end
-
-
-When /^I enter (.*) as an invalid Labor Benefit Rate Category Code$/  do |labor_benefit_rate_category_code|
-  on AccountPage do |page|
-    page.labor_benefit_rate_category_code.fit labor_benefit_rate_category_code
-    @account.labor_benefit_rate_category_code = labor_benefit_rate_category_code
-  end
-  step 'I save the Account document'
 end
 
 And /^I clone Account (.*) with the following changes:$/ do |account_number, table|
@@ -333,23 +248,6 @@ end
 
 And /^I add the account to the stack$/ do
   @accounts = @accounts.nil? ? [@account] : @accounts + [@account]
-end
-
-And /^I copy the old Account's Indirect Cost Recovery tab to the new Account$/ do
-  update = @accounts[-2].icr_accounts.to_hash
-  @account.edit update
-  @accounts[-1] = @account # Update that stack!
-end
-
-And /^I remember the Account as the (From|To) Account$/ do |target|
-  case target
-    when 'From'
-      @remembered_from_account = @account
-    when 'To'
-      @remembered_to_account = @account
-    else
-      pending "I don't know how to remember a \" #{target} \" Account."
-  end
 end
 
 And /^I create an Account using a CG account with a CG Account Responsibility ID in range (.*) to (.*)$/ do |lower_limit, upper_limit|
@@ -409,7 +307,6 @@ And /^I submit the Account document addressing Continutaion Account errors$/ do
   end
 end
 
-
 And /^I edit the first active Indirect Cost Recovery Account on the Account to (a|an) (closed|open)(?: (.*))? Contracts & Grants Account$/ do |a_an_ind, open_closed_ind, expired_non_expired_ind|
   # do not continue, fail the test if there there is no icr_account to edit
   fail ArgumentError, 'No Indirect Cost Recovery Account exists on the Account. Cannot continue with scenario because data cannot be modified as requested. ' if @account.icr_accounts.length == 0
@@ -437,18 +334,6 @@ And /^I edit the first active Indirect Cost Recovery Account on the Account to (
   }
 
   @account.icr_accounts[index_to_use].edit options
-end
-
-
-And /^I add (a|an) (closed|open)(?: (.*))?  Contacts & Grants Account as the 100 percent Indirect Cost Recovery Account to the Account$/ do |a_an_ind, open_closed_ind, expired_non_expired_ind|
-  random_account_number = find_random_cg_account_number_having(open_closed_ind, expired_non_expired_ind)
-
-  fail ArgumentError, "Cannot add ICR Account to the Account, WebService call did not return requested '#{open_closed_ind} #{expired_non_expired_ind} Contacts & Grants Acccount' required for this test." if random_account_number.nil? || random_account_number.empty?
-
-  @account.icr_accounts.add chart_of_accounts_code: get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-                            account_number:         random_account_number,
-                            account_line_percent:   '100',
-                            active_indicator:       :set
 end
 
 When /^I add a closed Contacts & Grants Account as the 100 percent Indirect Cost Recovery Account to the Account$/ do
