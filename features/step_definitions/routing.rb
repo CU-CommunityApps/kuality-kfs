@@ -1,72 +1,14 @@
 include Utilities
 
-And /^the next pending action for the (.*) document is an? (.*) from a (.*)$/ do |document, action, user_type|
-  on page_class_for(document) do |page|
-    page.show_route_log_button.wait_until_present
-    page.show_route_log unless page.route_log_shown?
-
-    page.pnd_act_req_table_action.visible?.should
-
-    if page.pnd_act_req_table_requested_of.text.match(/Multiple/m)
-      page.show_pending_action_requests_in_action_list if page.pending_action_requests_in_action_list_hidden?
-
-      page.pnd_act_req_table_multi.visible?.should
-      page.pnd_act_req_table_multi_action.text.should match(/#{action}/)
-      page.pnd_act_req_table_multi_annotation.text.should match(/#{user_type}/)
-    else
-      page.pnd_act_req_table_action.text.should match(/#{action}/)
-      page.pnd_act_req_table_annotation.text.should match(/#{user_type}/)
-    end
-  end
-end
-
 When /^I route the (.*) document to final$/ do |document|
   step "I view the #{document} document"
   until 'FINALPROCESSSED'.include? on(page_class_for(document)).document_status
     step "I switch to the user with the next Pending Action in the Route Log for the #{document} document"
     step "I view the #{document} document"
-    step "I attach an Invoice Image to the #{document} document" if document == 'Payment Request' &&
-                                                                    (document_object_for(document).notes_and_attachments_tab.length.zero? ||
-                                                                     document_object_for(document).notes_and_attachments_tab.index{ |na| na.type == 'Invoice Image' }.nil?)
     step "I approve the #{document} document, confirming any questions, if it is not already FINAL"
     step "I view the #{document} document"
   end
 end
-
-Then  /^the (.*) document routes to the (.*) node$/ do |document, node|
-  sleep(120)  #need to wait 2 minutes for cynergy to do its thing before verifying document routed correctly
-  pending_action_request_node = ''
-  step "the #{document} document goes to ENROUTE"
-  on page_class_for(document) do |page|
-    page.show_route_log_button.wait_until_present
-    page.show_route_log unless page.route_log_shown?
-    page.pnd_act_req_table_action.visible?.should
-    page.show_pending_action_requests_in_action_list unless page.pending_action_requests_in_action_list_shown?
-
-    until (page.pen_act_req_table_sub_node == node) || ('FINALPROCESSSED'.include? on(page_class_for(document)).document_status)
-      step "I route the #{document} document to the next node"
-      page.show_route_log_button.wait_until_present
-      page.show_route_log unless page.route_log_shown?
-      page.pnd_act_req_table_action.visible?.should
-      page.show_pending_action_requests_in_action_list unless page.pending_action_requests_in_action_list_shown?
-      pending_action_request_node = page.pen_act_req_table_sub_node
-    end #until
-  end #on page
-  pending_action_request_node.should == node
-end
-
-
-When /^I route the (.*) document to the next node$/ do |document|
-  step "I view the #{document} document"
-  step "I switch to the user with the next Pending Action in the Route Log for the #{document} document"
-  step "I view the #{document} document"
-  step "I attach an Invoice Image to the #{document} document" if document == 'Payment Request' &&
-      (document_object_for(document).notes_and_attachments_tab.length.zero? ||
-          document_object_for(document).notes_and_attachments_tab.index{ |na| na.type == 'Invoice Image' }.nil?)
-  step "I approve the #{document} document, confirming any questions, if it is not already FINAL"
-  step "I view the #{document} document"
-end
-
 
 Then /^I switch to the user with the next Pending Action in the Route Log for the (.*) document$/ do |document|
   new_user = ''
@@ -139,12 +81,6 @@ And /^I verify that the following (Pending|Future) Action approvals are requeste
     end
   end
 
-end
-
-And /^I capture the (.*) document id number$/ do |document|
-  on page_class_for(document) do |page|
-    @requisition_id = page.requisition_id if @requisition_id.nil? && page.header_title.include?('Requisition #:')
-  end
 end
 
 Then /^(.*) should be in the (.*) document Actions Taken$/ do |action, document|

@@ -6,8 +6,5 @@ Before do
       page.password.set @config[:cuweblogin_password]
       page.login
     end
-    # Otherwise, we're already logged in (or not actually using CUWebLogin)
-    # and we can safely continue on our way. Something else should break if
-    # anything is amiss.
   end
 end

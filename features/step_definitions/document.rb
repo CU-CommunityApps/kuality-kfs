@@ -12,7 +12,6 @@ And /^I open the document with ID (\d+)$/ do |document_id|
 end
 
 Then /^the (.*) document goes to (PROCESSED|ENROUTE|FINAL|INITIATED|SAVED)$/ do |document, doc_status|
-  # sleep 20
   document_object_for(document).view
   on page_class_for(document) do |page|
     page.document_status.should == doc_status
@@ -20,7 +19,6 @@ Then /^the (.*) document goes to (PROCESSED|ENROUTE|FINAL|INITIATED|SAVED)$/ do 
 end
 
 Then /^the (.*) document goes to one of the following statuses:$/ do |document, required_statuses|
-  # sleep 10
   document_object_for(document).view
   on(page_class_for(document)) { |page| required_statuses.raw.flatten.should include page.document_status }
 end
@@ -31,22 +29,6 @@ end
 
 And /^I remember the (.*) document number$/ do |document|
   @remembered_document_id = on(page_class_for(document)).document_id
-end
-
-Then /^The value for (.*) field is "(.*)"$/ do |field_name, field_value|
-  $current_page.send(StringFactory.damballa(field_name)).should==field_value
-end
-
-And /^I expand all tabs$/ do
-  on(KFSBasePage).expand_all
-end
-
-And /^I recall and cancel the financial document$/ do
-  on(KFSBasePage).recall_current_document
-  on RecallPage do |page|
-    page.reason.set 'Recall and cancel test'
-    page.recall_and_cancel
-  end
 end
 
 When /^I view the (.*) document$/ do |document|
@@ -77,9 +59,8 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
   object_klass = object_class_for(document)
   idle_time = object_klass::DOC_INFO[:action_wait_time]
 
-  # perform requested action
   doc_object = snake_case document
-  button.gsub!(' ', '_')  #change any spaces to underscores
+  button.gsub!(' ', '_')
   get(doc_object).send(button)
 
   # Based on action, idle for required amount of seconds.
@@ -94,10 +75,11 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
         $current_page.wait_for_sendAdHocRequest_button(idle_time)
 
       when  'approve', 'blanket_approve'
-        sleep idle_time   #Cannot wait_for_...these actions do not stay on current page, instead redirect back to Main Menu page
-      #else #implied no additional waiting for the requested action is needed
-    end #case-button
-  end #
+        # These actions do not stay on current page so cannot wait for a widget on the the current page.
+        # Instead redirect back to Main Menu page after waiting
+        sleep idle_time
+    end
+  end
 
   # Now deal with any yes/no confirmation pages generated ensuring final reference when we are done
   # remains on current page we are working with prior to dealing with confirmations.
@@ -115,12 +97,11 @@ And /^I (#{BasePage::available_buttons}) the (.*) document answering (.*) to any
     end
   end
 
-  #Specific edoc generate the yes/no pages and their processing actually occurs after the yes or no button is pressed;
-  #not when the action button is pressed. Need have additional wait time JUST for those edocs and we will do a sleep
+  # Specific edocs generate yes/no pages whose processing actually occurs after the yes or no button is pressed,
+  # not when the action button is pressed. Need additional wait time JUST for those edocs and we will do a sleep
   case object_klass::DOC_INFO[:label]
     when 'Asset Manual Payment'
-      sleep idle_time  #on an edoc that requires additional wait time for processing after the yes/no page response
-    #else, implied not on edoc requiring additional processing
+      sleep idle_time
   end
   $current_page = original_page
 end
@@ -128,12 +109,6 @@ end
 And /^I (#{BasePage::available_buttons}) a[n]? (.*) document$/ do |button, document|
   doc_object = snake_case document
   object_klass = object_class_for(document)
-
-  # # This has to do with not being on page that you want to do the action for and getting to that page
-  # # Should this code be needed, just perform a visit for each app tab and not hitting the link for the doc.
-  # if defined? object_klass::DOC_INFO && object_klass::DOC_INFO.transactional?
-  #   visit(MainPage).send(doc_object)
-  # end
 
   set(doc_object, (create object_klass))
   step "I #{button} the #{document} document answering yes to any questions"
@@ -152,5 +127,4 @@ end
 When /^I (#{BasePage::available_buttons}) the (.*) document and confirm any questions$/ do |button, document|
   step "I #{button} the #{document} document answering yes to any questions"
 end
-
 ############End-of section contains steps with the form of "I ACTION the|a|an DOCUMENT_NAME document..."##############

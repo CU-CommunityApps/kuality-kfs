@@ -80,8 +80,6 @@ After do |scenario|
     ObjectSpace.each_object(KFSDataObject).to_a.empty? ? (puts 'KFSDataObject was not instantiated') : (puts ObjectSpace.each_object(KFSDataObject).to_a)
     puts ' '  #for readability in output
 
-    @browser.screenshot.save 'screenshot.png'
-    embed 'screenshot.png', 'image/png'
   end
 
   $users.current_user.sign_out unless $users.current_user.nil?

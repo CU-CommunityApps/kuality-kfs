@@ -1,11 +1,3 @@
-When /^I start an empty Benefit Expense Transfer document$/ do
-  @benefit_expense_transfer = create BenefitExpenseTransferObject
-end
-
-And /^I change target sub account number to '(.*)'$/ do |sub_account_number|
-  on(BenefitExpenseTransferPage).update_target_sub_account_code.fit sub_account_number
-end
-
 Given /^I select employee (\d+)$/ do|emp|
   on SalaryExpenseTransferPage do |page|
     page.employee_id.fit ''
@@ -132,10 +124,6 @@ Given /^I populate Salary Expense Transfer document for employee$/ do
   step "I select employee #{@employee_id}"
   step "I search and retrieve Ledger Balance entry"
   step "I copy Salary Expense Transfer source account to target account"
-end
-
-And /^I set transfer from account number to '(.*)' on Benefit Expense Transfer document$/ do |account_number|
-  on(BenefitExpenseTransferPage).account_number.fit account_number
 end
 
 Then /^the labor ledger pending entry for employee is empty$/ do

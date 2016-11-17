@@ -18,16 +18,14 @@ class GeneralLedgerEntryLookupPage < Lookups
   action(:debit_credit_view_exclude) { |b| b.frm.radio(id: 'dummyBusinessObject.debitCreditOptionExclude').set }
 
   action(:find_preencumbrance_doc) do |type, pe, b|
-    # We'll assume that fiscal year and fiscal period default to nowish
     b.chart_code.fit pe.accounting_lines[type][0].chart_code
     b.account_number.fit pe.accounting_lines[type][0].account_number
     b.balance_type_code.fit ''
     b.pending_entry_approved_indicator_all
-
     b.search
-
     b.open_item_via_text(pe.accounting_lines[:source][0].line_description, pe.document_id)
   end
+
   action(:find_disencumbrance_doc) { |pe, b| b.find_preencumbrance_doc(:target, pe) }
   action(:find_encumbrance_doc) { |pe, b| b.find_preencumbrance_doc(:source, pe) }
 
@@ -47,8 +45,6 @@ class GeneralLedgerEntryLookupPage < Lookups
   action(:search_fiscal_period) { |b| b.frm.button(title: 'Search Fiscal Period').click }
 
   action(:find_gl_entries_by_account) do |account, b|
-    #want all defaults that are loaded for page left
-    # (i.e. fiscal year=current, balance type code=AC, fiscal period=current, and pending entry approved indicator)=No
     b.chart_code.fit      account.chart_code
     b.account_number.fit  account.number
     b.search

@@ -18,7 +18,10 @@ class ObjectCodeObject < KFSDataObject
                 :budget_aggregation_code,
                 :mandatory_transfer,
                 :federal_funded_code,
-                :next_year_object_code
+                :next_year_object_code,
+                #== Extended Attributes ==#
+                :suny_object_code
+
 
   def defaults
     super.merge({
@@ -39,15 +42,19 @@ class ObjectCodeObject < KFSDataObject
     on(ObjectCodeLookupPage).create_new
     on ObjectCodePage do |page|
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, *((self.class.superclass.attributes -
-          self.class.superclass.read_only_attributes -
-          self.class.notes_and_attachments_tab_mixin_attributes) +
+          self.class.superclass.read_only_attributes) +
           self.class.attributes -
           self.class.read_only_attributes) # We don't have any special attribute sections, so we should be able to throw them all in.
     end
   end
 
+  def fill_out_extended_attributes(attribute_group=nil)
+    on(ObjectCodePage) do |page|
+      fill_out page, :suny_object_code
+    end
+  end
 
   # Class Methods:
   class << self

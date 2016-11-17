@@ -22,7 +22,7 @@ class AccountDelegateModelObject < KFSDataObject
     on AccountDelegateModelPage do |page|
       page.expand_all
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, :description, :chart_of_accounts_code, :organization_code, :account_delegate_model_name, :active_indicator, :document_type_name,
                      :account_delegate_primary_route, :account_delegate_start_date, :approval_from_this_account,
                      :approval_to_this_account, :account_delegate_principal_name, :active
@@ -40,6 +40,6 @@ class AccountDelegateModelObject < KFSDataObject
                                          :active_indicator, :active ]
     end
 
-  end #class<<self
+  end
 
 end

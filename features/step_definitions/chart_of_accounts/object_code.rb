@@ -35,11 +35,9 @@ Then /^The object code should show an error that says "(.*?)"$/ do |error|
   on(ObjectCodePage).errors.should include error
 end
 
-
 And /^I update the Financial Object Code Description/ do
   on(ObjectCodePage).financial_object_code_description.set random_alphanums(60, 'AFT')
 end
-
 
 And /^I find a random Pre-Encumbrance Object Code$/ do
   random_attributes_hash = Hash.new
@@ -48,11 +46,6 @@ And /^I find a random Pre-Encumbrance Object Code$/ do
   step "I add the object code to the stack"
 end
 
-
 And /^I add the object code to the stack$/ do
   @object_codes = @object_codes.nil? ? [@object_code] : @object_codes + [@object_code]
-end
-
-Then /^the Reports to Object Code just entered should be displayed$/ do
-  on(ObjectCodePage).reports_to_object_code.value.should == @object_code.reports_to_object_code
 end

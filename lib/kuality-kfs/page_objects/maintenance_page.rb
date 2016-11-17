@@ -3,6 +3,6 @@ class MaintenancePage < BasePage
 
   tab_buttons
 
-  links 'Indirect Cost Recovery Rate','Format Checks/ACH','CG Reporting Code'
+  links 'Indirect Cost Recovery Rate'
 
 end

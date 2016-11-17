@@ -1,21 +1,3 @@
-When /^I perform a (.*) Lookup using account number (.*)$/ do |gl_balance_inquiry_lookup, account_number|
-  gl_balance_inquiry_lookup = gl_balance_inquiry_lookup.gsub!(' ', '_').downcase
-  visit(MainPage).send(gl_balance_inquiry_lookup)
-  if gl_balance_inquiry_lookup == 'current_fund_balance'
-    on CurrentFundBalanceLookupPage do |page|
-      page.chart_code.fit     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-      page.account_number.fit account_number
-      page.search
-    end
-  else
-    on GeneralLedgerEntryLookupPage do |page|
-      page.chart_code.fit     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-      page.account_number.fit account_number
-      page.search
-    end
-  end
-end
-
 Then /^the (.*) document GL Entry Lookup matches the document's GL entry$/ do |document|
   step "I lookup the Source Accounting Line of the #{document} document in the GL"
 
@@ -164,30 +146,4 @@ And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting
       puts "After sleep in Rescue block : Current Time : #{clock.inspect}"
     end
   end
-end
-
-And /^I lookup the (Encumbrance|Disencumbrance|Source|Target|From|To) Accounting Line of the (.*) document in the General Ledger Balance$/ do |al_type, document|
-  doc_object = document_object_for(document)
-  alt = AccountingLineObject::get_type_conversion(al_type)
-
-  visit(MainPage).general_ledger_balance
-  on GeneralLedgerBalanceLookupPage do |page|
-    page.balance_type_code.fit         ''
-    page.chart_code.fit                doc_object.accounting_lines[alt][0].chart_code # We're assuming this exists, of course.
-    page.fiscal_year.fit               get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)
-    page.fiscal_period.fit             fiscal_period_conversion(right_now[:MON])
-    page.account_number.fit            '*'
-    page.reference_document_number.fit doc_object.document_id
-    page.pending_entry_all.set
-    page.search
-    page.wait_for_search_results(90)
-  end
-end
-
-Then /^the (.*) document has General Ledger Balance transactions matching the accounting lines from the (.*) document$/ do |transaction_doc, lines_doc|
-  pending
-end
-
-And /^the recovery (.*) specified in the (.*) document have posted income transactions in the General Ledger Balance$/ do |transaction_doc, lines_doc|
-  pending
 end

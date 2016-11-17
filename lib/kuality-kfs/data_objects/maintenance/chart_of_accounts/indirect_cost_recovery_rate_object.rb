@@ -1,9 +1,8 @@
 class IndirectCostRecoveryRateObject < KFSDataObject
 
-attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery_rate_details
-
-
   DOC_INFO = { label: 'Indirect Cost Recovery Rate', type_code: 'ICRE', transactional?: false, action_wait_time: 30 }
+
+  attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery_rate_details
 
   def defaults
     super.merge({
@@ -20,7 +19,7 @@ attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery
     on(IndirectCostRecoveryRateLookupPage).create_new
     on IndirectCostRecoveryRatePage do |page|
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, :description, :rate_id, :active_indicator
     end
   end
@@ -64,7 +63,6 @@ attr_accessor :fiscal_year, :rate_id, :active_indicator, :indirect_cost_recovery
 
 
   def add_wildcarded_icr_rate_for_random_institutional_object_codes(percent_to_use)
-    #get random institutional allowance object code
     debit_object_code_info = get_kuali_business_object('KFS-COA','ObjectCode',"universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&financialObjectLevelCode=IAEX&financialObjectTypeCode=ES&active=true")
     @debit_object_code = debit_object_code_info['financialObjectCode'][0]
     credit_object_code_info = get_kuali_business_object('KFS-COA','ObjectCode',"universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&financialObjectLevelCode=IAIN&financialObjectTypeCode=IC&active=true")

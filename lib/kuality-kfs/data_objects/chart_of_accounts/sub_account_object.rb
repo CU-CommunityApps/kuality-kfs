@@ -6,16 +6,14 @@ class SubAccountObject < KFSDataObject
 
                 #== Edit Sub-Account Code tab ==#
   attr_accessor :chart_code, :account_number, :sub_account_number, :name, :active_indicator, :sub_account_type_code,
-                #== Edit Financial Reporting Code ==#
+                #== Edit Financial Reporting Code tab ==#
                 :financial_reporting_chart_code, :financial_reporting_org_code, :financial_reporting_code,
                 #== Edit CG Cost Sharing tab ==#
                 :cost_sharing_account_number, :cost_sharing_chart_of_accounts_code, :cost_sharing_sub_account_number,
                 #== Edit CG ICR tab ==#
                 :icr_identifier, :icr_type_code, :icr_off_campus_indicator,
-                #== ==#\
+                #== Ad Hoc Recipients tab ==#\
                 :adhoc_approver_userid   #TODO This singleton data element is a collection on the page and needs to be coded as such.
-
-#add if needed                :fin_reporting_chart_code, :fin_reporting_org_code, :fin_reporting_code,
 
   def defaults
     super.merge({
@@ -79,7 +77,7 @@ class SubAccountObject < KFSDataObject
       superclass.required_attributes | [ :chart_code, :account_number, :name, :sub_account_number, :sub_account_type_code]
     end
 
-  end #class<<self
+  end
 
   include IndirectCostRecoveryLinesMixin
 

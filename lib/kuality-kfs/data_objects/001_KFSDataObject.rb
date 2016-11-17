@@ -6,7 +6,7 @@ class KFSDataObject < DataFactory
 
   attr_accessor :document_id, :description,
                 :initiator,
-                :press #, :notes_and_attachments_tab
+                :press
 
   # Hooks:
   class << self
@@ -56,9 +56,8 @@ class KFSDataObject < DataFactory
 
   def defaults
     {
-      description:               random_alphanums(37, 'AFT') #,
-      #notes_and_attachments_tab: collection('NotesAndAttachmentsLineObject')
-    }.merge(default_notes_and_attachments)
+      description:               random_alphanums(37, 'AFT')
+    }
   end
 
   def extended_defaults
@@ -73,7 +72,7 @@ class KFSDataObject < DataFactory
   def expand_focus_and_clear(page)
     page.expand_all
     page.description.focus
-    page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+    page.alert.ok if page.alert.exists?
   end
 
   def create
@@ -83,7 +82,7 @@ class KFSDataObject < DataFactory
     post_create
 
     on page_class_for(document_object_of(self.class)) do |page|
-      page.alert.ok if page.alert.present? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.present?
       @document_id = page.document_id
       page.send(@press) unless @press.nil?
     end
@@ -113,9 +112,7 @@ class KFSDataObject < DataFactory
 
   def edit_extended_attributes(attribute_group=nil); end
 
-  def post_create
-    @notes_and_attachments_tab = collection('NotesAndAttachmentsLineObject')
-  end
+  def post_create; end
 
   def update_line_objects_from_page!(target=:new)
     update_extended_line_objects_from_page!(target)
@@ -201,9 +198,6 @@ class KFSDataObject < DataFactory
     end
   end
 
-  # # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
-  # def absorb_webservice_item!(data_item); end
-
   class << self
     # Used in method absorb_webservice_item! or can be called standalone
     # @param [Hash][Array] data_item Single array element from a WebService call for the data object in question.
@@ -252,5 +246,4 @@ class KFSDataObject < DataFactory
     end
   end
 
-  include NotesAndAttachmentsTabMixin
 end

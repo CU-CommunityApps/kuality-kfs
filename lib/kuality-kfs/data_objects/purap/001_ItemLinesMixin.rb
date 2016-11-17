@@ -16,8 +16,6 @@ module ItemLinesMixin
       end
 
       def default_items(opts={})
-        # This just makes it so we don't have to be so repetitive. It can certainly be
-        # overridden in a subclass if you don't want to chuck things in via opts.
         {
           items:              collection('ItemLineObject'),
           initial_item_lines: [],
@@ -27,12 +25,8 @@ module ItemLinesMixin
 
       def process_initial_item_lines
         import_initial_item_lines if @immediate_import
-
         @initial_item_lines.each { |il| add_item_line( il.merge({line_number: @items.size}) ) unless il.has_key?(:file_name) }
         @initial_item_lines.delete_if { |il| !il.has_key?(:file_name) } # Remove all non-import initial lines
-
-        # At the end of the method, we should either have either no remaining initial
-        # lines, or (if @immediate_import is false) only file names of files to be imported at a later time
       end
 
       # Adds a single item to the item collection. Manually setting @line_number

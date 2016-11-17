@@ -19,7 +19,7 @@ class AccountDelegateObject < KFSDataObject
     on AccountDelegatePage do |page|
       page.expand_all
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, :description, :chart_code, :number, :doc_type_name, :principal_name, :start_date
     end
   end
@@ -34,6 +34,6 @@ class AccountDelegateObject < KFSDataObject
       superclass.required_attributes | [ :chart_code, :number, :doc_type_name, :principal_name, :start_date]
     end
 
-  end #class<<self
+  end
 
 end

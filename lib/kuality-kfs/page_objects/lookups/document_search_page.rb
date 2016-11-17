@@ -16,8 +16,6 @@ class DocumentSearch < Lookups
   #ADDED for REQ
   element(:application_document_status) { |b| b.frm.select(name: 'applicationDocumentStatus') }
 
-  #element(:date_created_from) { |b| b.frm.text_field(name: 'rangeLowerBoundKeyPrefix_dateCreated') }
-  #element(:date_created_to) { |b| b.frm.text_field(name: 'dateCreated') }
   element(:document_description) { |b| b.frm.text_field(name: 'documentAttribute.documentDescription') }
   element(:organization_document_number) { |b| b.frm.text_field(name: 'documentAttribute.organizationDocumentNumber') }
   element(:purchase_order_number) { |b| b.frm.text_field(name: 'documentAttribute.purchaseOrderIdentifier') }
@@ -72,7 +70,6 @@ class DocumentSearch < Lookups
   action(:search_document_type) { |b| b.frm.button(title: 'Search Document Type').click }
   action(:direct_inquiry) { |b| b.frm.button(title: 'Direct Inquiry').click }
   action(:search_initiator) { |b| b.frm.button(title: 'Search Initiator').click }
-  #action(:direct_inquiry) { |b| b.frm.button(title: 'Direct Inquiry').click }
   action(:search_vendor_number) { |b| b.frm.button(title: 'Search Vendor #').click }
   action(:search_purchase_order_chart_code) { |b| b.frm.button(title: 'Search Purchase Order Chart Code').click }
   action(:search_purchase_order_organization_code) { |b| b.frm.button(title: 'Search Purchase Order Organization Code').click }
@@ -85,8 +82,5 @@ class DocumentSearch < Lookups
   action(:search_ledger_document_type) { |b| b.frm.button(title: 'Search Ledger Document Type').click }
 
   element(:lookup_div) { |b| b.frm.div(id: 'lookup') }
-
-  # action(:select_doc_id_with_po_number) { |purchase_number, b| b.div(id: 'tab-ViewRelatedDocuments-div').a(target: '_BLANK').click; b.use_new_tab; b.close_parents }
-  # action(:select_doc_id_with_po_number) { |purchase_number, b| b.frm.table(id: 'row', class: 'datatable-100').rows.each_with_index {|row, index| (b.link(index-1).clickb.use_new_tab; b.close_parents) if row.a(text: purchase_number).exists?;  } }
 
 end

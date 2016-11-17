@@ -41,7 +41,7 @@ class AccountGlobalObject < KFSDataObject
     visit(MainPage).account_global
     on AccountGlobalPage do |page|
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, :description, :fo_principal_name, :supervisor_principal_name,
                :organization_code, :sub_fund_group_code, :acct_expire_date,
                :postal_code, :city, :state, :address,
