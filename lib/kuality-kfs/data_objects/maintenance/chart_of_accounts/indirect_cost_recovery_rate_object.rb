@@ -7,7 +7,7 @@ class IndirectCostRecoveryRateObject < KFSDataObject
   def defaults
     super.merge({
                     fiscal_year:                            get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
-                    rate_id:                                random_alphanums(3),
+                    rate_id:                                generate_random_indirect_cost_recovery_rate_id,
                     active_indicator:                       :set,
                     indirect_cost_recovery_rate_details:    collection('IndirectCostRecoveryRateDetailLineObject')
                })
@@ -58,47 +58,6 @@ class IndirectCostRecoveryRateObject < KFSDataObject
   def update_line_objects_from_page!(target=:new)
     @indirect_cost_recovery_rate_details.update_from_page! target
     super
-  end
-
-
-
-  def add_wildcarded_icr_rate_for_random_institutional_object_codes(percent_to_use)
-    debit_object_code_info = get_kuali_business_object('KFS-COA','ObjectCode',"universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&financialObjectLevelCode=IAEX&financialObjectTypeCode=ES&active=true")
-    @debit_object_code = debit_object_code_info['financialObjectCode'][0]
-    credit_object_code_info = get_kuali_business_object('KFS-COA','ObjectCode',"universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&financialObjectLevelCode=IAIN&financialObjectTypeCode=IC&active=true")
-    @credit_object_code = credit_object_code_info['financialObjectCode'][0]
-    add_wildcarded_icr_rate_for_specified_institutional_object_codes percent_to_use, @debit_object_code, @credit_object_code
-  end
-
-
-  def add_wildcarded_icr_rate_for_specified_institutional_object_codes (percent_to_use, debit_object_code, credit_object_code)
-    #need two icr rate details created, one for debit and one for credit
-    debit_opts = {
-        chart_code:                 IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD,
-        account_number:             IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD,
-        sub_account_number:         IndirectCostRecoveryRateDetailLineObject::DEBIT_WILDCARD,
-        object_code:                debit_object_code,
-        debit_credit_code:          'Debit',
-        percent:                    percent_to_use,
-        details_active_indicator:   :set
-    }
-    icr_rate_debit_detail = make IndirectCostRecoveryRateDetailLineObject, debit_opts
-    icr_rate_debit_detail.create
-
-    credit_opts = {
-        chart_code:                 IndirectCostRecoveryRateDetailLineObject::CREDIT_WILDCARD,
-        account_number:             IndirectCostRecoveryRateDetailLineObject::CREDIT_WILDCARD,
-        sub_account_number:         '',
-        object_code:                credit_object_code,
-        debit_credit_code:          'Credit',
-        percent:                    percent_to_use,
-        details_active_indicator:   :set
-    }
-    icr_rate_credit_detail = make IndirectCostRecoveryRateDetailLineObject, credit_opts
-    icr_rate_credit_detail.create
-
-    #get data from page since "add" adjusts case and populates dependent data
-    absorb!(:new)
   end
 
 end

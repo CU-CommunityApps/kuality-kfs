@@ -82,6 +82,7 @@ class UserObject < DataFactory
   include Navigation
   include StringFactory
   include GlobalConfig
+  include KsbClientUtilities
 
   attr_accessor :user_name, :principal_id,
                 :first_name, :last_name,
@@ -98,26 +99,13 @@ class UserObject < DataFactory
   def initialize(browser, opts={})
     @browser = browser
 
-    defaults={
-        user_name:        random_letters(16),
-        description:      random_alphanums,
-        affiliation_type: 'Faculty',
-        campus_code:      'BL - BLOOMINGTON',
-        first_name:       random_alphanums,
-        last_name:        random_alphanums,
-        addresses:        [{type:   'Work',
-                            line_1:  '1375 N Scottsdale Rd',
-                            city:    'scottsdale',
-                            state:   'ARIZONA',
-                            country: 'United States',
-                            zip:     '85257',
-                            default: :set }],
-        phones:           [{type:   'Work',
-                            number:  '602-840-7300',
-                            default: :set }],
-        rolez:            [{id: '96'}],
-        groups:           collection('UserGroups')
-    }
+    defaults = get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_USER)
+    defaults.merge({description: generate_random_description,
+                    addresses:   [get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ADDRESS_OF_USER)],
+                    phones:      [get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_PHONE_OF_USER)],
+                    rolez:       [get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ROLE_OF_USER)],
+                    groups:      collection('UserGroups')
+                   })
     defaults.merge!(opts)
     @roles = collection('UserRoles')
 

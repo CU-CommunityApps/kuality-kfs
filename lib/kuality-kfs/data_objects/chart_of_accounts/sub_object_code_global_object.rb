@@ -10,12 +10,12 @@ class SubObjectCodeGlobalObject < KFSDataObject
 
   def defaults
     super.merge({
-        description:                    random_alphanums(40, 'AFT'),
+        description:                    generate_random_description,
         new_chart_code:                 get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
         organization_document_number:   get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER),
         new_fiscal_year:                get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
-        new_sub_object_code_name:       random_alphanums(20, 'AFT'),
-        new_sub_object_code_short_name: random_alphanums(5, 'ATF'),
+        new_sub_object_code_name:       generate_random_sub_object_code_name,
+        new_sub_object_code_short_name: generate_random_sub_object_code_short_name,
         noc_fiscal_year:                get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
         noc_chart_code:                 get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
         na_chart_code:                  get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),

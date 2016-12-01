@@ -24,13 +24,19 @@ class ObjectCodeObject < KFSDataObject
 
 
   def defaults
+    # Ensure object code being used has not been used before otherwise, user gets error
+    # 'This document cannot be Saved or Routed because a record with the same primary key already exists.'
+    begin
+      default_object_code = generate_random_object_code
+    end until is_unique?(default_object_code)
+
     super.merge({
                       fiscal_year:                        get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR),
                       new_chart_code:                     get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
-                      object_code:                        random_alphanums(4), #if object code matches data user gets an error 'This document cannot be Saved or Routed because a record with the same primary key already exists.'
-                      object_code_name:                   random_alphanums(10, 'AFT'),
-                      object_code_short_name:             random_alphanums(5, 'AFT'),
-                      financial_object_code_description:  random_alphanums(30, 'AFT'),
+                      object_code:                        default_object_code,
+                      object_code_name:                   generate_random_object_code_name,
+                      object_code_short_name:             generate_random_object_code_short_name,
+                      financial_object_code_description:  generate_random_financial_object_code_description,
                       mandatory_transfer:                 '::random::',
                       federal_funded_code:                '::random::',
                 }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_OBJECT_CODE))
@@ -46,7 +52,7 @@ class ObjectCodeObject < KFSDataObject
       fill_out page, *((self.class.superclass.attributes -
           self.class.superclass.read_only_attributes) +
           self.class.attributes -
-          self.class.read_only_attributes) # We don't have any special attribute sections, so we should be able to throw them all in.
+          self.class.read_only_attributes)
     end
   end
 
@@ -56,7 +62,12 @@ class ObjectCodeObject < KFSDataObject
     end
   end
 
-  # Class Methods:
+  def is_unique?(object_code_to_verify)
+    # when object code exists it is not unique
+    does_object_code_exist_for_current_fiscal_and_default_chart?(object_code_to_verify) ? false : true
+  end
+
+
   class << self
     # Attributes that are required for a successful save/submit.
     # @return [Array] List of Symbols for attributes that are required
@@ -99,7 +110,6 @@ class ObjectCodeObject < KFSDataObject
     def extended_webservice_item_to_hash(data_item)
       Hash.new
     end
+  end
 
-  end #class<<self
-
-end #class
+end

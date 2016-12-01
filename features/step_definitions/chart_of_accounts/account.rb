@@ -1,9 +1,9 @@
 And /^I copy an Account$/ do
   on(AccountLookupPage).copy_random
   on AccountPage do |page|
-    page.description.fit 'AFT testing copy'
+    page.description.fit generate_random_description
     page.chart_code.fit get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-    page.number.fit random_alphanums(4, 'AFT')
+    page.number.fit generate_random_account_number
     @account = make AccountObject
     @account.chart_code = page.chart_code.text
     @account.number = page.number.text
@@ -41,9 +41,9 @@ end
 And /^I clone a random Account with name, chart code, and description changes$/ do
   step 'I clone Account nil with the following changes:',
        table(%Q{
-         | Name        | #{random_alphanums(15, 'AFT')}                                      |
+         | Name        | #{generate_random_account_name}                                     |
          | Chart Code  | #{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}  |
-         | Description | #{random_alphanums(40, 'AFT')}                                      |
+         | Description | #{generate_random_description}                                      |
        })
 end
 
@@ -66,7 +66,7 @@ end
 
 And /^the Account document's Sub Fund Program code is uppercased$/ do
   on(AccountPage).sub_fund_group_code_new.should == @account.sub_fund_group_code.upcase
-  @account.sub_fund_group_code = on(AccountPage).sub_fund_group_code_new # Grab the update, if necessary
+  @account.sub_fund_group_code = on(AccountPage).sub_fund_group_code_new
 end
 
 And /^I find a random Pre-Encumbrance Account$/ do
@@ -104,41 +104,20 @@ When /^I enter (.*) as an invalid Appropriation Account Number$/  do |appropriat
 end
 
 When /^I save an Account document with only the ([^"]*) field populated$/ do |field|
-  # TODO: Swap this out for Account#defaults
-  default_fields = {
-      description:          random_alphanums(40, 'AFT'),
-      chart_code:           get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-      number:               random_alphanums(7),
-      name:                 random_alphanums(10),
-      organization_code:    '01G0',#TODO config?
-      campus_code:          get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_CODE),
-      effective_date:       '01/01/2010',
-      postal_code:          get_random_postal_code('*'),
-      city:                 get_generic_city,
-      state:                get_random_state_code,
-      address:              get_generic_address_1,
-      type_code:            get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_TYPE_CODE),
-      sub_fund_group_code:  'ADMSYS',#TODO config?
-      higher_ed_funct_code: '4000',#TODO config?
-      restricted_status_code:     'U - Unrestricted',#TODO config?
-      fo_principal_name:          get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
-      supervisor_principal_name:  get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
-      manager_principal_name: get_aft_parameter_value(ParameterConstants::DEFAULT_MANAGER),
-      budget_record_level_code:   'C - Consolidation',#TODO config?
-      sufficient_funds_code:      'C - Consolidation',#TODO config?
-      expense_guideline_text:     'expense guideline text',
-      income_guideline_text: 'incomde guideline text',
-      purpose_text:         'purpose text',
-      labor_benefit_rate_cat_code: 'CC'#TODO config?
-  }
-
-  # TODO: Make the Account document creation with a single field step more flexible.
-  case field
-    when 'Description'
-      default_fields.each {|k, _| default_fields[k] = '' unless k.to_s.eql?('description') }
+  visit(MainPage).account
+  on AccountLookupPage do |page|
+    page.create
   end
-
-  @account = create AccountObject, default_fields
+  on AccountPage do |page|
+    @account = make AccountObject
+    case field
+      when 'Description'
+        page.description.set @account.description
+      else
+        fail ArgementError, "Field #{field} for the Account document is not known by the step definition and needs its processing condition added."
+    end
+    @account.absorb! :new
+  end
   step 'I save the Account document'
   step 'I add the account to the stack'
 end
@@ -146,11 +125,11 @@ end
 When /^I enter an invalid (.*)$/  do |field_name|
   case field_name
     when 'Sub-Fund Program Code'
-      step "I enter a Sub-Fund Program Code of #{random_alphanums(4, 'XX').upcase}"
+      step "I enter a Sub-Fund Program Code of #{generate_invalid_sub_fund_program_code}"
     when 'Major Reporting Category Code'
-      step "I enter #{random_alphanums(6, 'XX').upcase} as an invalid Major Reporting Category Code"
+      step "I enter #{generate_invalid_major_reporting_category_code} as an invalid Major Reporting Category Code"
     when 'Appropriation Account Number'
-      step "I enter #{random_alphanums(6, 'XX').upcase} as an invalid Appropriation Account Number"
+      step "I enter #{generate_invalid_appropriation_account_number} as an invalid Appropriation Account Number"
   end
 end
 
@@ -168,7 +147,7 @@ Then /^I should get (invalid|an invalid) (.*) errors?$/ do |invalid_ind, error_f
 end
 
 And /^I enter (Sub Fund Program Code|Sub Fund Program Code and Appropriation Account Number) that (is|are) associated with a random Sub Fund Group Code$/ do |codes, is_are|
-  account = get_kuali_business_object('KFS-COA','Account','subFundGroupCode=*&extension.programCode=*&closed=N&extension.appropriationAccountNumber=*&active=Y&accountExpirationDate=NULL')
+  account = find_open_active_account_with_random_subFundGroupCode_programCode_appropriationAccountNumber
   on AccountPage do |page|
     page.sub_fund_group_code.set account['subFundGroup.codeAndDescription'].sample.split('-')[0].strip
     page.subfund_program_code.set account['extension.programCode'].sample
@@ -182,7 +161,7 @@ And /^I enter (Sub Fund Program Code|Sub Fund Program Code and Appropriation Acc
 end
 
 When /^I input a lowercase Major Reporting Category Code value$/  do
-  major_reporting_category_code = get_kuali_business_object('KFS-COA','MajorReportingCategory','active=Y')['majorReportingCategoryCode'].sample
+  major_reporting_category_code = find_random_active_major_reporting_category_code
   on(AccountPage).major_reporting_category_code.fit major_reporting_category_code.downcase
   @account.major_reporting_category_code = major_reporting_category_code.downcase
 end
@@ -214,12 +193,11 @@ And /^I clone Account (.*) with the following changes:$/ do |account_number, tab
     end
     on AccountPage do |page|
       @document_id = page.document_id
-      new_account_number = (random_alphanums(7)).upcase! #need to ensure data in object matches page since page auto uppercases this value
       @account = make AccountObject, description: updates['Description'],
-                      name:        updates['Name'],
-                      chart_code:  updates['Chart Code'],
-                      number:      new_account_number,
-                      document_id: page.document_id
+                                     name:        updates['Name'],
+                                     chart_code:  updates['Chart Code'],
+                                     number:      generate_random_account_number,
+                                     document_id: page.document_id
 
       page.description.fit               @account.description
       page.name.fit                      @account.name

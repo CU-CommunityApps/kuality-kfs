@@ -15,8 +15,8 @@ And /^I add credit and debit accounting lines with two different sub funds$/ do
   #   namespace = KFS-FP    component = AuxiliaryVoucher   parameter name = OBJECT_SUB_TYPES
   # Object code value cannot have an object level listed in the following system parameter:
   #   namespace = KFS-FP    component = AuxiliaryVoucher   parameter name = OBJECT_LEVELS
-  object_sub_type_exclusions = get_parameter_values('KFS-FP', 'OBJECT_SUB_TYPES', component_code='AuxiliaryVoucher')
-  object_level_exclusions = get_parameter_values('KFS-FP', 'OBJECT_LEVELS', component_code='AuxiliaryVoucher')
+  object_sub_type_exclusions = get_auxiliary_voucher_object_sub_types_parameter_value
+  object_level_exclusions = get_auxiliary_voucher_object_levels_parameter_value
   object_code_object = nil
 
   while true

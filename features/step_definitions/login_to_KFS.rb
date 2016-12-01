@@ -1,5 +1,7 @@
+include KsbClientUtilities
+
 Given /^I am logged in as a KFS Operations$/ do
-  perform_backdoor_login(get_first_principal_name_for_role('KFS-SYS', 'Operations'))
+  perform_backdoor_login(get_random_kfs_operations_user)
 end
 
 Given /^I am logged in as a KFS Fiscal Officer$/ do
@@ -7,7 +9,7 @@ Given /^I am logged in as a KFS Fiscal Officer$/ do
 end
 
 Given /^I am logged in as a KFS User$/ do
-  perform_backdoor_login(get_random_principal_name_for_role('KFS-SYS', 'User'))
+  perform_backdoor_login(get_random_kfs_user)
 end
 
 Given /^I am logged in as "([^"]*)"$/ do |user_id|
@@ -15,15 +17,15 @@ Given /^I am logged in as "([^"]*)"$/ do |user_id|
 end
 
 Given /^I am logged in as a KFS Chart Manager$/ do
-  perform_backdoor_login(get_random_principal_name_for_role('KFS-SYS', 'Chart Manager'))
+  perform_backdoor_login(get_random_chart_manager)
 end
 
 Given /^I am logged in as a KFS Chart Administrator$/ do
-  perform_backdoor_login(get_random_principal_name_for_role('KFS-SYS', 'Chart Administrator (cu)'))
+  perform_backdoor_login(get_random_chart_administrator)
 end
 
 Given /^I am logged in as a KFS Contracts & Grants Manager$/ do
-  perform_backdoor_login(get_random_principal_name_for_role('KFS-SYS', 'Contracts & Grants Manager'))
+  perform_backdoor_login(get_random_contracts_and_grants_manager)
 end
 
 Given /^I am logged in as a KFS User for the (.*) document$/ do |eDoc|
@@ -31,7 +33,7 @@ Given /^I am logged in as a KFS User for the (.*) document$/ do |eDoc|
 end
 
 Given /^I am logged in as a Labor Distribution Manager$/ do
-  perform_backdoor_login(get_first_principal_name_for_role('KFS-LD', 'Labor Distribution Manager (cu)'))
+  perform_backdoor_login(get_random_labor_distribution_manager)
 end
 
 # This Cucumber step takes the User principal name so the application login can be performed as that user.
@@ -40,7 +42,7 @@ Given  /^I am User (.*) who is a Salary Transfer Initiator$/ do |principal_name|
 end
 
 Given /^I Login as an Asset Processor$/ do
-  perform_backdoor_login(get_first_principal_name_for_role('KFS-SYS', 'Asset Processor'))
+  perform_backdoor_login(get_random_asset_processor)
 end
 
 And /^I remember the logged in user$/ do
@@ -52,8 +54,5 @@ And /^I am logged in as the remembered user$/ do
 end
 
 Given /^I am logged in as a KFS User who is not a Contracts & Grants Processor$/ do
-  kfs_users = get_principal_name_for_role('KFS-SYS', 'User')
-  cg_processors = get_principal_name_for_role('KFS-SYS', 'Contracts & Grants Processor')
-  kfs_users_who_are_not_cd_processors = kfs_users - cg_processors
-  perform_backdoor_login(kfs_users_who_are_not_cd_processors.sample)
+  perform_backdoor_login(get_random_kfs_user_not_being_contracts_and_grants_processor)
 end

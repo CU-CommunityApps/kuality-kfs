@@ -13,6 +13,7 @@ class AccountGlobalObject < KFSDataObject
                 :major_reporting_category_code
 
   def defaults
+
     super.merge({
         new_chart_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
         new_number:                             get_random_account_number,
@@ -22,16 +23,16 @@ class AccountGlobalObject < KFSDataObject
         sub_fund_group_code:                    '',
         acct_expire_date:                       '',
         postal_code:                            get_random_postal_code('*'),
-        city:                                   get_generic_city,
+        city:                                   generate_random_city,
         state:                                  get_random_state_code,
-        address:                                get_generic_address_1,
+        address:                                generate_random_address,
         continuation_coa_code:                  '',
         continuation_acct_number:               '',
         income_stream_financial_cost_code:      get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE_WITH_NAME),
         income_stream_account_number:           get_aft_parameter_value(ParameterConstants::DEFAULT_INCOME_STREAM_ACCOUNT_NUMBER),
         cfda_number:                            '',
         higher_ed_funct_code:                   '',
-        sufficient_funds_code:                  'C - Consolidation',
+        sufficient_funds_code:                  get_aft_parameter_value(ParameterConstants::DEFAULT_SUFFICIENT_FUNDS_CODE),
         trans_processing_sufficient_funds_code: '',
         labor_benefit_rate_category_code:       '',
     }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_GLOBAL))

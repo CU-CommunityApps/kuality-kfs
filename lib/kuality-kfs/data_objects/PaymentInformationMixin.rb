@@ -11,14 +11,7 @@ module PaymentInformationMixin
 
   alias :vendor_payee? :vendor_payee
   def default_payment_information_lines(opts={})
-    {
-        payment_reason_code:         'B - Reimbursement for Out-of-Pocket Expenses',
-        check_amount:                '100.00',
-        payment_method:              'P - ACH/CHECK',
-        check_stub_text:             'test, Check Stub',
-        address_type_description:    'TX - TAX',
-        vendor_payee:                true
-    }.merge(opts)
+    (get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_PAYMENT_INFORMATION_LINE)).merge(opts)
   end
 
   def post_create

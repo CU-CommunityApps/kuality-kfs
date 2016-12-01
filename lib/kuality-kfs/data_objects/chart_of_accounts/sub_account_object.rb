@@ -19,8 +19,8 @@ class SubAccountObject < KFSDataObject
     super.merge({
         chart_code:             get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
         account_number:         get_aft_parameter_value(ParameterConstants::DEFAULT_ACCOUNT_NUMBER),
-        sub_account_number:     random_alphanums(5),
-        name:                   random_alphanums(10),
+        sub_account_number:     generate_random_sub_account_number,
+        name:                   generate_random_sub_account_name,
         sub_account_type_code:  get_aft_parameter_value(ParameterConstants::DEFAULT_EXPENSE_SUB_ACCOUNT_TYPE_CODE)
     }).merge(default_icr_accounts)
       .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_SUB_ACCOUNT))
@@ -33,7 +33,7 @@ class SubAccountObject < KFSDataObject
     on SubAccountPage do |page|
       page.expand_all
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
 
       fill_out page, :description, :chart_code, :account_number, :sub_account_number, :name,
                :cost_sharing_account_number, :cost_sharing_chart_of_accounts_code,
@@ -68,7 +68,6 @@ class SubAccountObject < KFSDataObject
   end
 
 
-  # Class Methods:
   class << self
 
     # Attributes that are required for a successful save/submit.
@@ -76,7 +75,6 @@ class SubAccountObject < KFSDataObject
     def required_attributes
       superclass.required_attributes | [ :chart_code, :account_number, :name, :sub_account_number, :sub_account_type_code]
     end
-
   end
 
   include IndirectCostRecoveryLinesMixin

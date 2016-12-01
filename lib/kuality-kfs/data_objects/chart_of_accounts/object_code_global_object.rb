@@ -23,12 +23,12 @@ class ObjectCodeGlobalObject < KFSDataObject
     # Ensure object code being used has not been used before otherwise, user gets error
     # 'This document cannot be Saved or Routed because a record with the same primary key already exists.'
     begin
-      default_object_code = random_alphanums(4)
+      default_object_code = generate_random_object_code
     end until is_unique?(default_object_code)
 
     super.merge({
         object_code:              default_object_code, #Value must be one that does not currently exist;
-        object_code_name:         "AFT created unique object code #{default_object_code}",
+        object_code_name:         generate_random_object_code_name,
         object_code_short_name:   'AFTunique'
     }).merge(default_year_and_charts)
       .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_OBJECT_CODE_GLOBAL))
@@ -41,32 +41,25 @@ class ObjectCodeGlobalObject < KFSDataObject
   end
 
   def is_unique?(object_code_to_verify)
-    # WebService will generate a RuntimeError when the object code value being looked up is not found; that condition
-    # means the object code value does not currently exist and would be unique if it were to be added to the database.
-    unique = false
-    begin
-      get_kuali_business_object('KFS-COA', 'ObjectCode', "universityFiscalYear=#{get_aft_parameter_value(ParameterConstants::CURRENT_FISCAL_YEAR)}&chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&financialObjectCode=#{object_code_to_verify}&active=B")
-    rescue RuntimeError
-      unique = true
-    end
-    unique
+    # when object code exists it is not unique
+    does_object_code_exist_for_current_fiscal_and_default_chart?(object_code_to_verify) ? false : true
   end
 
   def build
     visit(MainPage).object_code_global
     on ObjectCodeGlobalPage do |page|
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
 
       fill_out page, *((self.class.superclass.attributes -
                         self.class.superclass.read_only_attributes) +
                         self.class.attributes -
                         self.class.read_only_attributes -
-                        self.class.year_and_charts_mixin_attributes) # We don't have any special attribute sections, so we should be able to throw them all in.
+                        self.class.year_and_charts_mixin_attributes)
     end
   end
 
-  # Class Methods:
+
   class << self
     # Attributes that are required for a successful save/submit.
     # @return [Array] List of Symbols for attributes that are required

@@ -9,7 +9,7 @@ end
 And /^I add the only payee with Payee Id (\w+) and Reason Code (\w+) to the Disbursement Voucher$/ do |net_id, reason_code|
   case reason_code
     when 'B'
-      @disbursement_voucher.payment_reason_code = 'B - Reimbursement for Out-of-Pocket Expenses'
+      @disbursement_voucher.payment_reason_code = get_aft_parameter_value(ParameterConstants::DEFAULT_PAYMENT_REASON_FOR_OUT_OF_POCKET_EXPENSES)
   end
   on (PaymentInformationTab) do |tab|
     tab.payee_search
@@ -37,10 +37,10 @@ And /^I add an Accounting Line to the Disbursement Voucher with the following fi
 end
 
 And /^I search for the payee with Terminated Employee and Reason Code (\w+) for Disbursement Voucher document with no result found$/ do |reason_code|
-  net_id = "msw13" # TODO : should get this from web services. Inactive employee with no other affiliation
+  net_id = get_aft_parameter_value(ParameterConstants::DEFAULT_DISBURSEMENT_VOUCHER_PAYEE_INACTIVE_EMPLOYEE_NO_AFFILIATIONS)
   case reason_code
     when 'B'
-      @disbursement_voucher.payment_reason_code = 'B - Reimbursement for Out-of-Pocket Expenses'
+      @disbursement_voucher.payment_reason_code = get_aft_parameter_value(ParameterConstants::DEFAULT_PAYMENT_REASON_FOR_OUT_OF_POCKET_EXPENSES)
   end
   on(PaymentInformationTab).payee_search
   on PayeeLookup do |plookup|
@@ -54,13 +54,9 @@ end
 And /^I add an? (.*) as payee and Reason Code (\w+) to the Disbursement Voucher$/ do |payee_status, reason_code|
   case payee_status
     when 'Retiree'
-      @payee_net_id = "map3" # TODO : should get from web service
+      @payee_net_id = get_aft_parameter_value(ParameterConstants::DEFAULT_DISBURSEMENT_VOUCHER_PAYEE_RETIREE)
     when 'Active Staff, Former Student, and Alumnus'
-      @payee_net_id = "nms32" # TODO : should get from web service or parameter
-    when 'Active Employee, Former Student, and Alumnus'
-      @payee_net_id = "vk76" # TODO : should get from web service or parameter. vk76 is inactive now.
-    when 'Inactive Employee and Alumnus'
-      @payee_net_id = "rlg3" # TODO : should get from web service or parameter.
+      @payee_net_id = get_aft_parameter_value(ParameterConstants::DEFAULT_DISBURSEMENT_VOUCHER_PAYEE_ACTIVE_STAFF_FORMER_STUDENT_ALUMNUS)
   end
   step "I add the only payee with Payee Id #{@payee_net_id} and Reason Code #{reason_code} to the Disbursement Voucher"
 end

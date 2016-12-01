@@ -5,7 +5,7 @@ end
 
 And /^I add Asset Line (\d+) with Allocation Amount (\w+)$/ do |line_number, amount|
   on AssetManualPaymentPage do |page|
-    page.asset_number.fit fetch_random_capital_asset_number
+    page.asset_number.fit get_random_capital_asset_number
     page.add_asset_number
     page.allocate_amount(line_number.to_i - 1).fit amount  #page array is zero based, adjust line number
     #ensure data object backing the page also has data just entered
@@ -17,7 +17,7 @@ end
 And /^I add an Accounting Line to the Asset Manual Payment with Amount (\w+)$/ do |amount|
   on AssetManualPaymentPage do |page|
     page.source_account_number.fit  get_random_account_number
-    page.source_object_code.fit     fetch_random_capital_asset_object_code
+    page.source_object_code.fit     get_random_capital_asset_object_code
     page.source_amount.fit          amount
     page.source_posted_date.fit     right_now[:date_w_slashes] #Use today for default value as this is required data
     page.add_acct_line

@@ -19,7 +19,7 @@ And /^I edit an Object Code document$/ do
     page.edit_random
   end
   on ObjectCodePage do |page|
-    page.description.set random_alphanums(40, 'AFT')
+    page.description.set generate_random_description
     @object_code.document_id = page.document_id
   end
 end
@@ -36,7 +36,7 @@ Then /^The object code should show an error that says "(.*?)"$/ do |error|
 end
 
 And /^I update the Financial Object Code Description/ do
-  on(ObjectCodePage).financial_object_code_description.set random_alphanums(60, 'AFT')
+  on(ObjectCodePage).financial_object_code_description.set generate_random_financial_object_code_description
 end
 
 And /^I find a random Pre-Encumbrance Object Code$/ do
