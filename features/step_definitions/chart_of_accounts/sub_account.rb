@@ -10,9 +10,7 @@ Then /^The Indirect Cost Rate ID field should not be null$/ do
 end
 
 And /^I am logged in as the FO of the Sub-Account$/ do
-  sleep(1)
-  account_info = get_kuali_business_object('KFS-COA','Account',"accountNumber=#{@sub_account.account_number}")
-  fiscal_officer_principal_name = account_info['accountFiscalOfficerUser.principalName'][0]
+  fiscal_officer_principal_name = get_fiscal_officer_principal_name_for_sub_account_number(@sub_account.account_number)
   step "I am logged in as \"#{fiscal_officer_principal_name}\""
   @user_id = fiscal_officer_principal_name
 end
@@ -46,7 +44,7 @@ And /^I create a Sub-Account using a CG account with a CG Account Responsibility
   options = {
       chart_code:               get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
       account_number:           account_numbers.sample,
-      name:                     'Test route sub-acct type CS to CG Respon',
+      name:                     generate_random_sub_account_name,
       sub_account_type_code:    get_aft_parameter_value(ParameterConstants::DEFAULT_EXPENSE_SUB_ACCOUNT_TYPE_CODE),
   }
   @sub_account = create SubAccountObject, options
@@ -54,7 +52,7 @@ end
 
 And /^I edit the Sub-Account changing its type code to Cost Share$/ do
   options = {
-      description:                          'Edit Sub-Acct from expense to cost share',
+      description:                          generate_random_description,
       sub_account_type_code:                get_aft_parameter_value(ParameterConstants::DEFAULT_COST_SHARE_SUB_ACCOUNT_TYPE_CODE),
       cost_sharing_account_number:          get_account_of_type('Cost Sharing Account'),
       cost_sharing_chart_of_accounts_code:  get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
@@ -64,9 +62,9 @@ And /^I edit the Sub-Account changing its type code to Cost Share$/ do
 end
 
 And /^I create a Sub-Account with a Cost Share Sub-Account Type Code$/ do
-  #parameter look-ups are costly, get default chart code once and use it multiple times in this method
   chart_code = get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
-  account_number = get_kuali_business_object('KFS-COA','Account',"subFundGroupCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_COST_SHARE_SUB_FUND_GROUP_CODE)}&active=Y&accountExpirationDate=NULL&chartOfAccountsCode=#{chart_code}")['accountNumber'].sample
+  cost_share_sub_fund_group_code = get_aft_parameter_value(ParameterConstants::DEFAULT_COST_SHARE_SUB_FUND_GROUP_CODE)
+  account_number = get_account_number_for_cost_share_sub_account_with_sub_fund_group_code(cost_share_sub_fund_group_code, chart_code)
   options = {
       account_number:                      account_number,
       cost_sharing_chart_of_accounts_code: chart_code,

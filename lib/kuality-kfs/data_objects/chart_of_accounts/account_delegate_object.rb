@@ -8,8 +8,8 @@ class AccountDelegateObject < KFSDataObject
   def defaults
     super.merge({
         chart_code:           get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-        number:               random_alphanums(7),
-        principal_name:       get_random_principal_name_for_role('KFS-SYS', 'User'),
+        number:               generate_random_account_delegate_account_number,
+        principal_name:       get_random_kfs_user,
     }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_DELEGATE))
   end
 
@@ -25,15 +25,12 @@ class AccountDelegateObject < KFSDataObject
   end
 
 
-  # Class Methods:
   class << self
-
     # Attributes that are required for a successful save/submit.
     # @return [Array] List of Symbols for attributes that are required
     def required_attributes
       superclass.required_attributes | [ :chart_code, :number, :doc_type_name, :principal_name, :start_date]
     end
-
   end
 
 end

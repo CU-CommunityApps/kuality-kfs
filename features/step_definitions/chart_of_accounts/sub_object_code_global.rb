@@ -16,9 +16,8 @@ end
 
 # This step requires that the global hash @test_input_data exist and hold the input data required.
 Then /^retrieved accounts equal all Active Accounts for the Organization Code$/ do
-  #get the accounts we should validate against using the previously obtained test_input_data values
-  accounts_hash = get_kuali_business_objects('KFS-COA','Account',"organizationCode=#{@test_input_data[:organization_code]}&closed=N")
-  accounts = accounts_hash['org.kuali.kfs.coa.businessobject.Account']
+  # get the accounts we should validate against using the previously obtained test_input_data values
+  accounts = get_all_active_accounts_for_organization_code(@test_input_data[:organization_code])
 
   #ensure accounts were found
   accounts.nil?.should_not

@@ -331,7 +331,7 @@
       <column name="OBJ_ID" valueNumeric="sys_guid()"/>
       <column name="VER_NBR" value="1"/>
       <column name="PARM_TYP_CD" value="VALID"/>
-      <column name="VAL" value="organization_code=01G0;effective_date=01/01/2010;account_expiration_date=;sub_fund_group_code=ADMSYS;higher_ed_funct_code=4000;restricted_status_code=U - Unrestricted;budget_record_level_code=C - Consolidation;sufficient_funds_code=C - Consolidation;labor_benefit_rate_cat_code=CC;expense_guideline_text=expense guideline text;income_guideline_text=income guideline text;purpose_text=purpose text"/>
+      <column name="VAL" value="organization_code=01G0;effective_date=01/01/2010;account_expiration_date=;sub_fund_group_code=ADMSYS;higher_ed_funct_code=4000;restricted_status_code=U - Unrestricted;budget_record_level_code=C - Consolidation;sufficient_funds_code=C - Consolidation;labor_benefit_rate_category_code=CC;expense_guideline_text=expense guideline text;income_guideline_text=income guideline text;purpose_text=purpose text"/>
       <column name="PARM_DESC_TXT" value="Defaults for the Account object"/>
       <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
@@ -539,7 +539,162 @@
         <column name="PARM_DESC_TXT" value="Maximum number of data rows returned by a web service inquiry to convert to array or hash elements during automated functional testing."/>
         <column name="EVAL_OPRTR_CD" value="A"/>
     </insert>
-
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_INDIRECT_COST_RECOVERY_RATE_ID"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="EC1"/>
+      <column name="PARM_DESC_TXT" value="Default indirect cost recovery rate id for automated functional testing."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_SUFFICIENT_FUNDS_CODE"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="C - Consolidation"/>
+      <column name="PARM_DESC_TXT" value="Default sufficient funds code for automated functional testing."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_LABOR_BENEFIT_RATE_CATEGORY_CODE"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="CC"/>
+      <column name="PARM_DESC_TXT" value="Default labor benefit rate category code for automated functional testing."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULTS_FOR_USER_ROLE"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="id=54;name=Financial System User"/>
+      <column name="PARM_DESC_TXT" value="Defaults for the User Role object."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULTS_FOR_PAYMENT_INFORMATION_LINE"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="payment_reason_code=B - Reimbursement for Out-of-Pocket Expenses;check_amount=100.00;payment_method=P - ACH/CHECK;check_stub_text=test, Check Stub;address_type_description=TX - TAX;vendor_payee=true"/>
+      <column name="PARM_DESC_TXT" value="Defaults for a single Payment Information Line."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULTS_FOR_USER"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="user_name=FIRST_ABC LAST_XYZ;affiliation_type=Faculty;campus_code=IT - Ithaca;first_name=FIRST_ABC;last_name=LAST_XYZ"/>
+      <column name="PARM_DESC_TXT" value="Defaults for a User object non-array attributes. Defaults for the array attributes for this object are constructed with their own defaults, i.e. address, phone, etc."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULTS_FOR_ADDRESS_OF_USER"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="type=Work;line_1=1375 N Scottsdale Rd;city=Ithaca;state=NEW YORK;country=United States;zip=14850;default=:set"/>
+      <column name="PARM_DESC_TXT" value="Defaults for a User object single array element address attribute."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULTS_FOR_PHONE_OF_USER"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="type=Work;number=607-555-1234;default=:set"/>
+       <column name="PARM_DESC_TXT" value="Defaults for a User object single array element phone attribute."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULTS_FOR_ROLES_OF_USER"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="id=96"/>
+      <column name="PARM_DESC_TXT" value="Defaults for a User object single array element role attribute"/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_PAYMENT_REASON_FOR_OUT_OF_POCKET_EXPENSES"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="B - Reimbursement for Out-of-Pocket Expenses"/>
+      <column name="PARM_DESC_TXT" value="Default disbursement voucher payment reason code for out of pocket expenses."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_DISBURSEMENT_VOUCHER_PAYEE_ACTIVE_STAFF_FORMER_STUDENT_ALUMNUS"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="nms32"/>
+      <column name="PARM_DESC_TXT" value="Default active staff who is former student and alumnus to use for disbursement voucher payee automated functional tests."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_DISBURSEMENT_VOUCHER_PAYEE_INACTIVE_EMPLOYEE_NO_AFFILIATIONS"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="msw13"/>
+      <column name="PARM_DESC_TXT" value="Default inactive employee with no other university affiliations to use for disbursement voucher payee automated functional tests."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
+    <insert tableName="KRCR_PARM_T">
+      <column name="NMSPC_CD" value="KFS-AFTEST"/>
+      <column name="CMPNT_CD" value="All"/>
+      <column name="PARM_NM" value="DEFAULT_DISBURSEMENT_VOUCHER_PAYEE_RETIREE"/>
+      <column name="APPL_ID" value="KFS"/>
+      <column name="OBJ_ID" valueNumeric="sys_guid()"/>
+      <column name="VER_NBR" value="1"/>
+      <column name="PARM_TYP_CD" value="VALID"/>
+      <column name="VAL" value="map3"/>
+      <column name="PARM_DESC_TXT" value="Default retiree to use for disbursement voucher payee automated functional tests."/>
+      <column name="EVAL_OPRTR_CD" value="A"/>
+    </insert>
 	<modifySql dbms="mysql">
 		<replace replace="sys_guid()" with="uuid()" />
 	</modifySql>

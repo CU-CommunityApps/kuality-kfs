@@ -30,15 +30,96 @@ module Utilities
     Kernel.const_get("#{snake_case(document).to_s.sub(/[oO]bject$/, '').split('_').map(&:capitalize).join('')}Page")
   end
 
-  # @return [String] A randomly-generated phone number that should pass KFS's requirements for phone numbers. No other assurances.
-  def random_phone_number
-    "#{rand(99..999)}-#{rand(99..999)}-#{rand(999..9999)}"
+  def generate_random_account_delegate_account_number
+    random_alphanums(7)
+  end
+
+  def generate_random_account_delegate_model_name
+    random_alphanums(10, 'AFT')
+  end
+
+  def generate_random_account_name
+    random_alphanums(15, 'AFT')
+  end
+
+  def generate_random_account_number
+    (random_alphanums(7)).upcase!
+  end
+
+  def generate_random_address
+    "#{rand(1..9999)} Evergreen Terrace"
+  end
+
+  def generate_random_city
+    random_letters(10)
+  end
+
+  def generate_random_description
+    random_alphanums(40, 'AFT')
   end
 
   # @return [String] A randomly generated email address that should pass KFS's requirements for email address validation. No other assurances.
-  def random_email_address
+  def generate_random_email_address
     "#{[*('a'..'z')].sample(6).join}" + '@abc.xyz'
   end
+
+  def generate_random_financial_object_code_description
+    random_alphanums(60, 'AFT')
+  end
+
+  def generate_random_indirect_cost_recovery_rate_id
+    random_alphanums(3)
+  end
+
+  def generate_random_object_code
+    random_alphanums(4)
+  end
+
+  def generate_random_object_code_name
+    random_alphanums(10, 'AFT')
+  end
+
+  def generate_random_object_code_short_name
+    random_alphanums(5, 'AFT')
+  end
+
+  # @return [String] A randomly generated phone number that should pass KFS's requirements for phone numbers. No other assurances.
+  def generate_random_phone_number
+    "#{rand(99..999)}-#{rand(99..999)}-#{rand(999..9999)}"
+  end
+
+  def generate_random_sub_account_name
+    random_alphanums(40)
+  end
+
+  def generate_random_sub_account_number
+    random_alphanums(7)
+  end
+
+  def generate_random_sub_object_code_name
+    random_alphanums(20, 'AFT')
+  end
+
+  def generate_random_sub_object_code_short_name
+    random_alphanums(5, 'ATF')
+  end
+
+  def generate_invalid_appropriation_account_number
+    random_alphanums(6, 'XX').upcase
+  end
+
+  def generate_invalid_major_reporting_category_code
+    random_alphanums(6, 'XX').upcase
+  end
+
+  def generate_invalid_organization_code
+    'BSBS'
+  end
+
+  def generate_invalid_sub_fund_program_code
+    random_alphanums(4, 'XX').upcase
+  end
+
 
   def fiscal_period_conversion(month)
     case month
@@ -85,33 +166,6 @@ module Utilities
         nil
     end
   end
-
-  # @param [String] type Named type of Account to search for with the service
-  # @return [String] The Account Number of the requested type if found by the service, or nil if not found
-  def get_account_of_type(type)
-    case type
-      when 'Cost Sharing Account'
-        ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&accountName=*cost share*&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
-      when 'Open Non-Expired Contracts & Grants Account'
-        ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&subFundGroupCode=CGFEDL&closed=N&active=Y&accountExpirationDate=NULL&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
-      when 'Open Expired Contracts & Grants Account'
-        all_open_expired_accounts = get_kuali_business_objects('KFS-COA',
-                                                               'Account',
-                                                               "chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&subFundGroupCode=CGFEDL&closed=N&active=N&")['org.kuali.kfs.coa.businessobject.Account']
-        single_open_expired_account = all_open_expired_accounts.sample
-        single_open_expired_account['accountNumber'][0]
-      when 'Closed Contracts & Grants Account'
-        ((get_kuali_business_objects('KFS-COA','Account',"chartOfAccountsCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&accountTypeCode=CC&subFundGroup.fundGroupCode=CG&subFundGroupCode=CGFEDL&closed=Y&}")['org.kuali.kfs.coa.businessobject.Account']).sample)['accountNumber'][0]
-      when 'Random Sub-Fund Group Code'
-        get_kuali_business_object('KFS-COA','Account',"chartCode=#{get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)}&subFundGroupCode=*&extension.programCode=*&closed=N&extension.appropriationAccountNumber=*&active=Y&accountExpirationDate=NULL")['accountNumber'].sample
-      else
-        nil
-    end
-  rescue RuntimeError => re
-    # In other cases, get_kuali_business_object will raise a RuntimeError if no results are found.
-    nil
-  end
-
 
   private
 

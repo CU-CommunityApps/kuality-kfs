@@ -8,7 +8,6 @@ class SalaryExpenseTransferObject < KFSDataObject
 
   attr_accessor :fiscal_year, :employee_id,
                 :remembered_employee_id,
-                # constants used for verifying LLPE entries, values in KFS Parameters table
                 :actuals_balance_type, :labor_balance_type, :debit_code, :credit_code, :period_unassigned
 
   def defaults
@@ -21,17 +20,12 @@ class SalaryExpenseTransferObject < KFSDataObject
                 }).merge!(default_accounting_lines)
   end
 
-  def initialize(browser, opts={})
-    @browser = browser
-    set_options(defaults.merge(opts))
-  end
-
   def build
     visit(MainPage).salary_expense_transfer
     on SalaryExpenseTransferPage do |page|
       page.expand_all
       page.description.focus
-      page.alert.ok if page.alert.exists? # Because, y'know, sometimes it doesn't actually come up...
+      page.alert.ok if page.alert.exists?
       fill_out page, :description, :employee_id
     end
   end
@@ -99,12 +93,12 @@ class SalaryExpenseTransferObject < KFSDataObject
   def pull_all_accounting_lines(page)
     to_lines = Array.new
     from_lines = Array.new
-    #get all From lines
+
     for row in 0..(page.accounting_lines_row_count :source)-1
       line_hash = pull_specified_accounting_line(:source, row, page)
       from_lines.push(line_hash)
     end
-    #get all To lines
+
     for row in 0..(page.accounting_lines_row_count :target)-1
       line_hash = pull_specified_accounting_line(:target, row, page)
       to_lines.push(line_hash)
@@ -147,12 +141,6 @@ class SalaryExpenseTransferObject < KFSDataObject
   end
 
 
-  def get_benefits_clearing_account
-    clearing_accounts =  get_parameter_values('KFS-LD', 'BENEFIT_CLEARING_ACCOUNT_NUMBER', 'SalaryExpenseTransfer')
-    return clearing_accounts[0]
-  end
-
-
   # The caller should provide a local copy of the accounting lines as this method will add the additional attributes
   # required for LLPE validation to each accounting line hash after they are looked up and/or calculated.
   # @return [Hash][Array][Hash] Accounting lines with related benefits attributes added to each line's hash
@@ -161,15 +149,15 @@ class SalaryExpenseTransferObject < KFSDataObject
   def determine_additional_llpe_attributes(st_accounting_lines, type)
 
     st_accounting_lines[type].each do |line|
-      # Account Lookup as webservice call to get labor benefit rate category code on the account
-      account_info = get_kuali_business_object('KFS-COA','Account',"closed=N&accountNumber=#{line[:account_number]}")
+      # Lookup the account to get its labor benefit rate category code
+      account_info = lookup_account_by(line[:account_number])
 
-      # Labor Object Code Benefits Lookup as webservice call to get labor benefits type code
-      labor_benefit_type_info = get_kuali_business_object('KFS-LD','PositionObjectBenefit',"universityFiscalYear=#{line[:payroll_end_date_fiscal_year]}&chartOfAccountsCode=#{line[:chart_code]}&financialObjectCode=#{line[:object_code]}")
+      # Lookup labor object code benefits to get its labor benefits type code
+      labor_benefit_type_info = lookup_labor_object_code_benefits_by(line[:object_code], line[:payroll_end_date_fiscal_year], line[:chart_code])
 
       # Labor Benefits Calculation Lookup as webservice call using labor benefit rate category code and
       # labor benefits type code to get labor benefit object code, labor account code offset, and position fringe benefit percent
-      labor_calc_info = get_kuali_business_object('KFS-LD','BenefitsCalculation',"universityFiscalYear=#{line[:payroll_end_date_fiscal_year]}&chartOfAccountsCode=#{line[:chart_code]}&positionBenefitTypeCode=#{labor_benefit_type_info['financialObjectBenefitsTypeCode'][0]}&laborBenefitRateCategoryCode=#{account_info['laborBenefitRateCategoryCode'][0]}")
+      labor_calc_info = lookup_labor_benefits_calculation_by(account_info['laborBenefitRateCategoryCode'][0], labor_benefit_type_info['financialObjectBenefitsTypeCode'][0], line[:payroll_end_date_fiscal_year], line[:chart_code])
 
       # Determine what the benefits amount should be based on the percentage just retrieved.
       benefit_amount = calculate_benefit_amount((line[:amount]).to_f, (labor_calc_info['positionFringeBenefitPercent'][0]).to_f)
@@ -291,11 +279,10 @@ class SalaryExpenseTransferObject < KFSDataObject
 
     if need_clearing_account_entries
       #Obtain the clearing account
-      clearing_account = get_benefits_clearing_account
+      clearing_account = get_benefits_clearing_account_parameter_value
 
       # clearing account lines that only differ by amount need to be consolidated,  creating new array for the clearing
-      # entries so there are fewer to search through for this consolidation after all have been created
-      # after all clearing account entries
+      # entries so there are fewer to search through for this consolidation after all line have been created
       clearing_entries = Array.new
       create_clearing_account_benefit_entries(clearing_account, clearing_entries, st_accounting_lines, :source, @debit_code)
       create_clearing_account_benefit_entries(clearing_account, clearing_entries, st_accounting_lines, :target, @credit_code)
@@ -304,8 +291,7 @@ class SalaryExpenseTransferObject < KFSDataObject
       clearing_entries.each do |entry|
         expected_llpe_data.push(entry)
       end
-    end #need_clearing_account_entries
-
+    end
     return expected_llpe_data
   end
 

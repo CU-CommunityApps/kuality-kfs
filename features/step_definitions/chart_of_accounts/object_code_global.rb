@@ -1,8 +1,5 @@
 And /^I create an Object Code Global document with default parameter data$/ do
-  #Use the default setup when the object is created
   @object_code_global = create ObjectCodeGlobalObject
-  #Add New Year and Chart values
-  #no need to set fiscal year value as it defaults to the current fiscal year
   @object_code_global.year_and_charts.add chart_of_accounts_code: get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE)
 end
 

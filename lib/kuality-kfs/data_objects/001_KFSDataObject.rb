@@ -56,7 +56,7 @@ class KFSDataObject < DataFactory
 
   def defaults
     {
-      description:               random_alphanums(37, 'AFT')
+      description:  generate_random_description
     }
   end
 

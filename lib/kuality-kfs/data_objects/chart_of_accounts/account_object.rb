@@ -25,13 +25,13 @@ class AccountObject < KFSDataObject
   def defaults
     super.merge({
                   chart_code:                        get_aft_parameter_value(ParameterConstants::DEFAULT_CHART_CODE),
-                  number:                            random_alphanums(7),
-                  name:                              random_alphanums(10),
+                  number:                            generate_random_account_number,
+                  name:                              generate_random_account_name,
                   campus_code:                       get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_CODE),
                   postal_code:                       get_random_postal_code('*'),
-                  city:                              get_generic_city,
+                  city:                              generate_random_city,
                   state:                             get_random_state_code,
-                  address:                           get_generic_address_1,
+                  address:                           generate_random_address,
                   type_code:                         get_aft_parameter_value(ParameterConstants::DEFAULT_CAMPUS_TYPE_CODE),
                   fo_principal_name:                 get_aft_parameter_value(ParameterConstants::DEFAULT_FISCAL_OFFICER),
                   supervisor_principal_name:         get_aft_parameter_value(ParameterConstants::DEFAULT_SUPERVISOR),
@@ -42,7 +42,7 @@ class AccountObject < KFSDataObject
 
   def extended_defaults
     {
-        labor_benefit_rate_category_code: 'CC'
+        labor_benefit_rate_category_code:  get_aft_parameter_value(ParameterConstants::DEFAULT_LABOR_BENEFIT_RATE_CATEGORY_CODE)
     }.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT))
   end
 
@@ -95,7 +95,6 @@ class AccountObject < KFSDataObject
     update_options(on(AccountPage).send("account_data_#{target.to_s}"))
     update_line_objects_from_page!(target)
   end
-
 
   # Class Methods:
   class << self
@@ -150,7 +149,7 @@ class AccountObject < KFSDataObject
           expense_guideline_text:               data_item['accountGuideline.accountExpenseGuidelineText'][0],
           income_guideline_txt:                 data_item['accountGuideline.accountIncomeGuidelineText'][0],
           purpose_text:                         data_item['accountGuideline.accountPurposeText'][0],
-          labor_benefit_rate_cat_code:          data_item['laborBenefitRateCategoryCode'][0],
+          labor_benefit_rate_category_code:     data_item['laborBenefitRateCategoryCode'][0],
           account_expiration_date:              data_item['accountExpirationDate'][0],
           closed:                               data_item['closed'][0],
           income_stream_account_number:         data_item['incomeStreamAccountNumber'][0],
