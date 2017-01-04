@@ -14,9 +14,7 @@ class DisbursementVoucherObject < KFSDataObject
                 :car_mileage, :car_mileage_reimb_amt, :per_diem_start_date
 
   def defaults
-    super
-    super.merge!(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_DISBURSEMENT_VOUCHER))
-         .merge!(default_accounting_lines)
+    super.merge!(default_accounting_lines)
          .merge!(default_payment_information_lines)
   end
 

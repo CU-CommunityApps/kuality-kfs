@@ -11,7 +11,7 @@ class UserGroupObject < DataFactory
 
     }
 
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_USER_GROUP)).merge(opts))
+    set_options(defaults.merge(opts))
     requires :user_name
   end
 
@@ -29,7 +29,5 @@ end
 class UserGroupsCollection < CollectionsFactory
 
   contains UserGroupObject
-
-
 
 end

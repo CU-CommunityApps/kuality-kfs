@@ -8,7 +8,6 @@ class AssetManualPaymentObject < KFSDataObject
                 :asset_lines
 
   def defaults
-    super # we have no default attribute values but super class does, build from super class first to prevent nil object issue
     super.merge!(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ASSET_MANUAL_PAYMENT))
          .merge!(default_accounting_lines)
   end

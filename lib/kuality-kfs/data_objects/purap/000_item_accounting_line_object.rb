@@ -15,8 +15,7 @@ class ItemAccountingLineObject < DataFactory
 
   def initialize(browser, opts={})
     @browser = browser
-    set_options(defaults.merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ITEM_ACCOUNTING_LINES))
-                        .merge(opts))
+    set_options(defaults.merge(opts))
   end
 
   def pre_create; end

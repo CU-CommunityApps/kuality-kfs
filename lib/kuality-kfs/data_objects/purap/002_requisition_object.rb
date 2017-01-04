@@ -24,7 +24,6 @@ class RequisitionObject < KFSDataObject
 
   def defaults
     super.merge(default_items)
-         .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_REQUISITION)) #parameter not defined as of 3/2016
   end
 
   def build
