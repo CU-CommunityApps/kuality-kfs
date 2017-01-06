@@ -13,8 +13,7 @@ class PreEncumbranceObject < KFSDataObject
   attr_accessor   :organization_document_number, :explanation
 
   def defaults
-    super
-    super.merge!(default_accounting_lines).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_PREENCUMBRANCE))
+    super.merge!(default_accounting_lines)
   end
 
   def build

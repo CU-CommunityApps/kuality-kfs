@@ -24,8 +24,6 @@ class AuxiliaryVoucherObject < KFSDataObject
 
   def defaults
     super.merge!(default_accounting_lines)
-         .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_AUXILIARY_VOUCHER))
-
   end
 
   def build

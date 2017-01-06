@@ -23,7 +23,6 @@ class SubAccountObject < KFSDataObject
         name:                   generate_random_sub_account_name,
         sub_account_type_code:  get_aft_parameter_value(ParameterConstants::DEFAULT_EXPENSE_SUB_ACCOUNT_TYPE_CODE)
     }).merge(default_icr_accounts)
-      .merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_SUB_ACCOUNT))
   end
 
 

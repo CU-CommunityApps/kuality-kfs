@@ -35,7 +35,7 @@ class AccountGlobalObject < KFSDataObject
         sufficient_funds_code:                  get_aft_parameter_value(ParameterConstants::DEFAULT_SUFFICIENT_FUNDS_CODE),
         trans_processing_sufficient_funds_code: '',
         labor_benefit_rate_category_code:       '',
-    }).merge(get_aft_parameter_values_as_hash(ParameterConstants::DEFAULTS_FOR_ACCOUNT_GLOBAL))
+    })
   end
 
   def build
